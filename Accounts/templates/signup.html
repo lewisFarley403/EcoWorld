@@ -9,7 +9,13 @@
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Register</button>
+        <button id = "registerBtn" type="submit">Register</button>
+        <script>
+            document.getElementById("registerBtn").addEventListener("click", function(){
+                alert("You have registered successfully!");
+                
+            });
+            </script>
     </form>
 </body>
 </html>
