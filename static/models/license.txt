@@ -1,0 +1,11 @@
+Model Information:
+* title:	Animated Old Chest
+* source:	https://sketchfab.com/3d-models/animated-old-chest-4477ee9446b34d8e857906816ca5245a
+* author:	NOT_Lonely (https://sketchfab.com/not_lonely)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Animated Old Chest" (https://sketchfab.com/3d-models/animated-old-chest-4477ee9446b34d8e857906816ca5245a) by NOT_Lonely (https://sketchfab.com/not_lonely) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

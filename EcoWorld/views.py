@@ -2,4 +2,4 @@ from django.shortcuts import render
 
 # Create your views here.
 def chest(request):
-    return render(request, "chest.html")
+    return render(request, "chest1.html")

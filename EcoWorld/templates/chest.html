@@ -1,28 +1,30 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Box Animation</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <title>Three.js in Django</title>
 </head>
 <body style="margin: 0; overflow: hidden;">
-<script>
-let scene, camera, renderer;
-let box, lid, smallBox;
-let isOpened = false;
+    <script type="importmap">
+        {
+          "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@v0.149.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.149.0/examples/jsm/"
+          }
+        }
+      </script>
 
-function init() {
-    // Setup Scene
-    scene = new THREE.Scene();
 
-    // Camera
-    camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.set(0, 2, 11);
+      <script type="module">
+        // Import Three.js core and FBXLoader from CDN
+        import * as THREE from 'three';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-    // Renderer
-    renderer = new THREE.WebGLRenderer({ antialias: true });
+        const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
@@ -31,58 +33,121 @@ function init() {
     light.position.set(5, 5, 5);
     scene.add(light);
 
-    // Create the Main Box (Container)
-    const boxMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
-    box = new THREE.Mesh(new THREE.BoxGeometry(2, 2, 2), boxMaterial);
-    scene.add(box);
+    // Camera position
+    camera.position.z = 5;
 
-    // Create the Lid (Separate Top)
-    lid = new THREE.Mesh(new THREE.BoxGeometry(2, 0.1, 2), boxMaterial);
-    lid.position.set(0, 1, 0); // Position on top of the main box
-    scene.add(lid);
+    // Animation mixer for controlling animations
+    let mixer;
 
-    // Create the Small Box Inside
-    const smallBoxMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
-    smallBox = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.5, 0.5), smallBoxMaterial);
-    smallBox.position.set(0, 0.5, 0); // Inside the main box
-    scene.add(smallBox);
+    // Load the glTF model with animations
+    const loader = new GLTFLoader();
+    loader.load(
+        "{% static 'models/scene.gltf' %}", // Path to your GLB model
+        (gltf) => {
+            // Add the loaded model to the scene
+            scene.add(gltf.scene);
 
-    // Listen for Click Event
-    window.addEventListener("click", openBox);
+            // Set up the animation mixer to play the animations
+            mixer = new THREE.AnimationMixer(gltf.scene);
 
+            // Iterate over all animations and play them
+            gltf.animations.forEach((clip) => {
+                mixer.clipAction(clip).play();
+            });
+        },
+        // Progress callback (optional)
+        (xhr) => {
+            console.log(`${(xhr.loaded / xhr.total) * 100}% loaded`);
+        },
+        // Error callback
+        (error) => {
+            console.error('Error loading GLTF model:', error);
+        }
+    );
+
+    // Animation loop
+    function animate() {
+        requestAnimationFrame(animate);
+
+        if (mixer) mixer.update(0.01); // Update the mixer for each frame
+
+        renderer.render(scene, camera);
+    }
     animate();
-}
 
-function openBox() {
-    if (!isOpened) {
-        isOpened = true;
+    // Handle window resizing
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    </script>
+<!-- <script type="module">
+    console.log("{% static 'js/three/three.module.js' %}");
+    import * as THREE from "{% static 'js/three/three.module.js' %}";
+    import { FBXLoader } from "{% static 'js/three/FBXLoader.js' %}";
 
-        // Animate the lid opening
-        gsap.to(lid.rotation, { duration: 1, x: Math.PI / 2, ease: "power2.out" });
+    let scene, camera, renderer, mixer, clock;
 
-        // Animate the small box flying out and landing in front of the camera
-        gsap.to(smallBox.position, { 
-            duration: 1, 
-            y: 3,   // Moves up first
-            ease: "power2.out",
-            onComplete: () => { 
-                gsap.to(smallBox.position, { 
-                    duration: 1.5, 
-                    y: -1,   // Comes back down
-                    z: 3,  // Moves toward the camera
-                    ease: "bounce.out"
-                });
+    function init() {
+        // Scene setup
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x202020);
+
+        // Camera setup (Fixed Position)
+        camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(0, 2, 5); // Static camera position
+
+        // Renderer setup
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // Lighting
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(5, 5, 5);
+        scene.add(light);
+
+        // Clock for animations
+        clock = new THREE.Clock();
+
+        // Load FBX animation
+        const loader = new FBXLoader();
+        loader.load("{% static 'models/chest.fbx' %}", (object) => {
+            object.scale.set(0.01, 0.01, 0.01); // Adjust scale if needed
+            scene.add(object);
+
+            // Animation mixer
+            mixer = new THREE.AnimationMixer(object);
+            if (object.animations.length > 0) {
+                const action = mixer.clipAction(object.animations[0]);
+                action.play();
             }
         });
+
+        // Resize event
+        window.addEventListener('resize', onWindowResize);
+        
+        // Start animation loop
+        animate();
     }
-}
 
-function animate() {
-    requestAnimationFrame(animate);
-    renderer.render(scene, camera);
-}
+    function animate() {
+        requestAnimationFrame(animate);
+        const delta = clock.getDelta();
+        if (mixer) mixer.update(delta); // Update animation
+        renderer.render(scene, camera);
+    }
 
-init();
-</script>
+    function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // Initialize the scene
+    init();
+    </script>  -->
+
 </body>
 </html>

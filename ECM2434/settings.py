@@ -121,9 +121,18 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = "static/"
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+STATIC_URL = '/static/'
+
+# Add this to tell Django where to find static files in your project
+STATICFILES_DIRS = [
+    BASE_DIR / "static",  # The folder where your static files (like `three.module.js`) are located
+]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"  # Where collected static files will go when running collectstatic (for production)
