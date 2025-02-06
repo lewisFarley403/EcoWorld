@@ -1,17 +1,17 @@
 from django import forms
-from .models import User
-class UserForm(forms.ModelForm):
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from .models import Profile
+
+class SignUpForm(UserCreationForm):
+    email = forms.EmailField(required=True)
+
     class Meta:
         model = User
-        fields = ['username', 'password', 'email', 'first_name', 'last_name', 'date_of_birth']
-        widgets = {
-            'password': forms.PasswordInput(),
-            'date_of_birth': forms.DateInput(attrs={'type': 'date'}),
-        }
-    def save(self, commit=True):
-        user = super().save(commit=False)
-        user.set_password(self.cleaned_data["password"])  # ✅ Hash the password before saving
+        fields = ['first_name','last_name','username', 'email', 'password1', 'password2']
 
-        if commit:
-            user.save()  
-        return user
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['bio', 'profile_picture']

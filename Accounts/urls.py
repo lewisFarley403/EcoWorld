@@ -1,7 +1,9 @@
 from django.urls import path
-from .views import dbTest,signUpView  # Import the view
-
+from django.contrib.auth import views as auth_views
+from . import views
 urlpatterns = [
-    path('', dbTest, name='home'),  # Root URL
-    path('signup/', signUpView, name='signup'),  # URL for the signup page
+    path('signup/', views.signup, name='signup'),
+    path('login/', auth_views.LoginView.as_view(), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
+    path('profile/', views.profile, name='profile'),
 ]

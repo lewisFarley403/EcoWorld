@@ -44,7 +44,6 @@ INSTALLED_APPS = [
     "Accounts",
     "EcoWorld",
 ]
-AUTH_USER_MODEL = 'Accounts.User' # tells django to use this user as its internal auth user model
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
