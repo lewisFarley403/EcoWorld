@@ -31,12 +31,16 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 let scene, camera, renderer;
 let box, lid, smallBox;
 let isOpened = false;
+let GLTF;
+let animations;
 function loadModel() {
     const loader = new GLTFLoader();
     loader.load("{% static 'models/scene.gltf' %}", (gltf) => {
         scene.add(gltf.scene);
+        GLTF = gltf;
         box = gltf.scene.getObjectByName('Box');
         lid = gltf.scene.getObjectByName('Lid');
+        animations = gltf.animations;
         // smallBox = gltf.scene.getObjectByName('SmallBox');
     });
 }
@@ -81,33 +85,82 @@ function init() {
 
     animate();
 }
+let mixer;
+// function openBox() {
+//     if (!isOpened) {
+//         isOpened = true;
+        
+//         mixer = new THREE.AnimationMixer(GLTF.scene);
+//         console.log("playing animation");
+//         console.log(animations);
+//         // Iterate over all animations and play them
+//         animations.forEach((clip) => {
+//             mixer.clipAction(clip).play();
+//         });
+//         // Animate the lid opening
+//         // gsap.to(lid.rotation, { duration: 1, x: Math.PI / 2, ease: "power2.out" });
+
+//         // Animate the small box flying out and landing in front of the camera
+//         gsap.to(smallBox.position, { 
+//             duration: 1, 
+//             y: 100,   // Moves up first
+//             ease: "power2.out",
+//             onComplete: () => { 
+//                 gsap.to(smallBox.position, { 
+//                     duration: 1.5, 
+//                     y: 0,   // Comes back down
+//                     x: -100,  // Moves toward the camera
+//                     ease: "bounce.out"
+//                 });
+//             }
+//         });
+//     }
+// }
 
 function openBox() {
     if (!isOpened) {
         isOpened = true;
 
-        // Animate the lid opening
-        // gsap.to(lid.rotation, { duration: 1, x: Math.PI / 2, ease: "power2.out" });
+        mixer = new THREE.AnimationMixer(GLTF.scene);
+        console.log("playing animation");
+        console.log(animations);
 
-        // Animate the small box flying out and landing in front of the camera
-        gsap.to(smallBox.position, { 
-            duration: 1, 
-            y: 100,   // Moves up first
-            ease: "power2.out",
-            onComplete: () => { 
-                gsap.to(smallBox.position, { 
-                    duration: 1.5, 
-                    y: 0,   // Comes back down
-                    x: -100,  // Moves toward the camera
-                    ease: "bounce.out"
-                });
-            }
+        // Play the animations only once
+        animations.forEach((clip) => {
+            let action = mixer.clipAction(clip);
+            action.loop = THREE.LoopOnce;  // Ensures the animation plays once
+            action.clampWhenFinished = true;  // Makes sure the animation stops at the last frame
+            action.play();
+        });
+
+        // Listen for the animation finish
+        mixer.addEventListener("finished", () => {
+            console.log("Box animation complete, now animating small box...");
+            animateSmallBox();
         });
     }
 }
 
+function animateSmallBox() {
+    gsap.to(smallBox.position, { 
+        duration: 1, 
+        y: 100,   // Moves up first
+        ease: "power2.out",
+        onComplete: () => { 
+            gsap.to(smallBox.position, { 
+                duration: 1.5, 
+                y: 0,   // Comes back down
+                x: -100,  // Moves toward the camera
+                ease: "bounce.out"
+            });
+        }
+    });
+}
+
 function animate() {
     requestAnimationFrame(animate);
+    if (mixer) mixer.update(0.01); // Update the mixer for each frame
+
     renderer.render(scene, camera);
 }
 
