@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+        <!-- need to add csrf token -->
+        <input type="hidden" id="csrf_token" value="{{ csrf_token }}"> 
+
+
+        <h1>hello world</h1>
+        <label for="id">user ID:</label>
+        <input type="text" id="id" name="id"><br><br>
+        <label for="fountain">fountain ID:</label>
+        <input type="text" id="fountain" name="fountain"><br><br>
+
+        <button id="submitBtn">Submit</button>
+
+        <script>
+
+            document.getElementById("submitBtn").addEventListener("click", function(){
+                const today = new Date();
+                const formattedDate = today.getFullYear() + '-' + 
+                      String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+                      String(today.getDate()).padStart(2, '0');
+
+                var csrfToken = document.getElementById("csrf_token").value;
+                var id = document.getElementById("id").value;
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", "/ecoworld/addDrink/", true);
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.setRequestHeader("X-CSRFToken", csrfToken); // ✅ Include CSRF token
+                var fountain = document.getElementById("fountain").value;
+
+                xhr.onreadystatechange = function(){
+                    if(xhr.readyState === 4 && xhr.status === 200){
+                        console.log(xhr.responseText);
+                    }
+                }
+                xhr.send(JSON.stringify({user: id, fountain: fountain,drank_on: formattedDate}));
+            });
+
+
+            // document.getElementById("submitBtn").addEventListener("click", function(){
+            //     alert("submit")
+            // });
+        </script>
+    
+</body>
+</html>
