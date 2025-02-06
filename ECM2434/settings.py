@@ -41,10 +41,9 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "Accounts",
+    "accounts",
     "EcoWorld",
 ]
-AUTH_USER_MODEL = 'Accounts.User' # tells django to use this user as its internal auth user model
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+    {% block extra_css %}
+    <link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}">
+{% endblock %}
+    <div class="profile-container">
+        <h2>Your Profile</h2>
+
+        <!-- Profile Picture Display (centered) -->
+        <div class="profile-picture-container">
+            <img src="{% static 'accounts/pfps/' %}{{ profile.profile_picture }}" alt="Profile Picture" class="profile-picture" />
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            <label for="bio">Bio:</label>
+            <textarea name="bio" id="bio" rows="4">{{ profile.bio }}</textarea>
+
+            <h3>Select Profile Picture:</h3>
+            <button type="button" id="selectProfilePictureBtn">Select Profile Picture</button>
+
+            <!-- Hidden input field to store the selected profile picture -->
+            <input type="hidden" name="profile_picture" id="profilePictureInput" value="{{ profile.profile_picture }}">
+
+            <!-- Popup Modal -->
+            <div id="profilePictureModal" class="modal">
+                <div class="modal-content">
+                    <span id="closeModal" class="close">&times;</span>
+                    <h2>Select a Profile Picture</h2>
+                    <div class="image-gallery">
+                        <img src="{% static 'accounts/pfps/pfp1.png' %}" alt="Profile 1" class="profile-image" data-image="pfp1.png">
+                        <img src="{% static 'accounts/pfps/pfp2.png' %}" alt="Profile 2" class="profile-image" data-image="pfp2.png">
+                        <img src="{% static 'accounts/pfps/pfp3.png' %}" alt="Profile 3" class="profile-image" data-image="pfp3.png">
+                        <img src="{% static 'accounts/pfps/pfp4.png' %}" alt="Profile 4" class="profile-image" data-image="pfp4.png">
+                        <img src="{% static 'accounts/pfps/pfp5.png' %}" alt="Profile 5" class="profile-image" data-image="pfp5.png">
+                    </div>
+                    <button type="button" id="confirmSelectionBtn">Confirm Selection</button>
+                </div>
+            </div>
+
+            <button type="submit">Update Profile</button>
+        </form>
+    </div>
+    {% block extra_js %}
+    <script src="{% static 'accounts/js/profile.js' %}"></script>
+{% endblock %}
+
+{% endblock %}

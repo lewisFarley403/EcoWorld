@@ -1,0 +1,29 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}User Profile{% endblock %}</title>
+
+    <!-- Base CSS -->
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+
+    <!-- Additional page-specific CSS (optional) -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation Bar -->
+
+
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+
+    <!-- Base JS -->
+    <script src="{% static 'js/base.js' %}"></script>
+
+    <!-- Additional page-specific JS (optional) -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

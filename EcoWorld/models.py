@@ -1,6 +1,6 @@
 from django.db import models
 
-from Accounts.models import User
+from accounts.models import User
 # Create your models here.
 class challenge(models.Model):
     name = models.CharField(max_length=50)
