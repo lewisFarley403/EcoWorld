@@ -3,12 +3,16 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import SignUpForm, ProfileUpdateForm
 from .models import Profile
-
+from .utils import createGarden
 def signup(request):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
+            user=form.save()
+            print("User: ")
+            print(user)
+            # create garden for user
+            createGarden(user)
             return redirect('login')  # Redirect to the login page after successful registration
     else:
         form = SignUpForm()

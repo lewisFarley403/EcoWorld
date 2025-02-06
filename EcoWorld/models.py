@@ -41,7 +41,7 @@ class card(models.Model):
     title = models.CharField(max_length=50)
     description = models.TextField()
     rarity = models.ForeignKey(cardRarity, on_delete=models.CASCADE)
-    image = models.ImageField()
+    image = models.ImageField(upload_to='cards/')
     def __str__(self):
         return self.title
 class ownsCard(models.Model):

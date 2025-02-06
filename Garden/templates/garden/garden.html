@@ -1,0 +1,51 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<h1>Garden</h1>
+<p>Here is a list of all the plants in the garden:</p>
+{% for row in squares %}
+    <div>
+        {% for square in row %}
+        {% if square.cardID %}  {# Check if square is not None #}
+            <img src ="{{ square.cardID.image.url }}"> </img>
+        {% else %}
+            <img src = "{{MEDIA_URL}}cards/dirt.jpeg"> </img>
+    {% endif %}
+        {% endfor %}
+    </div>
+{% endfor %}
+    
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+<h1>Garden</h1>
+<p>Here is a list of all the plants in the garden:</p>
+
+{% for row in squares %}
+    <div style="max-width: 100%; overflow: hidden; display: flex; justify-content: center;">
+        {% for square in row %}
+            {% if square.cardID %}
+                <img src="{{ square.cardID.image.url }}" style="width: 100%; height: auto; object-fit: contain;" alt="{{ square.cardID.title }}">
+            {% else %}
+                <img src="{{ MEDIA_URL }}cards/dirt.jpeg" style="width: 100%; height: auto; object-fit: contain;" alt="Default Image">
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endfor %}
+
+</body>
+</html>
