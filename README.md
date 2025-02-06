@@ -15,6 +15,11 @@ awareness and actionable steps towards environmental sustainability.
 ### Technologies Used
 
 ### Installation and Setup
+- install the dependancies ```pip install -r requirements.txt```
+- ```python manage.py makemigrations```
+- ```python manage.py migrate```
+- run django server ```python manage.py runserver```
+
 
 ### 
 
