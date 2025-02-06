@@ -12,7 +12,7 @@ def signup(request):
             return redirect('login')  # Redirect to the login page after successful registration
     else:
         form = SignUpForm()
-    return render(request, 'accounts/signup.html', {'form': form})
+    return render(request, 'Accounts/signup.html', {'form': form})
 
 @login_required  # Ensure that only logged-in users can access the profile
 def profile(request):
@@ -34,4 +34,4 @@ def profile(request):
         return redirect('profile')
 
     # If it's a GET request, show the form
-    return render(request, 'accounts/profile.html', {'profile': profile})
+    return render(request, 'Accounts/profile.html', {'profile': profile})
