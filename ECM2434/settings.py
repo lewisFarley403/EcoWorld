@@ -16,6 +16,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -43,6 +44,7 @@ INSTALLED_APPS = [
     "Accounts",
     "EcoWorld",
 ]
+AUTH_USER_MODEL = 'Accounts.User' # tells django to use this user as its internal auth user model
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
