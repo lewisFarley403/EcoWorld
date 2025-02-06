@@ -19,9 +19,9 @@ class UserType(models.Model):
 #         return self.username
 
 ## change the User model to inherit from AbstractUser, the built-in Django user model
-class CustomUser(AbstractUser):  # Inherit from AbstractUser
+class User(AbstractUser):  # Inherit from AbstractUser
     date_of_birth = models.DateField(null=True, blank=True)
-    user_type = models.ForeignKey(UserType, on_delete=models.SET_NULL, null=True, blank=True)
+    user_type = models.ForeignKey(UserType, on_delete=models.SET_NULL, null=True, blank=True,default=0) # 0 is the default user type
 
     def __str__(self):
         return self.username

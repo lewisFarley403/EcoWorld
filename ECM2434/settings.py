@@ -15,7 +15,6 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-AUTH_USER_MODEL = 'Accounts.User' # tells django to use this user as its internal auth user model
 
 
 # Quick-start development settings - unsuitable for production
@@ -45,6 +44,7 @@ INSTALLED_APPS = [
     "Accounts",
     "EcoWorld",
 ]
+AUTH_USER_MODEL = 'Accounts.User' # tells django to use this user as its internal auth user model
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
