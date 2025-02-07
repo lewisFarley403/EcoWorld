@@ -11,4 +11,4 @@ def show_garden(request):
     print(list(squares))
     processedSquares = [[squares[i*g.size+j] for j in range (g.size)] for i in range (g.size)]
     print(processedSquares)
-    return render(request, 'Garden/garden.html', {'squares': processedSquares,'MEDIA_URL':settings.MEDIA_URL})
+    return render(request, 'Garden/garden.html', {'squares': processedSquares,'MEDIA_URL':settings.MEDIA_URL,'size':g.size})
