@@ -17,6 +17,8 @@
             overflow: auto; /* Enable scroll if needed */
             background-color: rgb(0,0,0); /* Fallback color */
             background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            overflow-y: scroll;
+
         }
         .modal-content {
             background-color: #fefefe;
@@ -24,6 +26,7 @@
             padding: 20px;
             border: 1px solid #888;
             width: 80%; /* Could be more or less, depending on screen size */
+            overflow-y: scroll;
         }
         .grid-container {
             display: grid;
@@ -43,15 +46,13 @@
 </head>
 <body>
     <div id ="modal">
-        <script>
-            fetch('/garden/getAvailableCards/').then(response => response.json()).then(data => {
-                console.log("data")
-                console.log(data);
-            });
-            </script>
+
         <div class="modal-content">
             <span class="close" onclick = "closeModal()">&times;</span>
             <p>Some text in the Modal..</p>
+            {% for card in availableCards %}
+                <img src="{{MEDIA_URL}}{{card.image}}" alt="{{ card.title }}">
+            {% endfor %}
     </div>
     </div>
     {%csrf_token%}
