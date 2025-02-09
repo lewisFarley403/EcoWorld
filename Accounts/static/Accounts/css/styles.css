@@ -9,6 +9,10 @@ body {
 .left-side {
     width: 60%;
     background-color: #00dea5;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers images horizontally */
+    justify-content: center; /* Centers images vertically if needed */
 }
 
 /* Right side (40% of the screen) */
@@ -27,6 +31,14 @@ body {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     width: 300px; /* Fixed width for the login container */
     text-align: center;
+}
+
+.arch-photo img{
+    width: 70%;
+}
+
+.main-photo img {
+    width: 80%;
 }
 
 .logo img {
@@ -67,20 +79,8 @@ h1 {
     box-shadow: 4px 4px 0 #00dea5; /* Keep shadow on focus */
 }
 
-.forgot-password {
-    display: block;
-    margin-bottom: 15px;
-    color: #007bff;
-    text-decoration: none;
-    font-size: 14px;
-}
-
-.forgot-password:hover {
-    text-decoration: underline;
-}
-
 .login-button {
-    width: 100%;
+    width: 50%;
     padding: 10px;
     background-color: #007bff;
     color: #fff;
@@ -91,8 +91,7 @@ h1 {
 }
 
 .login-button:hover {
-    background-color: #0056b3;
-    box-shadow: 4px 4px 0 #00b386; /* Slightly darker shadow on hover */
+    background-color: #00dea5;
 }
 
 .signup-link {
@@ -108,4 +107,5 @@ h1 {
 
 .signup-link a:hover {
     text-decoration: underline;
+    color: #00dea5;
 }

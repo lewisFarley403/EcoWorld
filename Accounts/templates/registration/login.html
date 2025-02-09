@@ -10,16 +10,18 @@
 </head>
 <body>
 <div class="left-side">
-    <div class="logo">
-        <!-- Placeholder for logo image -->
-        <img src="{% static 'Accounts/res/login_page_photo.png' %}" alt="Eco World Logo">
+    <div class="arch-photo">
+        <img src="{% static 'Accounts/res/login-page-arch.png' %}" alt="Leafy Arch">
+    </div>
+    <div class="main-photo">
+        <img src="{% static 'Accounts/res/login-page-photo.png' %}" alt="Plants Design">
     </div>
 </div>
 <div class="right-side">
     <div class="login-container">
         <div class="logo">
             <!-- Placeholder for logo image -->
-            <img src="{% static 'Accounts/pfps/logo.png' %}" alt="Eco World Logo">
+            <img src="{% static 'Accounts/res/logo-placeholder.png' %}" alt="Eco World Logo">
         </div>
         <h1>Log In</h1>
         <form method="POST" class="login-form">
@@ -32,7 +34,6 @@
                 <label for="id_password">Password</label>
                 <input type="password" id="id_password" name="password" placeholder="Enter your password" required>
             </div>
-            <a href="#" class="forgot-password">Forgot your password?</a>
             <button type="submit" class="login-button">Log In</button>
         </form>
         <div class="signup-link">
