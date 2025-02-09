@@ -19,8 +19,9 @@ def show_garden(request):
     availableCards = [ card.card for card in playerInventory if card.card not in [square.cardID for square in squares]]
     serialized=json.loads(serializers.serialize('json', availableCards))
     print("SERIALIZED")
-    final = [obj["fields"] for obj in serialized]
+    final = [obj["fields"]|{'id':obj['pk']} for obj in serialized]
     print(final[0])
+    # print(final)
     return render(request, 'Garden/garden.html', {'squares': processedSquares,'MEDIA_URL':settings.MEDIA_URL,'size':g.size,'availableCards':final})
 def remove_card(request):
     if request.method =="POST":
@@ -44,10 +45,31 @@ def getAvailableCards(request):
     g = garden.objects.get(userID=request.user)
     squares = g.gardensquare_set.all()
     playerInventory = ownsCard.objects.filter(user=request.user)
-    availableCards = [ card.card for card in playerInventory if card.card not in [square.cardID for square in squares]]
+    # availableCards = [ card.card for card in playerInventory if card.card not in [square.cardID for square in squares]]
+
+    # with new db that has quantity
+    availableCards = [ card.card for card in playerInventory if card.quantity>0 and card.card not in [square.cardID for square in squares]]
     serialized=json.loads(serializers.serialize('json', availableCards))
     print("SERIALIZED")
+    print(serialized)
+    print("SERIALIZED bellow")
+
     final = [obj["fields"] for obj in serialized]
     print(final)
-    print("SERIALIZED bellow")
     return JsonResponse({'success': True,'cards':final})
+
+def addCard(request):
+    if request.method =="POST":
+        body = json.loads(request.body)
+        g=garden.objects.get(userID=request.user)
+        row = int(body['row'])
+        col = int(body['col'])
+        cardID = int(body['card'])
+        card = card.objects.get(id=cardID)
+        squareID = (row-1)*g.size+(col-1)
+        square = g.gardensquare_set.get(gardenID=g,squareID=squareID)
+        square.cardID = card
+        # maybe check if this quantity is >0
+        ownsCard.objects.get(user=request.user,card=card).quantity-=1
+
+        return JsonResponse({'success': True, 'message': 'Card added!'})

@@ -45,13 +45,16 @@
     </style>
 </head>
 <body>
+    <script>
+        var squareClicked = null;
+    </script>
     <div id ="modal">
 
         <div class="modal-content">
             <span class="close" onclick = "closeModal()">&times;</span>
             <p>Some text in the Modal..</p>
             {% for card in availableCards %}
-                <img src="{{MEDIA_URL}}{{card.image}}" alt="{{ card.title }}">
+                <img src="{{MEDIA_URL}}{{card.image}}" alt="{{ card.title }}" onclick="handleAddToGarden('{{card.id}}')">
             {% endfor %}
     </div>
     </div>
@@ -103,11 +106,37 @@
         }
 
         function openModal(row, col){
+            squareClicked = [row,col]
             console.log(row, col);
             document.getElementById('modal').style.display = 'block';
         }
         function closeModal(){
             document.getElementById('modal').style.display = 'none';
+            squareClicked=null;
+        }
+
+        function handleAddToGarden(cardID){
+            console.log(cardID);
+            const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+            fetch('/garden/addCard/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken
+                },
+                body: JSON.stringify({ row: squareClicked[0], col: squareClicked[1], cardID: cardID })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Card added successfully!");
+                    location.reload();
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+
         }
     </script>
 </body>
