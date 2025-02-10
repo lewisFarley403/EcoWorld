@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Sustainability Information</h1>
+    <p id="paragraph-display">{{ paragraphs.0 }}</p>
+
+    <button onclick="prevParagraph()">Previous</button>
+    <button onclick="nextParagraph()">Next</button>
+
+    <a href="{% url 'quiz' %}">
+        <button>Take the Quiz</button>
+    </a>
+
+    <script>
+        let paragraphs = {{ paragraphs|safe }};
+        let index = 0;
+        let paragraphDisplay = document.getElementById("paragraph-display");
+
+        function nextParagraph() {
+            if (index < paragraphs.length - 1) {
+                index++;
+                paragraphDisplay.innerText = paragraphs[index];
+            }
+        }
+
+        function prevParagraph() {
+            if (index > 0) {
+                index--;
+                paragraphDisplay.innerText = paragraphs[index];
+            }
+        }
+    </script>
+{% endblock %}

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "Accounts",
     "EcoWorld",
+    "guides",
 ]
 
 MIDDLEWARE = [
