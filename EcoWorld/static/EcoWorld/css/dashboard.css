@@ -9,7 +9,8 @@ body {
     font-family: Arial, sans-serif;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    max-height: 100vh;
+    overflow: hidden;
 }
 
 /* Header Section */
@@ -35,13 +36,13 @@ body {
     margin-right: 20px;
     font-size: 16px;
     text-decoration: none;
-    color: #333;
+    color: #003c3c;
 }
 
 .navbar .logo {
     font-size: 24px;
     font-weight: bold;
-    color: #333;
+    color: #003c3c;
 }
 
 .navbar .right-links {
@@ -66,14 +67,23 @@ body {
 
 .left-panel {
     width: 15%;
+    overflow: hidden;
 }
 
 .right-panel {
-    transform: scaleX(-1);
     width: 15%;
-    transform-origin: center;
-    position: relative;
-    right: -85%; /* Shift the flipped content to the correct position */
+    overflow: hidden;
+}
+
+.left-panel img{
+    width: 200%;
+    height: auto;
+}
+
+.right-panel img{
+    transform: scaleX(-1);
+    width: 200%;
+    height: auto;
 }
 
 .center-content {
@@ -97,7 +107,14 @@ body {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     overflow: hidden;
     text-align: center;
-    margin-top: 25%;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.05); /* Slight zoom effect on hover */
 }
 
 .card-image {
@@ -110,5 +127,5 @@ body {
     font-size: 18px;
     font-weight: bold;
     padding: 10px 0;
-    color: #333;
+    color: #003c3c;
 }
