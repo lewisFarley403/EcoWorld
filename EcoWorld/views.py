@@ -1,3 +1,11 @@
+"""
+this module defines the views used in this app:
+    - `addDrink` : This view allows the user to add a drink event
+    - `testAddDrink` : This view allows the user to test adding a drink event (for testing purposes)
+Author:
+    -Lewis Farley (lf507@exeter.ac.uk)
+"""
+
 from django.shortcuts import render
 from .models import drinkEvent,User,waterFountain
 import json
