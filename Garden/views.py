@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from .models import garden
 from django.http import JsonResponse
-from EcoWorld.models import ownsCard
+from EcoWorld.models import ownsCard,card
 import json
 from django.core import serializers
 
@@ -20,7 +20,7 @@ def show_garden(request):
     serialized=json.loads(serializers.serialize('json', availableCards))
     print("SERIALIZED")
     final = [obj["fields"]|{'id':obj['pk']} for obj in serialized]
-    print(final[0])
+    # print(final[0])
     # print(final)
     return render(request, 'Garden/garden.html', {'squares': processedSquares,'MEDIA_URL':settings.MEDIA_URL,'size':g.size,'availableCards':final})
 def remove_card(request):
@@ -64,12 +64,14 @@ def addCard(request):
         g=garden.objects.get(userID=request.user)
         row = int(body['row'])
         col = int(body['col'])
-        cardID = int(body['card'])
-        card = card.objects.get(id=cardID)
+        print(body)
+        cardID = int(body['cardID'])
+        c = card.objects.get(id=cardID)
         squareID = (row-1)*g.size+(col-1)
         square = g.gardensquare_set.get(gardenID=g,squareID=squareID)
-        square.cardID = card
+        square.cardID = c
         # maybe check if this quantity is >0
-        ownsCard.objects.get(user=request.user,card=card).quantity-=1
-
+        ownsCard.objects.get(user=request.user,card=c).quantity-=1
+        ownsCard.objects.get(user=request.user,card=c).save()
+        square.save()
         return JsonResponse({'success': True, 'message': 'Card added!'})

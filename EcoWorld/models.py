@@ -47,5 +47,6 @@ class card(models.Model):
 class ownsCard(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     card = models.ForeignKey(card, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
     def __str__(self):
         return self.user.username + " owns " + self.card.title
