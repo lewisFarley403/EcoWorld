@@ -41,11 +41,12 @@ class card(models.Model):
     title = models.CharField(max_length=50)
     description = models.TextField()
     rarity = models.ForeignKey(cardRarity, on_delete=models.CASCADE)
-    image = models.ImageField()
+    image = models.ImageField(upload_to='cards/')
     def __str__(self):
         return self.title
 class ownsCard(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     card = models.ForeignKey(card, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=0)
     def __str__(self):
         return self.user.username + " owns " + self.card.title
