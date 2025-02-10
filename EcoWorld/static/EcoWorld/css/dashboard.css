@@ -1,0 +1,114 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Header Section */
+.header {
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px 20px;
+}
+
+.navbar {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar .left-links a,
+.navbar .right-links span {
+    margin-right: 20px;
+    font-size: 16px;
+    text-decoration: none;
+    color: #333;
+}
+
+.navbar .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.navbar .right-links {
+    display: flex;
+    align-items: center;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-left: 10px;
+    border: 2px solid #00dea5;
+}
+
+/* Main Content Section */
+.main-content {
+    flex: 1;
+    display: flex;
+    background-color: #0e4d46;
+}
+
+.left-panel {
+    width: 15%;
+}
+
+.right-panel {
+    transform: scaleX(-1);
+    width: 15%;
+    transform-origin: center;
+    position: relative;
+    right: -85%; /* Shift the flipped content to the correct position */
+}
+
+.center-content {
+    width: 70%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 100px;
+    padding: 20px;
+    background-color: #00dea5;
+}
+
+.card {
+    background-color: #fff;
+    width: 250px;
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+    text-align: center;
+    margin-top: 25%;
+}
+
+.card-image {
+    width: 100%;
+    height: 60%;
+    object-fit: cover;
+}
+
+.card-text {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px 0;
+    color: #333;
+}

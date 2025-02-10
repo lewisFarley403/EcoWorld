@@ -3,6 +3,7 @@ body {
     margin: 0;
     height: 100vh;
     display: flex;
+    color: #003c3c;
 }
 
 /* Left side (60% of the screen) */
@@ -29,7 +30,7 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 300px; /* Fixed width for the login container */
+    width: 400px; /* Increased width */
     text-align: center;
 }
 
@@ -40,7 +41,7 @@ body {
 }
 
 .logo img {
-    width: 100px;
+    width: 70px;
     margin-bottom: 20px;
 }
 
@@ -48,6 +49,16 @@ h1 {
     margin-bottom: 20px;
     font-size: 24px;
     color: #003c3c;
+}
+
+.name-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px; /* Space between first & last name */
+}
+
+.name-group .input-group {
+    width: 50%; /* Each takes half the width */
 }
 
 .input-group {
@@ -106,4 +117,30 @@ h1 {
 .signup-link a:hover {
     text-decoration: underline;
     color: #00dea5;
+}
+
+.password-tooltip {
+    position: absolute;
+    left: -230px; /* Moves box to the left */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 200px;
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+    font-size: 12px;
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    display: none; /* Hidden by default */
+}
+
+/* Show tooltip on hover */
+.input-group:hover .password-tooltip {
+    display: block;
+}
+
+/* Positioning wrapper for the input field */
+.password-container {
+    position: relative;
+    align-items: center;
 }

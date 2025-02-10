@@ -23,3 +23,6 @@ def addDrink(request):
 
 def testAddDrink(request):
     return render(request, "addDrink.html")
+
+def dashboard(request):
+    return render(request, "EcoWorld/dashboard.html")
