@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 from Accounts.models import User
 # Create your models here.
 class challenge(models.Model):
@@ -50,3 +50,10 @@ class ownsCard(models.Model):
     quantity = models.IntegerField(default=0)
     def __str__(self):
         return self.user.username + " owns " + self.card.title
+
+class WaterBottleFill(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='bottle_uploads/')
+    timestamp = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"{self.user.username} - {self.timestamp}"
