@@ -17,6 +17,8 @@ def createGarden(user):
         user : User : The user for whom the garden is created.
     Returns:
         g : Garden : The garden created for the user.
+    author:
+        - Lewis Farley (lf507@exeter.ac.uk)
     """
     # Create a garden for the user
     print(user)

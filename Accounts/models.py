@@ -3,6 +3,9 @@ Module to create the Profile model for the Accounts app.
 This module includes:
     - Profile: Model for storing user profile information (bio, first name, last name, profile picture).
 
+Usage:
+    - Import the Profile model in views.py to access user profile information.
+    
 It creates database tables for storing user profile information.
 
 @author Ethan Sweeney (es1057@exeter.ac.uk)
@@ -22,7 +25,6 @@ class Profile(models.Model):
         -first_name: TextField : The first name of the user.
         -last_name: TextField : The last name of the user.
         -profile_picture: CharField : The profile picture of the user.
-        
     Methods:
         __str__(): Returns the username of the user.
     author:
