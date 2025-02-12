@@ -1,12 +1,69 @@
-.answer-box {
-    display: block;
-    padding: 15px;
-    margin: 10px 0;
+h1.text-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.card {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+/* General Styles */
+.question-box {
     background-color: #f8f9fa;
     border: 2px solid #ddd;
     border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    display: none; /* Initially hide all questions */
+    position: relative;
+    transition: transform 0.5s ease-in-out; /* For slide effect */
+}
+
+/* When active, show the question */
+.question-box.active {
+    display: block;
+}
+
+/* Add a class to trigger slide-in effect */
+.question-box.slide-in {
+    transform: translateX(0); /* Slide in */
+}
+
+/* When we are navigating back, slide out */
+.question-box.slide-out {
+    transform: translateX(100%); /* Slide out */
+}
+
+/* Navigation Buttons */
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+
+.answer-box {
+    display: block;
+    padding: 12px;
+    margin: 8px 0;
+    background-color: #ffffff;
+    border: 2px solid #ddd;
+    border-radius: 8px;
     text-align: center;
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
 }
@@ -22,9 +79,51 @@
     font-weight: bold;
 }
 
-h1.text-center {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
+/* Progress Bar Container */
+#progress-bar-container {
+    width: 100%;
+    background-color: #f0f0f0;
+    height: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Progress Bar Fill */
+#progress-bar {
+    height: 100%;
+    background-color: #28a745; /* Green color */
+    width: 0%; /* Start with 0% width */
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+/* Define my font */
+@font-face {
+    font-family: 'bangers';
+    src: url("{% static 'fonts/bangers-regular.ttf' %}") format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Apply the font globally */
+body {
+    font-family: 'bangers', cursive;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'bangers', cursive;
+    color: #333;
+}
+
+button {
+    font-family: 'bangers', cursive;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
 }

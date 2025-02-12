@@ -6,31 +6,44 @@
     {% block extra_css %}
     <link rel="stylesheet" href="{% static 'guides/css/style.css' %}">
 {% endblock %}
+
     <div class="container mt-5">
         <div class="card shadow p-4">
             <h1 class="text-center text-success">Sustainability Quiz</h1>
+
+            <!-- Progress Bar -->
+            <div id="progress-bar-container">
+            <div id="progress-bar"></div>
+            </div>
+
             <form id="quiz-form">
 
-                <div class="mb-3">
-                    <p class="fw-bold">1. Which of the following is a renewable energy source? (Select all that apply)</p>
-                    <div class="answer-box" data-question="q1" data-value="A" data-multi="true">Coal</div>
-                    <div class="answer-box" data-question="q1" data-value="B" data-multi="true">Solar power</div>
-                    <div class="answer-box" data-question="q1" data-value="C" data-multi="true">Natural gas</div>
-                    <div class="answer-box" data-question="q1" data-value="D" data-multi="true">Wind power</div>
+                <!-- Question 1 -->
+                <div class="question-box" id="question-1">
+                    <div class="question-text">1. Which of the following is a renewable energy source? (Select all that apply)</div>
+                    <div class="answer-box" data-question="q1" data-value="A">Coal</div>
+                    <div class="answer-box" data-question="q1" data-value="B">Solar power</div>
+                    <div class="answer-box" data-question="q1" data-value="C">Natural gas</div>
+                    <div class="answer-box" data-question="q1" data-value="D">Wind power</div>
                 </div>
 
-                <div class="mb-3">
-                    <p class="fw-bold">2. What are the benefits of using LED lightbulbs?</p>
+                <!-- Question 2 -->
+                <div class="question-box" id="question-2">
+                    <div class="question-text">2. What are the benefits of using LED lightbulbs? (Select all that apply)</div>
                     <div class="answer-box" data-question="q2" data-value="A">They consume more electricity</div>
                     <div class="answer-box" data-question="q2" data-value="B">They last longer</div>
                     <div class="answer-box" data-question="q2" data-value="C">They produce more heat</div>
                     <div class="answer-box" data-question="q2" data-value="D">They are energy efficient</div>
                 </div>
 
-                <button type="button" class="btn btn-success w-100" onclick="submitQuiz()">Submit</button>
+                <!-- Navigation Buttons -->
+                <button type="button" id="back-button" style="display:none;">Back</button>
+                <button type="button" id="next-button">Next</button>
+                <button type="button" id="submit-button" style="display:none;">Submit</button>
             </form>
         </div>
     </div>
+
     {% block extra_js %}
     <script src="{% static 'guides/js/quiz.js' %}"></script>
 {% endblock %}
