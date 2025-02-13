@@ -36,7 +36,6 @@ STATIC_ROOT = BASE_DIR / 'static'
 # Application definition
 
 INSTALLED_APPS = [
-    'qr_code'
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -46,6 +45,7 @@ INSTALLED_APPS = [
     "Accounts",
     "EcoWorld",
     "Garden",
+    "qr_code",
 ]
 
 MIDDLEWARE = [
