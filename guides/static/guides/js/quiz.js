@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function() {
             ]
         },
         {
-            question: "Which of the following transportation methods have relatively low environmental impact? (Select all that apply)",
+            question: "Which of the following transportation methods has the lowest environmental impact? (Select all that apply)",
             answers: [
                 { text: "Driving alone in a gas-powered car", value: "A", correct: false },
                 { text: "Taking a train", value: "B", correct: true },
@@ -96,15 +96,19 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Function to navigate to the next question
-    function showQuestion(questionNumber) {
+    function showQuestion(questionNumber, direction) {
         const allQuestions = document.querySelectorAll(".question-box");
         allQuestions.forEach((question) => {
-            question.classList.remove("active", "slide-in", "slide-out");
+            question.classList.remove("active", "slide-in-next", "slide-out-next", "slide-in-prev", "slide-out-prev");
         });
 
         const currentQuestionBox = document.getElementById(`question-${questionNumber + 1}`);
         if (currentQuestionBox) {
-            currentQuestionBox.classList.add("active", "slide-in");
+            if (direction === "next") {
+                currentQuestionBox.classList.add("active", "slide-in-next");
+            } else if (direction === "prev") {
+                currentQuestionBox.classList.add("active", "slide-in-prev");
+            }
         }
 
         // Handle button visibility
@@ -134,16 +138,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Generate questions and show the first question
     generateQuestions();
-    showQuestion(currentQuestion);
+    showQuestion(currentQuestion, "next");
 
     // Event listener for the Next button
     nextButton.addEventListener("click", function() {
         if (currentQuestion < totalQuestions - 1) {
-            currentQuestion++;
-            const currentQuestionBox = document.getElementById(`question-${currentQuestion}`);
-            currentQuestionBox.classList.add("slide-out");
+            const currentQuestionBox = document.getElementById(`question-${currentQuestion + 1}`);
+            currentQuestionBox.classList.add("slide-out-next");
             setTimeout(() => {
-                showQuestion(currentQuestion);
+                currentQuestion++;
+                showQuestion(currentQuestion, "next");
             }, 500); // Wait for the slide-out to complete
         }
     });
@@ -151,11 +155,11 @@ document.addEventListener("DOMContentLoaded", function() {
     // Event listener for the Back button
     backButton.addEventListener("click", function() {
         if (currentQuestion > 0) {
-            currentQuestion--;
-            const currentQuestionBox = document.getElementById(`question-${currentQuestion + 2}`);
-            currentQuestionBox.classList.add("slide-out");
+            const currentQuestionBox = document.getElementById(`question-${currentQuestion + 1}`);
+            currentQuestionBox.classList.add("slide-out-prev");
             setTimeout(() => {
-                showQuestion(currentQuestion);
+                currentQuestion--;
+                showQuestion(currentQuestion, "prev");
             }, 500); // Wait for the slide-out to complete
         }
     });

@@ -1,3 +1,36 @@
+/* General Styles */
+body {
+    font-family: 'bangers', cursive;
+    background-color: skyblue;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+.leaf {
+    position: fixed;
+    top: -10%;
+    width: 50px;
+    height: auto;
+    z-index: -1;
+    pointer-events: none;
+    animation: fallingLeaves linear infinite;
+}
+
+@keyframes fallingLeaves {
+    0% {
+        transform: translateY(-10vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(110vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+
 h1.text-center {
     display: flex;
     justify-content: center;
@@ -9,8 +42,10 @@ h1.text-center {
     width: 100%;
     max-width: 800px;
     margin: 0 auto;
+    border-radius: 10px;
 }
-/* General Styles */
+
+/* Question Box Styles */
 .question-box {
     background-color: #f8f9fa;
     border: 2px solid #ddd;
@@ -18,9 +53,9 @@ h1.text-center {
     padding: 15px;
     margin-bottom: 20px;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-    display: none; /* Initially hide all questions */
+    display: none;
     position: relative;
-    transition: transform 0.5s ease-in-out; /* For slide effect */
+    transition: transform 0.5s ease-in-out;
 }
 
 /* When active, show the question */
@@ -28,14 +63,24 @@ h1.text-center {
     display: block;
 }
 
-/* Add a class to trigger slide-in effect */
-.question-box.slide-in {
-    transform: translateX(0); /* Slide in */
+/* Slide in from the left when moving to the next question */
+.question-box.slide-in-next {
+    transform: translateX(0); /* Slide in from the left */
 }
 
-/* When we are navigating back, slide out */
-.question-box.slide-out {
-    transform: translateX(100%); /* Slide out */
+/* Slide out to the left when moving to the next question */
+.question-box.slide-out-next {
+    transform: translateX(-100%); /* Slide out to the left */
+}
+
+/* Slide in from the right when moving to the previous question */
+.question-box.slide-in-prev {
+    transform: translateX(0); /* Slide in from the right */
+}
+
+/* Slide out to the right when moving to the previous question */
+.question-box.slide-out-prev {
+    transform: translateX(100%); /* Slide out to the right */
 }
 
 /* Navigation Buttons */
@@ -54,7 +99,7 @@ button:hover {
     background-color: #218838;
 }
 
-
+/* Answer Box Styles */
 .answer-box {
     display: block;
     padding: 12px;
@@ -107,14 +152,6 @@ button:hover {
 }
 
 /* Apply the font globally */
-body {
-    font-family: 'bangers', cursive;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 h1, h2, h3, h4, h5, h6 {
     font-family: 'bangers', cursive;
     color: #333;
