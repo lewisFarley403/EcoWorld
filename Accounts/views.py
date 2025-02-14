@@ -1,14 +1,37 @@
+"""
+module defines views for the Accounts app:
+    - `signup` : This view allows the user to sign up for an account
+    - `profile` : This view allows the user to view and update their profile
+author:
+    - Ethan Sweeney (es1057@exeter.ac.uk) 
+"""
+
 # views.py
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import SignUpForm, ProfileUpdateForm
 from .models import Profile
-
+from .utils import createGarden
 def signup(request):
+    """
+    This view allows the user to sign up for an account.
+    It renders the signup form (when it received get request) and creates a new user when the form is submitted (it receives post request).
+
+    Attributes:
+        request : HttpRequest : The HTTP request object
+    Returns:
+        render : HttpResponse : The HTTP response object
+    Author:
+        Ethan Sweeney (es1057@exeter.ac.uk)
+    """
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
-            form.save()
+            user=form.save()
+            print("User: ")
+            print(user)
+            # create garden for user
+            createGarden(user)
             return redirect('login')  # Redirect to the login page after successful registration
     else:
         form = SignUpForm()
@@ -16,6 +39,18 @@ def signup(request):
 
 @login_required  # Ensure that only logged-in users can access the profile
 def profile(request):
+    """
+    This view allows the user to view and update their profile.
+    It renders the profile form (when it received get request) and updates the profile when the form is submitted (it receives post request).
+    it requires the user to be logged in. if the user is not logged in, it redirects to the login page.
+    Attributes:
+        request : HttpRequest : The HTTP request object
+    Returns:
+        render : HttpResponse : The rendered HTML page
+    Author:
+        - Ethan Sweeney (es1057@exeter.ac.uk)
+
+    """
     profile = Profile.objects.get(user=request.user)
 
     # Handle the profile picture update
