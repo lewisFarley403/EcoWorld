@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco World - Home</title>
+    <link rel="stylesheet" href="{% static 'EcoWorld/css/dashboard.css' %}">
+</head>
+<body>
+<header class="header">
+    <nav class="navbar">
+        <div class="left-links">
+            <a href="#">Challenges</a>
+            <a href="#">Guides</a>
+        </div>
+        <div class="logo">Eco World</div>
+        <div class="right-links">
+            <span>Username</span>
+            <img src={% static "EcoWorld/res/Username.png"%} alt="Username" class="card-image">
+        </div>
+    </nav>
+</header>
+<main class="main-content">
+    <div class="left-panel">
+        <img src={% static "EcoWorld/res/greenery.png"%} alt="greenery">
+    </div>
+    <div class="center-content">
+        <a href="#" class="card">
+            <img src={% static "EcoWorld/res/Challenges.png" %} alt="Challenges" class="card-image">
+            <div class="card-text">Challenges</div>
+        </a>
+        <a href="#" class="card">
+            <img src={% static "EcoWorld/res/Guides.png" %} alt="Guides" class="card-image">
+            <div class="card-text">Guides</div>
+        </a>
+    </div>
+
+    <div class="right-panel">
+        <img src={% static "EcoWorld/res/greenery.png"%} alt="greenery">
+    </div>
+</main>
+</body>
+</html>

@@ -29,6 +29,8 @@ def addDrink(request):
         return HttpResponse("Added drink event")
     return HttpResponse("Invalid request type 2")
 
-def testAddDrink(request):
-    print("add drink post req")
-    return render(request, "ecoWorld/addDrink.html")
+
+def dashboard(request):
+    return render(request, "EcoWorld/dashboard.html")
+
+
