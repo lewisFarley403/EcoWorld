@@ -1,4 +1,4 @@
-from .models import card, cardRarity
+from .models import card, cardRarity, pack
 
 def createItemsInDb():
     common = cardRarity.objects.get_or_create(title="common")[0]
@@ -25,6 +25,8 @@ def createItemsInDb():
         {"title": "Statue", "desc": "A head bust of an important historical recycler", "rarity": epic, "img": "cards/statue.png"},
         {"title": "Sunflower", "desc": "Shines bright in the fields", "rarity": rare, "img": "cards/sunflower.png"},
         {"title": "Tulip Patch", "desc": "A simple patch of tulips", "rarity": rare, "img": "cards/tulip.png"},
+        {"title": "Log", "desc": "From a long lost oak tree", "rarity": common,"img" : "cards/log.png"},
+        {"title": "Olive Tree", "desc": "From the fields of ancient greece", "rarity": epic, "img": "cards/olivetree.png"}
     ]
 
 
@@ -37,5 +39,23 @@ def createItemsInDb():
                 "image": data["img"]
             }
         )
+
+def createPacksInDb():
+    pack_data = [
+        {"title": "Basic Pack", "cost": 20, "packimage": "packs/basicpack.png"},
+        {"title": "Rare Pack", "cost": 45, "packimage": "packs/rarepack.png"},
+        {"title": "Icon Pack", "cost": 100, "packimage": "packs/iconpack.png"}
+    ]
+
+    for data in pack_data:
+        pack.objects.update_or_create(
+            title=data["title"],
+            defaults={
+                "cost": data["cost"],
+                "packimage": data["packimage"]
+            }
+        )
+
+
 
 
