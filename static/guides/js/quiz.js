@@ -1,3 +1,5 @@
+console.log("quiz.js loaded");
+
 document.addEventListener("DOMContentLoaded", function() {
     let currentQuestion = 0;
     const questions = [
@@ -143,11 +145,13 @@ document.addEventListener("DOMContentLoaded", function() {
     // Event listener for the Next button
     nextButton.addEventListener("click", function() {
         if (currentQuestion < totalQuestions - 1) {
+            nextButton.disabled = true;
             const currentQuestionBox = document.getElementById(`question-${currentQuestion + 1}`);
             currentQuestionBox.classList.add("slide-out-next");
             setTimeout(() => {
                 currentQuestion++;
                 showQuestion(currentQuestion, "next");
+                nextButton.disabled = false;
             }, 500); // Wait for the slide-out to complete
         }
     });
@@ -155,11 +159,13 @@ document.addEventListener("DOMContentLoaded", function() {
     // Event listener for the Back button
     backButton.addEventListener("click", function() {
         if (currentQuestion > 0) {
+            backButton.disabled = true;
             const currentQuestionBox = document.getElementById(`question-${currentQuestion + 1}`);
             currentQuestionBox.classList.add("slide-out-prev");
             setTimeout(() => {
                 currentQuestion--;
                 showQuestion(currentQuestion, "prev");
+                backButton.disabled = false;
             }, 500); // Wait for the slide-out to complete
         }
     });
@@ -168,6 +174,7 @@ document.addEventListener("DOMContentLoaded", function() {
     submitButton.addEventListener("click", function() {
         let score = 0;
         const correctAnswers = {};
+        console.log("submit button pressed");
 
         // Generate correct answers object
         questions.forEach((q, index) => {
@@ -176,14 +183,16 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // Calculate score
         for (let question in correctAnswers) {
+            console.log(selectedAnswers[question]);
+            console.log(correctAnswers[question]);
             if (selectedAnswers[question] &&
                 correctAnswers[question].size === selectedAnswers[question].size &&
                 [...correctAnswers[question]].every((ans) => selectedAnswers[question].has(ans))) {
                 score++;
             }
         }
-
-        alert("Your score: " + score + "/" + totalQuestions);
+        console.log(score)
+        // alert("Your score: " + score + "/" + totalQuestions);
     });
 
     // Store the selected answers when users click on answer boxes

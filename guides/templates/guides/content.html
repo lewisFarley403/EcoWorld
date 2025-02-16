@@ -1,33 +1,45 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-    <h1>Sustainability Information</h1>
-    <p id="paragraph-display">{{ paragraphs.0 }}</p>
+    {% block extra_css %}
+        <link rel="stylesheet" href="{% static 'guides/css/style.css' %}">
+    {% endblock %}
 
-    <button onclick="prevParagraph()">Previous</button>
-    <button onclick="nextParagraph()">Next</button>
+    <div class="container mt-5">
+        <div class="card shadow p-4">
+            <h1 class="text-center text-success">Sustainability Information</h1>
 
-    <a href="{% url 'quiz' %}">
-        <button>Take the Quiz</button>
-    </a>
+            <!-- Progress Bar -->
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
 
-    <script>
-        let paragraphs = {{ paragraphs|safe }};
-        let index = 0;
-        let paragraphDisplay = document.getElementById("paragraph-display");
+            <!-- Paragraph Display -->
+            <div id="paragraph-display" class="paragraph-box">
+                {{ paragraphs.0 }}
+            </div>
 
-        function nextParagraph() {
-            if (index < paragraphs.length - 1) {
-                index++;
-                paragraphDisplay.innerText = paragraphs[index];
-            }
-        }
+            <!-- Navigation Buttons -->
+            <div class="text-center">
+                <button type="button" id="prev-button" class="nav-button">Previous</button>
+                <button type="button" id="next-button" class="nav-button">Next</button>
+            </div>
 
-        function prevParagraph() {
-            if (index > 0) {
-                index--;
-                paragraphDisplay.innerText = paragraphs[index];
-            }
-        }
-    </script>
+            <!-- Take the Quiz Button -->
+            <div class="text-center mt-4">
+                <a href="{% url 'quiz' %}">
+                    <button type="button" class="nav-button">Take the Quiz</button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    {% block extra_js %}
+        <script src="{% static 'guides/js/fallingLeaves.js' %}"></script>
+        <script src="{% static 'guides/js/content.js' %}"></script>
+        <script>
+            const paragraphs = {{ paragraphs|safe }};
+        </script>
+    {% endblock %}
 {% endblock %}

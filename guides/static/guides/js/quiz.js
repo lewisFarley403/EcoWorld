@@ -143,11 +143,13 @@ document.addEventListener("DOMContentLoaded", function() {
     // Event listener for the Next button
     nextButton.addEventListener("click", function() {
         if (currentQuestion < totalQuestions - 1) {
+            nextButton.disabled = true;
             const currentQuestionBox = document.getElementById(`question-${currentQuestion + 1}`);
             currentQuestionBox.classList.add("slide-out-next");
             setTimeout(() => {
                 currentQuestion++;
                 showQuestion(currentQuestion, "next");
+                nextButton.disabled = false;
             }, 500); // Wait for the slide-out to complete
         }
     });
@@ -155,11 +157,13 @@ document.addEventListener("DOMContentLoaded", function() {
     // Event listener for the Back button
     backButton.addEventListener("click", function() {
         if (currentQuestion > 0) {
+            backButton.disabled = true;
             const currentQuestionBox = document.getElementById(`question-${currentQuestion + 1}`);
             currentQuestionBox.classList.add("slide-out-prev");
             setTimeout(() => {
                 currentQuestion--;
                 showQuestion(currentQuestion, "prev");
+                backButton.disabled = false;
             }, 500); // Wait for the slide-out to complete
         }
     });
@@ -182,7 +186,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 score++;
             }
         }
-
         alert("Your score: " + score + "/" + totalQuestions);
     });
 
