@@ -17,11 +17,21 @@ document.addEventListener("DOMContentLoaded", function () {
             paragraphDisplay.innerText = paragraphs[index];
             updateProgressBar();
         }
+        else {
+            index = 0;
+            paragraphDisplay.innerText = paragraphs[index];
+            updateProgressBar();
+        }
     }
 
     function prevParagraph() {
         if (index > 0) {
             index--;
+            paragraphDisplay.innerText = paragraphs[index];
+            updateProgressBar();
+        }
+        else {
+            index = paragraphs.length - 1;
             paragraphDisplay.innerText = paragraphs[index];
             updateProgressBar();
         }
