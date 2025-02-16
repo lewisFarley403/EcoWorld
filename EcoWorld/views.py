@@ -32,7 +32,7 @@ def testAddDrink(request):
 def generate_qr_code(request):
     qr_options = QRCodeOptions(size='M' , border=6, error_correction='L')
     qr_data = "https://EcoWorld.com/scan/" #Change this to website name I have no idea
-    return render(request, 'EcoWorld/qr_code.html', {'qr_data': qr_data, 'qr_option': qr_options})
+    return render(request, 'EcoWorld/qr_code.html', {'qr_data': qr_data, 'qr_options': qr_options})
 
 def scan_qr_code(request):
     return render(request, 'EcoWorld/scan_qr_code.html')
