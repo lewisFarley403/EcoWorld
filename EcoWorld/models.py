@@ -34,6 +34,7 @@ class challenge(models.Model):
     description = models.TextField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_on = models.DateField()
+    worth = models.IntegerField(default=10)
     def __str__(self):
         return self.name
 class ongoingChallenge(models.Model):
@@ -51,8 +52,9 @@ class ongoingChallenge(models.Model):
     """
     challenge = models.ForeignKey(challenge, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    submission = models.TextField()
-    submitted_on = models.DateField()
+    submission = models.TextField(null=True)
+    submitted_on = models.DateField(null=True)
+    created_on = models.DateTimeField( auto_now_add=True) #sets this to the current date when the object is created
     def __str__(self):
         return self.challenge.name + " by " + self.user.username
     
