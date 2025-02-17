@@ -1,3 +1,11 @@
+"""
+this module defines the views used in this app:
+    - `addDrink` : This view allows the user to add a drink event
+    - `testAddDrink` : This view allows the user to test adding a drink event (for testing purposes)
+Author:
+    -Lewis Farley (lf507@exeter.ac.uk)
+"""
+
 from django.shortcuts import render
 from .models import drinkEvent,User,waterFountain
 import json
@@ -21,6 +29,9 @@ def addDrink(request):
         return HttpResponse("Added drink event")
     return HttpResponse("Invalid request type 2")
 
+
+def dashboard(request):
+    return render(request, "EcoWorld/dashboard.html")
+
 def testAddDrink(request):
-    print("add drink post req")
-    return render(request, "ecoWorld/addDrink.html")
+    return render(request, "EcoWorld/addDrink.html")
