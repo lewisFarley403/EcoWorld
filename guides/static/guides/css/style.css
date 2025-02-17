@@ -93,6 +93,11 @@ button:hover {
     background-color: #218838;
 }
 
+button:active {
+    transform: scale(0.95);
+    box-shadow: 3px 2px 20px 1px rgba(0, 0, 0, 0.15);
+}
+
 .answer-box {
     display: block;
     padding: 12px;
