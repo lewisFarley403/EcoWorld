@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import SignUpForm, ProfileUpdateForm
 from .models import Profile
-from .utils import createGarden
+from .utils import createGarden, createOwnsDb
 def signup(request):
     """
     This view allows the user to sign up for an account.
@@ -32,6 +32,8 @@ def signup(request):
             print(user)
             # create garden for user
             createGarden(user)
+            #creates cards owned by user set default as 0.
+            createOwnsDb(user)
             return redirect('login')  # Redirect to the login page after successful registration
     else:
         form = SignUpForm()

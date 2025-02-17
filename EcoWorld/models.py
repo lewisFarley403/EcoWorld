@@ -142,3 +142,12 @@ class ownsCard(models.Model):
     quantity = models.IntegerField(default=0)
     def __str__(self):
         return self.user.username + " owns " + self.card.title
+    
+class pack(models.Model):
+    title = models.CharField(max_length=50)
+    cost = models.IntegerField()
+    packimage = models.ImageField(upload_to='packs/')
+    def __str__(self):
+        return self.title
+
+    
