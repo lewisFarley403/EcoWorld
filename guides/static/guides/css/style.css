@@ -1,7 +1,9 @@
 /* General Styles */
 body {
-    font-family: 'bangers', cursive;
+    font-family: 'poppins', cursive;
     background-color: skyblue;
+    background-image: url("../res/background.png");
+    background-size: cover;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -36,6 +38,13 @@ h1.text-center {
     justify-content: center;
     align-items: center;
     text-align: center;
+    color: white;
+    text-shadow:
+        -2px -2px 0 black,
+         2px -2px 0 black,
+        -2px  2px 0 black,
+         2px  2px 0 black;
+    font-size: 3vw;
 }
 
 .card {
@@ -140,19 +149,26 @@ button:active {
 }
 
 @font-face {
-    font-family: 'bangers';
-    src: url("{% static 'guides/fonts/Bangers-Regular.ttf' %}") format('truetype');
+    font-family: 'jotione';
+    src: url("../fonts/JotiOne-Regular.ttf") format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'poppins';
+    src: url("../fonts/Poppins-Medium.ttf") format('truetype');
     font-weight: normal;
     font-style: normal;
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'bangers', cursive;
+    font-family: 'jotione', cursive;
     color: #333;
 }
 
 button {
-    font-family: 'bangers', cursive;
+    font-family: 'jotione', cursive;
     padding: 10px;
     border: none;
     cursor: pointer;
