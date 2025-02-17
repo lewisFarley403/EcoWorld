@@ -9,6 +9,8 @@ author:
 
 from Garden.models import garden,gardenSquare
 from django.conf import settings
+from EcoWorld.models import card, ownsCard
+
 def createGarden(user):
     """
     This function creates a garden for the user.
@@ -29,3 +31,13 @@ def createGarden(user):
         gS.save()
 
     return g
+
+
+def createOwnsDb(user):
+    print(type(user))
+    for cards in card.objects.all():
+        oCard = ownsCard(card_id=cards.id, user_id=user.id)
+        oCard.save()
+
+    
+
