@@ -222,8 +222,12 @@
     <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
     <div class = 'modal'>
         <div class = 'modal-content'>
-            <span class = 'close'>&times;</span>
-            <p>Thank you for your purchase!</p>
+            <span class = 'close' onclick="closeModal()">&times;</span>
+            <h2>You have won:</h2>
+            <p id = 'modal-card-name'></p>
+            <p id = 'modal-card-description'></p>
+            <p id = 'modal-card-rarity'></p>
+            <img src="" alt="Card Image" id = 'modal-card-image'>
         </div>
 
     </div>
@@ -262,15 +266,25 @@
             .then(response => response.json())
             .then(data => {
                 console.log(data);
-                alert(data.message);
                 //make modal visible
                 document.querySelector('.modal').style.display = 'block';
+                //set the image
+                document.querySelector('#modal-card-image').src = data.image;
+                //set the name
+                document.querySelector('#modal-card-name').innerText = data.name;
+                //set the description
+                document.querySelector('#modal-card-description').innerText = data.description;
+                //set the rarity
+                document.querySelector('#modal-card-rarity').innerText = data.rarity;
 
             })
             .catch(error => {
                 console.error('Error:', error);
             });
 
+        }
+        function closeModal(){
+            document.querySelector('.modal').style.display = 'none';
         }
     </script>
 </body>
