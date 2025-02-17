@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
     "Accounts",
     "EcoWorld",
     "guides",
+    "Garden",
 ]
 
 MIDDLEWARE = [
@@ -129,3 +131,15 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+
+
+MEDIA_URL = '/media/'  # The URL to access media files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Path to the directory where media files are stored
+
+GARDEN_SIZE=5
+
+NUM_CHALLENGES=3
+from datetime import datetime, timedelta
+
+CHALLENGE_EXPIRY = timedelta(seconds=10)  # The time in seconds before a challenge expires

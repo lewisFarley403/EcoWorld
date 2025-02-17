@@ -1,7 +1,18 @@
+"""
+this module defines the views used in this app:
+    - `addDrink` : This view allows the user to add a drink event
+    - `testAddDrink` : This view allows the user to test adding a drink event (for testing purposes)
+Author:
+    -Lewis Farley (lf507@exeter.ac.uk)
+"""
+
 from django.shortcuts import render
-from .models import drinkEvent,User,waterFountain
+from .models import drinkEvent,User,waterFountain,challenge,ongoingChallenge
 import json
 from django.http import HttpResponse
+from .utils import getUsersChallenges
+from django.contrib.auth.decorators import login_required
+from datetime import datetime
 # Create your views here.
 def addDrink(request):
     print("add drink post req")
@@ -21,5 +32,35 @@ def addDrink(request):
         return HttpResponse("Added drink event")
     return HttpResponse("Invalid request type 2")
 
+
+def dashboard(request):
+    return render(request, "EcoWorld/dashboard.html")
+
 def testAddDrink(request):
-    return render(request, "addDrink.html")
+    return render(request, "EcoWorld/addDrink.html")
+@login_required
+def challenge(request):
+    challenges = getUsersChallenges(request.user)
+    user = User.objects.get(id=request.user.id)
+    print(type(user.username)) 
+    print(user.profile.number_of_coins)   
+    return render(request, "EcoWorld/challengePage.html", {"challenges":challenges,'username':user.username,'coins':user.profile.number_of_coins})
+@login_required
+def completeChallenge(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        print(request.user.id)
+        user = User.objects.get(id=request.user.id)
+        onGoingChallenge = data["id"]
+        print(f"User: {user}")
+        print(f"Challenge: {challenge}")
+        chal = ongoingChallenge.objects.get(id=onGoingChallenge)
+        worth = chal.challenge.worth
+        chal.submitted_on = datetime.now()
+        
+        # worth = challenge.objects.get(id=chal).worth
+        user.profile.number_of_coins += worth
+        user.save()
+        chal.save()
+        return HttpResponse("Challenge completed")
+    return HttpResponse("Invalid request type")
