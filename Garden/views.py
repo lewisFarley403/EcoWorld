@@ -36,7 +36,7 @@ def show_garden(request):
 
 
     playerInventory = ownsCard.objects.filter(user=request.user)
-    availableCards = [ card.card for card in playerInventory if card.card not in [square.cardID for square in squares]]
+    availableCards = [ card.card for card in playerInventory if card.quantity>0 and card.card not in [square.cardID for square in squares]]
     serialized=json.loads(serializers.serialize('json', availableCards))
     final = [obj["fields"]|{'id':obj['pk']} for obj in serialized]
 
@@ -71,6 +71,8 @@ def getAvailableCards(request):
 
     # with new db that has quantity
     availableCards = [ card.card for card in playerInventory if card.quantity>0 and card.card not in [square.cardID for square in squares]]
+    print("AVAILABLE CARDS")
+    print(availableCards[0].quantity)
     serialized=json.loads(serializers.serialize('json', availableCards))
     final = [obj["fields"] for obj in serialized]
     return JsonResponse({'success': True,'cards':final})
@@ -95,6 +97,7 @@ def addCard(request):
         square = g.gardensquare_set.get(gardenID=g,squareID=squareID)
         square.cardID = c
         # maybe check if this quantity is >0
+        print(ownsCard.objects.filter(user=request.user,card=c))
         ownsCard.objects.get(user=request.user,card=c).quantity-=1
         ownsCard.objects.get(user=request.user,card=c).save()
         square.save()

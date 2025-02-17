@@ -57,7 +57,7 @@ def store(request):
         user.profile.number_of_coins -= p.cost
         user.profile.save()
         card = p.openPack()
-        inventory =ownsCard.objects.create(user=user,card=card)
+        inventory =ownsCard.objects.get(user=user,card=card)
         inventory.quantity += 1
         inventory.save()
         # return card as json
