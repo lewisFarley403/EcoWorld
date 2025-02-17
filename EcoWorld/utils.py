@@ -42,9 +42,39 @@ def createItemsInDb():
 
 def createPacksInDb():
     pack_data = [
-        {"title": "Basic Pack", "cost": 20, "packimage": "packs/basicpack.png"},
-        {"title": "Rare Pack", "cost": 45, "packimage": "packs/rarepack.png"},
-        {"title": "Icon Pack", "cost": 100, "packimage": "packs/iconpack.png"}
+        {
+            "title": "Basic Pack", 
+            "cost": 20, 
+            "packimage": "packs/basicpack.png", 
+            "probabilities": {
+                "common": 0.5,
+                "rare": 0.35,
+                "epic": 0.1,
+                "legendary": 0.05
+            }
+        },
+        {
+            "title": "Rare Pack", 
+            "cost": 45, 
+            "packimage": "packs/rarepack.png", 
+            "probabilities": {
+                "common": 0.35,
+                "rare": 0.35,
+                "epic": 0.175,
+                "legendary": 0.125
+            }
+        },
+        {
+            "title": "Icon Pack", 
+            "cost": 100, 
+            "packimage": "packs/iconpack.png", 
+            "probabilities": {
+                "common": 0.1,
+                "rare": 0.4,
+                "epic": 0.25,
+                "legendary": 0.25
+            }
+        }
     ]
 
     for data in pack_data:

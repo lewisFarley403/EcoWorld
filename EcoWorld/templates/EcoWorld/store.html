@@ -1,0 +1,277 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+    <body>
+        <div class="container">
+            <h1 class="title">Game Pack Shop</h1>
+            <div class="grid">
+                <div class="card blue">
+                    <h2>Basic Pack</h2>
+                    <p>A starter pack with essential items.</p>
+                    <p class="price">$4.99</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+                <div class="card purple">
+                    <h2>Premium Pack</h2>
+                    <p>A pack with exclusive rewards.</p>
+                    <p class="price">$9.99</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+                <div class="card orange">
+                    <h2>Exclusive Pack</h2>
+                    <p>The ultimate pack with rare items.</p>
+                    <p class="price">$19.99</p>
+                    <button class="buy-button">Buy Now</button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html> -->
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Pack Shop</title>
+    <style>
+        body {
+            background-color: #1a202c;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .pack {
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 250px;
+        }
+        .bg-blue { background-color: #3b82f6; }
+        .bg-purple { background-color: #8b5cf6; }
+        .bg-orange { background-color: #f97316; }
+        .buy-btn {
+            margin-top: 10px;
+            width: 100%;
+            background-color: black;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .buy-btn:hover {
+            background-color: #2d3748;
+        }
+    </style>
+</head>
+<body>
+    <h1>Game Pack Shop</h1>
+    <div class="grid">
+        <div class="pack bg-blue">
+            <h2>Common Pack</h2>
+            <p>A pack with {{packs.basic_pack.commonProb  }}% chance of common, {{common.rareProb }} chance of rare, {{common.epicProb }} chance of epic and {{common.legendaryProb }} chance of legendary</p>
+            <p><strong>$4.99</strong></p>
+            <button class="buy-btn" onclick="alert('Purchased: Basic Pack')">Buy Now</button>
+        </div>
+        <div class="pack bg-purple">
+            <h2>Premium Pack</h2>
+            <p>A pack with exclusive rewards.</p>
+            <p><strong>$9.99</strong></p>
+            <button class="buy-btn" onclick="alert('Purchased: Premium Pack')">Buy Now</button>
+        </div>
+        <div class="pack bg-orange">
+            <h2>Exclusive Pack</h2>
+            <p>The ultimate pack with rare items.</p>
+            <p><strong>$19.99</strong></p>
+            <button class="buy-btn" onclick="alert('Purchased: Exclusive Pack')">Buy Now</button>
+        </div>
+    </div>
+</body>
+</html> -->
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Pack Shop</title>
+    <style>
+        body {
+            background-color: #1a202c; 
+            color: white; 
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center the content vertically */
+            padding: 20px;
+            min-height: 100vh; /* Full height of the viewport */
+            margin: 0; /* Remove default margin */
+        }
+        .pack {
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 250px;
+            margin: 10px;
+        }
+        .blue { background-color: #3b82f6; }
+        .purple { background-color: #8b5cf6; }
+        .orange { background-color: #f97316; }
+        .buy-btn {
+            margin-top: 10px;
+            width: 100%;
+            background-color: black;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .buy-btn:hover {
+            background-color: #2d3748;
+        }
+        .modal{
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+        }
+    </style>
+    <!-- <style>
+        body {
+            /* background-color: #1a202c;  */
+            /* color: white; White text color */
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center; /* Center the content vertically */
+            padding: 20px;
+            min-height: 100vh; /* Full height of the viewport */
+            margin: 0; /* Remove default margin */
+        }
+        h1 {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Flexible grid columns */
+            gap: 20px;
+            justify-items: center; /* Center the items within the grid */
+            width: 100%;
+            max-width: 1200px; /* Limit the maximum width of the grid */
+        }
+        .pack {
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 250px;
+        }
+        .bg-blue { background-color: #3b82f6; }
+        .bg-purple { background-color: #8b5cf6; }
+        .bg-orange { background-color: #f97316; }
+        .buy-btn {
+            margin-top: 10px;
+            width: 100%;
+            background-color: black;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .buy-btn:hover {
+            background-color: #2d3748;
+        }
+    </style> -->
+</head>
+<body>
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+    <div class = 'modal'>
+        <div class = 'modal-content'>
+            <span class = 'close'>&times;</span>
+            <p>Thank you for your purchase!</p>
+        </div>
+
+    </div>
+    <h1>Game Pack Shop</h1>
+
+    <div id="packs-container">
+        {% for pack in packs %}
+        <div class="pack {{ pack.color_class|lower }}">
+            <h2>{{ pack.title }}</h2>
+            <p><strong>Cost:</strong> ${{ pack.cost }}</p>
+            <p>
+                A pack with {{ pack.commonProb|floatformat:2 }}% chance of common, 
+                {{ pack.rareProb|floatformat:2 }}% chance of rare, 
+                {{ pack.epicProb|floatformat:2 }}% chance of epic, 
+                and {{ pack.legendaryProb|floatformat:2 }}% chance of legendary.
+            </p>
+            <button class="buy-btn" onclick="handleBuy('{{pack.id}}')">Buy Now</button>
+        </div>
+        {% endfor %}
+
+    </div>
+    <script>
+        function handleBuy(packId) {
+            const csrf = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+            console.log(`Purchased: ${packId}`);
+            fetch(`/ecoworld/buyPack/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrf,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    pack: packId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                alert(data.message);
+                //make modal visible
+                document.querySelector('.modal').style.display = 'block';
+
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+        }
+    </script>
+</body>
+</html>

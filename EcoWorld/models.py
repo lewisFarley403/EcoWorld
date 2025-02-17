@@ -1,5 +1,5 @@
 from django.db import models
-
+import random
 from Accounts.models import User
 # Create your models here.
 class challenge(models.Model):
@@ -55,7 +55,28 @@ class pack(models.Model):
     title = models.CharField(max_length=50)
     cost = models.IntegerField()
     packimage = models.ImageField(upload_to='packs/')
+    commonProb = models.FloatField(default=0.5)
+    rareProb = models.FloatField(default=0.35)
+    epicProb = models.FloatField(default=0.1)
+    legendaryProb = models.FloatField(default=0.05)
+    color_class = models.CharField(max_length=50, default="blue")
+
     def __str__(self):
         return self.title
+    def openPack(self):
+        #Open the pack and return
+        r=random.random()
+        if r<self.commonProb:
+            rarity = cardRarity.objects.get(title="common")
+        elif r<self.commonProb+self.rareProb:
+            rarity = cardRarity.objects.get(title="rare")
+        elif r<self.commonProb+self.rareProb+self.epicProb:
+            rarity = cardRarity.objects.get(title="epic")
+        else:
+            rarity = cardRarity.objects.get(title="legendary")
+        cards = card.objects.filter(rarity=rarity)
+        cardToReturn = random.choice(cards)
+        return cardToReturn
+    
 
     
