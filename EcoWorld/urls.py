@@ -15,4 +15,6 @@ urlpatterns = [
     path('addDrink/', addDrink, name='home'),  # Root URL
     path("drink/", testAddDrink, name='addDrinkTest'),  # URL for the signup page
     path("dashboard/", views.dashboard, name='dashboard'),  # URL for the dashboard page
+    path("challenge/", views.challenge, name='challenge'),  # URL for the challenge page
+    path("completeChallenge/", views.completeChallenge, name='completeChallenge'),  # URL for the complete challenge page
 ]

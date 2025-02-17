@@ -32,6 +32,7 @@ def createGarden(user):
 
     return g
 
+
 def createOwnsDb(user):
     print(type(user))
     for cards in card.objects.all():
@@ -39,3 +40,4 @@ def createOwnsDb(user):
         oCard.save()
 
     
+
