@@ -1,152 +1,198 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+/* General Reset */
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
 }
 
-.container {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 400px;
-    text-align: center;
+/* Profile Container */
+.profile-container {
+    display: flex;
+    background-color: white;
+    width: 80%;
+    max-width: 1200px;
+    height: 80vh;
+    border-radius: 10px;
+    gap: 20px;
 }
 
-h2 {
-    color: #333;
+/* Left Sidebar */
+.profile-sidebar {
+    width: 300px;
+    background-color: #00dea5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    color: black;
+    font-weight: bold;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Username */
+.profile-sidebar h2 {
+    font-size: 24px;
     margin-bottom: 20px;
 }
 
-form {
+/* Profile Picture */
+.profile-picture-container {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background-color: #184d47;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    margin-bottom: 20px;
 }
 
-form p {
-    margin-bottom: 15px;
+.profile-picture {
+    width: 80%;
+    height: auto;
 }
 
+/* Bio Section */
+.bio-section {
+    width: 100%;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    min-height: 80px;
+    margin-top: 20px;
+}
+
+/* Form Styles */
+form {
+    width: 100%;
+    margin-top: 20px;
+}
+
+textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+}
+
+/* Button Styles */
 button {
     background-color: #007bff;
-    color: #fff;
+    color: white;
     border: none;
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
+    margin-top: 15px;
+    width: 100%;
     transition: background-color 0.3s ease;
-    font-size: 16px;
 }
 
 button:hover {
     background-color: #0056b3;
 }
 
-hr {
-    margin: 20px 0;
-    border: 0;
-    height: 1px;
-    background: #ddd;
+/* Right Content Section */
+.profile-main {
+    flex: 1;
+    background-color: white;
 }
 
-h3 {
-    color: #555;
-}
-
-p {
-    color: #777;
-}
-
-/* Center profile picture and modal content */
-.profile-picture-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-/* Style for the profile picture */
-.profile-picture {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ddd;
-    margin-top: 10px;
-}
-
-/* The modal (hidden by default) */
+/* Modal Styles - Keep the existing modal styles */
 .modal {
-  display: none;
-  position: fixed;
-  z-index: 1;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgb(0, 0, 0); /* Black with opacity */
-  background-color: rgba(0, 0, 0, 0.4); /* Black with opacity */
-  padding-top: 60px;
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding-top: 60px;
 }
 
-/* Modal content */
 .modal-content {
-  background-color: #fefefe;
-  margin: 5% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 500px;
+    background-color: #fefefe;
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    text-align: center;
 }
 
-/* The "close" button */
 .close {
-  color: #aaa;
-  font-size: 28px;
-  font-weight: bold;
+    color: #aaa;
+    font-size: 28px;
+    font-weight: bold;
 }
 
 .close:hover,
 .close:focus {
-  color: black;
-  text-decoration: none;
-  cursor: pointer;
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
 }
 
-/* Gallery of images */
 .image-gallery {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin: 20px 0;
 }
 
 .profile-image {
-  width: 80px;
-  height: 80px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.3s;
 }
 
 .profile-image:hover {
-  border-color: #007BFF;
+    border-color: #007BFF;
 }
 
 #confirmSelectionBtn {
-  margin-top: 20px;
-  padding: 10px;
-  background-color: #007BFF;
-  color: white;
-  border: none;
-  cursor: pointer;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
 }
 
 #confirmSelectionBtn:hover {
-  background-color: #0056b3;
+    background-color: #0056b3;
+}
+
+/* Update the profile-main class */
+.profile-main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.profile-card {
+    width: 80%;
+    height: 70%;
+    background-color: #00dea5;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
