@@ -18,7 +18,7 @@ body {
     height: auto;
     z-index: -1;
     pointer-events: none;
-    animation: fallingLeaves linear infinite;
+    animation: fallingLeaves linear forwards;
 }
 
 @keyframes fallingLeaves {
