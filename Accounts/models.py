@@ -8,7 +8,7 @@ Usage:
     
 It creates database tables for storing user profile information.
 
-@author Ethan Sweeney (es1057@exeter.ac.uk)
+@author Ethan Sweeney (es1052@exeter.ac.uk)
 """
 
 
@@ -28,7 +28,7 @@ class Profile(models.Model):
     Methods:
         __str__(): Returns the username of the user.
     author:
-        -Ethan Sweeney (es1057@exeter.ac.uk)
+        -Ethan Sweeney (es1052@exeter.ac.uk)
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(blank=True)

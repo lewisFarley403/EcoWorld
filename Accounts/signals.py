@@ -7,7 +7,7 @@ usage:
     - create_or_update_profile: This function creates or updates the user profile when the user is created or updated. 
     It should be imported in models.py.
 author:
-    - Ethan Sweeney (es1057@exeter.ac.uk)
+    - Ethan Sweeney (es1052@exeter.ac.uk)
 """
 
 from django.db.models.signals import post_save

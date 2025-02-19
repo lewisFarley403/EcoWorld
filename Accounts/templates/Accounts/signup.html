@@ -60,6 +60,11 @@
                 <input type="password" id="id_password2" name="password2" placeholder="Re-enter your password" required>
             </div>
 
+            <div class="privacy-policy-group">
+                <input type="checkbox" id="id_privacy_policy" name="privacy_policy" required>
+                <label for="id_privacy_policy"> I have read and agree to the <a href="{% url 'privacy_policy' %}" target="_blank">Privacy Policy</a></label>
+            </div>
+
             <button type="submit" class="login-button">Sign Up</button>
         </form>
 
