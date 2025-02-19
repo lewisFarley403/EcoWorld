@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
+from django.contrib.auth.decorators import login_required
+from .models import quiz_results
 
 # need to add complete paragraphs but added start of each paragraph to make it work
 paragraphs = [
@@ -10,8 +12,31 @@ paragraphs = [
     "Your diet plays a significant role in your environmental footprint. Reducing meat and dairy consumption, particularly beef and lamb, can lower greenhouse gas emissions, as livestock farming is a major contributor to climate change. Incorporate more plant-based meals into your diet, such as fruits, vegetables, legumes, and grains. When buying seafood, choose sustainably sourced options to help protect ocean ecosystems. Additionally, avoid food waste by planning meals, storing food properly, and using leftovers creatively."
 ]
 
+
+
+@login_required
+def registerScore_view(request):
+    data = json.loads(request.body)
+    score = int(data['score'])
+    user = data['user']
+    results = quiz_results.objects.get(user=user,id=1)
+    high_score = results.best_result
+    results.previous_best = high_score
+    results.new_result = score
+    if score > results.previous_best:
+        results.best_result = score
+    results.save()
+
+    return redirect('results')
+
+@login_required
+def results_view(request):
+    return render(request, 'guides/results.html')
+
+@login_required
 def content_view(request):
     return render(request, 'guides/content.html', {'paragraphs': paragraphs})
 
+@login_required
 def quiz_view(request):
     return render(request, 'guides/quiz.html')

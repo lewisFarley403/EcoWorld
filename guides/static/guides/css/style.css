@@ -38,7 +38,7 @@ h1.text-center {
     justify-content: center;
     align-items: center;
     text-align: center;
-    color: white;
+    color: #00dea5;
     text-shadow:
         -2px -2px 0 black,
          2px -2px 0 black,
@@ -55,8 +55,7 @@ h1.text-center {
 }
 
 .question-box {
-    background-color: #f8f9fa;
-    border: 2px solid #ddd;
+    background-color: #00dea5;
     border-radius: 10px;
     padding: 15px;
     margin-bottom: 20px;
@@ -91,15 +90,15 @@ button {
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
-    background-color: #28a745;
-    color: white;
+    background-color: #00dea5;
+    color: black;
     border: none;
     border-radius: 5px;
     margin-top: 20px;
 }
 
 button:hover {
-    background-color: #218838;
+    background-color: #03c091;
 }
 
 button:active {
@@ -111,8 +110,8 @@ button:active {
     display: block;
     padding: 12px;
     margin: 8px 0;
-    background-color: #ffffff;
-    border: 2px solid #ddd;
+    background-color: #00dea5;
+    border: 2px solid #03c091;
     border-radius: 8px;
     text-align: center;
     font-size: 16px;
@@ -121,13 +120,13 @@ button:active {
 }
 
 .answer-box:hover {
-    background-color: #e2e6ea;
+    background-color: #03c091;
 }
 
 .answer-box.selected {
-    background-color: #28a745;
+    background-color: #03c091;
     color: white;
-    border-color: #218838;
+    border-color: #03c091;
     font-weight: bold;
 }
 
@@ -142,7 +141,7 @@ button:active {
 
 #progress-bar {
     height: 100%;
-    background-color: #28a745;
+    background-color: #00dea5;
     width: 0%;
     border-radius: 10px;
     transition: width 0.3s ease;
@@ -176,8 +175,7 @@ button {
 }
 
 .paragraph-box {
-    background-color: #f8f9fa;
-    border: 2px solid #ddd;
+    background-color: #00dea5;
     border-radius: 10px;
     padding: 15px;
     margin-bottom: 20px;

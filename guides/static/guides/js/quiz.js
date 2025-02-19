@@ -189,6 +189,17 @@ document.addEventListener("DOMContentLoaded", function() {
         }
         console.log(score);
         alert("Your score: " + score + "/" + totalQuestions);
+
+        const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+        console.log(csrfToken)
+        fetch('/guides/registerScore/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken
+            },
+            body: JSON.stringify({score:score})
+        })
     });
 
     // Store the selected answers when users click on answer boxes
