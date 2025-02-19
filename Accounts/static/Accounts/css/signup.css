@@ -139,6 +139,13 @@ h1 {
     display: block;
 }
 
+.privacy-policy-group {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Adjust spacing between checkbox and label */
+    margin-top: 10px;
+}
+
 /* Positioning wrapper for the input field */
 .password-container {
     position: relative;
