@@ -7,6 +7,19 @@
     <link rel="stylesheet" href="{% static 'guides/css/style.css' %}">
 {% endblock %}
 
+    <header class="header">
+        <nav class="navbar">
+            <div class="left-links">
+                <a href="/ecoworld/dashboard/">Home</a>
+            </div>
+            <div class="logo">Eco World</div>
+            <div class="right-links">
+                <span>Username</span>
+                <img src={% static "EcoWorld/res/Username.png"%} alt="Username" class="card-image">
+            </div>
+        </nav>
+    </header>
+
     <div class="container mt-5">
         <div class="card shadow p-4">
             <h1 class="text-center text-success">Sustainability Quiz</h1>

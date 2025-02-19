@@ -1,3 +1,4 @@
+console.log('javascript loaded')
 document.addEventListener("DOMContentLoaded", function() {
     let currentQuestion = 0;
     const questions = [
@@ -186,6 +187,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 score++;
             }
         }
+        console.log(score);
         alert("Your score: " + score + "/" + totalQuestions);
     });
 

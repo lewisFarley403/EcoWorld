@@ -18,7 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
         // Remove the leaf after it falls
         leaf.addEventListener("animationend", () => {
             leaf.remove();
-            console.log("leafus deleatus")
         });
     }
 
