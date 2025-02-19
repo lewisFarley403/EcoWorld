@@ -12,6 +12,8 @@ from django.shortcuts import render, redirect
 from .forms import SignUpForm, ProfileUpdateForm
 from .models import Profile
 from .utils import createGarden, createOwnsDb
+from Garden.models import garden
+from EcoWorld.models import ownsCard
 def signup(request):
     """
     This view allows the user to sign up for an account.
@@ -69,6 +71,26 @@ def profile(request):
 
         # Redirect to the profile page after saving
         return redirect('profile')
+        """
+    This view renders the garden.html page to allow the user to view their garden.
+    It requires the user to be logged in. If the user is not logged in, it redirects to the login page.
+    Attributes:
+        request : HttpRequest : The HTTP request object
+    Returns:
+        render : HttpResponse : The rendered HTML page
+    Author:
+        - Lewis Farley (lf507@exeter.ac.uk)
+    """
+    g = garden.objects.get(userID=request.user)
+    squares = g.gardensquare_set.all()
+    processedSquares = [[squares[i*g.size+j] for j in range (g.size)] for i in range (g.size)]
 
+
+    playerInventory = ownsCard.objects.filter(user=request.user)
+    availableCards = [ card.card for card in playerInventory if card.card not in [square.cardID for square in squares]]
+    serialized=json.loads(serializers.serialize('json', availableCards))
+    final = [obj["fields"]|{'id':obj['pk']} for obj in serialized]
+
+    return render(request, 'Garden/garden.html', {'squares': processedSquares,'MEDIA_URL':settings.MEDIA_URL,'size':g.size,'availableCards':final})
     # If it's a GET request, show the form
-    return render(request, 'Accounts/profile.html', {'profile': profile})
+    return render(request, 'Accounts/profile.html', {'profile': profile,'squares': processedSquares,'MEDIA_URL':settings.MEDIA_URL,'size':g.size,'availableCards':final})

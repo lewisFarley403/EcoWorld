@@ -15,7 +15,6 @@ It creates database tables for storing user profile information.
 # models.py
 from django.db import models
 from django.contrib.auth.models import User
-
 class Profile(models.Model):
     """
     Model for storing user profile information.
@@ -38,3 +37,5 @@ class Profile(models.Model):
     number_of_coins = models.IntegerField(default=0)
     def __str__(self):
         return self.user.username
+
+
