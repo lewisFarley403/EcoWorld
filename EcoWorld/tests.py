@@ -5,7 +5,12 @@ from EcoWorld.models import pack, card, cardRarity, ownsCard
 class TestPackModels(TestCase):
     #Sets up test item in database
     def setUp(self):
-        pack.objects.create(title="TestPack", cost=50, packimage="packs/basicpack.png")
+        self.common = cardRarity.objects.create(title="Common")
+        self.rare = cardRarity.objects.create(title="Rare")
+        self.epic = cardRarity.objects.create(title="Epic")
+        self.legendary = cardRarity.objects.create(title="Legendary")
+        self.mythic = cardRarity.objects.create(title="Mythic")
+        pack.objects.create(title="TestPack", cost=50, packimage="packs/basicpack.png", commonProb=0.5, rareProb=0.3, epicProb=0.15, legendaryProb=0.05)
 
 
     #Tests that when the item is created it is properly implemented with the correct values
