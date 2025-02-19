@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 from .models import quiz_results
+import json
 
 # need to add complete paragraphs but added start of each paragraph to make it work
 paragraphs = [

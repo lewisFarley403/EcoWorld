@@ -1,11 +1,14 @@
-{% extends 'base.html' %}
 {% load static %}
-{% block title %}Quiz{% endblock %}
 
-{% block content %}
-    {% block extra_css %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
     <link rel="stylesheet" href="{% static 'guides/css/style.css' %}">
-{% endblock %}
+</head>
+<body>
 
     <header class="header">
         <nav class="navbar">
@@ -15,12 +18,11 @@
             <div class="logo">Eco World</div>
             <div class="right-links">
                 <span>Username</span>
-                <img src={% static "EcoWorld/res/Username.png"%} alt="Username" class="card-image">
+                <img src="{% static 'EcoWorld/res/Username.png' %}" alt="Username" class="card-image">
             </div>
         </nav>
     </header>
 
-    {% csrf_token %}
     <div class="container mt-5">
         <div class="card shadow p-4">
             <h1 class="text-center text-success">Sustainability Quiz</h1>
@@ -31,6 +33,7 @@
             </div>
 
             <form id="quiz-form">
+                {% csrf_token %}
                 <!-- Questions will be dynamically inserted here -->
                 <div id="questions-container"></div>
 
@@ -42,9 +45,9 @@
         </div>
     </div>
 
-    {% block extra_js %}
+    <!-- JavaScript Files -->
     <script src="{% static 'guides/js/quiz.js' %}"></script>
     <script src="{% static 'guides/js/fallingLeaves.js' %}"></script>
-{% endblock %}
 
-{% endblock %}
+</body>
+</html>
