@@ -14,6 +14,9 @@ from .models import Profile
 from .utils import createGarden, createOwnsDb
 from Garden.models import garden
 from EcoWorld.models import ownsCard
+import json
+from django.core import serializers
+from django.conf import settings
 def signup(request):
     """
     This view allows the user to sign up for an account.
