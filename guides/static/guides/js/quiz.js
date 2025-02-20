@@ -191,7 +191,6 @@ document.addEventListener("DOMContentLoaded", function() {
         alert("Your score: " + score + "/" + totalQuestions);
 
         const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
-        console.log(csrfToken)
         fetch('/guides/registerScore/', {
             method: 'POST',
             headers: {
@@ -200,6 +199,18 @@ document.addEventListener("DOMContentLoaded", function() {
             },
             body: JSON.stringify({score:score})
         })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                window.location.href = data.redirect_url;
+            } else {
+                console.error('Error:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+
     });
 
     // Store the selected answers when users click on answer boxes

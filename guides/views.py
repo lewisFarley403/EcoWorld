@@ -1,6 +1,7 @@
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
-from .models import quiz_results
+from .models import quiz_results,User
+from django.http import JsonResponse
 import json
 
 # need to add complete paragraphs but added start of each paragraph to make it work
@@ -19,16 +20,21 @@ paragraphs = [
 def registerScore_view(request):
     data = json.loads(request.body)
     score = int(data['score'])
-    user = data['user']
-    results = quiz_results.objects.get(user=user,id=1)
+    user = User.objects.get(id=request.user.id)
+    print(score)
+    print(user)
+    try:
+        results = quiz_results.objects.get(user=user,id=1)
+    except quiz_results.DoesNotExist:
+        results = quiz_results(user=user, best_result=0, previous_best=0, new_result=0)
+        results.save()
     high_score = results.best_result
     results.previous_best = high_score
     results.new_result = score
     if score > results.previous_best:
         results.best_result = score
     results.save()
-
-    return redirect('results')
+    return JsonResponse({'status': 'success', 'redirect_url': '/guides/results/'})
 
 @login_required
 def results_view(request):
@@ -41,3 +47,4 @@ def content_view(request):
 @login_required
 def quiz_view(request):
     return render(request, 'guides/quiz.html')
+
