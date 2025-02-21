@@ -36,7 +36,28 @@ def addDrink(request):
 
 
 def dashboard(request):
-    return render(request, "EcoWorld/dashboard.html")
+    """
+    Dashboard on request takes user info to send to dashboard
+    Returns: render request and userinfo to be displayed
+
+    Author: 
+    Chris Lynch (cl1037@exeter.ac.uk)
+    """
+    if request.method == "GET":
+        user = request.user
+        user = User.objects.get(id=user.id)
+        pfp_url = user.profile.profile_picture
+        pfp_url = "/media/pfps/" + pfp_url
+
+        userinfo = []
+        userinfo.append({
+            "username": user.username,
+            "pfp_url": pfp_url,
+            "coins" : user.profile.number_of_coins
+            })
+        print(userinfo)
+
+        return render(request, "EcoWorld/dashboard.html", {"userinfo":userinfo[0]})
 
 def testAddDrink(request):
 
