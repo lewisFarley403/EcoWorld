@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Opening Pack...</title>
+    <style>      
+        body {
+            background-color: black;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        
+        .video-container {
+            position: absolute;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 2s ease-in-out;
+        }
+
+        
+        video {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+        }
+
+        
+        .card-container {
+            opacity: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            transition: 0.5s ease-in-out;
+        }
+
+
+        .card-container img {
+            width: 300px;
+            margin-bottom: 20px; 
+        }
+
+        
+        .back-to-store-btn {
+            display: none; 
+            padding: 10px 20px;
+            background-color: #000000; 
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px; 
+            font-weight: bold;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+    
+        .back-to-store-btn:hover {
+            background-color: #004979;
+        }
+
+
+    </style>
+</head>
+<body>
+
+
+    <div class="video-container" id="videoContainer">
+        <video id="packOpeningVideo" muted playsinline></video>  
+    </div>
+
+
+    <div class="card-container" id="cardContainer">
+        <img id="cardImage" src="{{ image }}" alt="Card Image">
+        <button id="backToStoreBtn" class="back-to-store-btn" onclick="window.location.href='/ecoworld/store/'">Go Back to Store</button>
+    </div>
+
+    
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        const videoContainer = document.getElementById("videoContainer");
+        const video = document.getElementById("packOpeningVideo");
+        const cardContainer = document.getElementById("cardContainer");
+        const backToStoreBtn = document.getElementById("backToStoreBtn");
+
+        console.log("DOM fully loaded"); 
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const packId = urlParams.get("pack_id");
+
+
+        let videoSrc;
+        if (packId === "1") {
+            videoSrc = "/media/animations/BasicPackVid.mp4"; 
+        } else if (packId === "2") {
+            videoSrc = "/media/animations/FinalRare.mp4"; // Default animation
+        } else if (packId === "3") {
+            videoSrc = "/media/animations/Iconpack.mp4";
+        } else {
+            videoSrc = "none"
+        }
+
+
+        video.innerHTML = `<source src="${videoSrc}" type="video/mp4">`;
+        video.load();
+
+        setTimeout(() => {
+            videoContainer.style.opacity = "1"; 
+            setTimeout(() => {
+                video.play().catch(error => {
+                    console.error("Autoplay blocked:", error);
+                });
+            }, 2000);
+        }, 1000); 
+        video.onended = function() {
+            cardContainer.style.opacity = "1"; 
+            setTimeout(() => {
+                backToStoreBtn.style.display = "block"; 
+            }, 2000);
+        };
+    });
+
+    </script>
+
+</body>
+</html>

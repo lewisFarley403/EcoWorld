@@ -138,6 +138,7 @@ class ownsCard(models.Model):
         __str__(): Returns the name of the user and the card they own.
     Author:
         -Lewis Farley (lf507@exeter.ac.uk)
+        -Chris Lynch (cl1037@exeter.ac.uk)
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     card = models.ForeignKey(card, on_delete=models.CASCADE)
@@ -146,6 +147,28 @@ class ownsCard(models.Model):
         return self.user.username + " owns " + self.card.title
     
 class pack(models.Model):
+    """
+    Model for storing Packs so they can be bought in store
+
+    Attributes: 
+        -title: CharField: Used as the name of the pack
+        -Cost: IntegerField: Uses as the coin cost for buying a pack
+        -packimage: ImageField: Used for the imaging for the pack in the store
+        -commonProb: FloatField : Used as a propability for pack rarity
+        -rareProb: FloatField : Used as a propability for pack rarity
+        -epicProb: FloatField : Used as a propability for pack rarity
+        -legendaryProb: FloatField : Used as a propability for pack rarity
+        -colour_class: Charfield : Used when pack opening for the colouring of the background
+
+    Methods:
+    __str__(): Returns the title of the pack
+    openPack() : Used to open a pack in the store
+
+    Author:
+    Chris Lynch (cl1037@exeter.ac.uk)
+    Lewis Farley (lf507@exeter.ac.uk)
+    
+    """
     title = models.CharField(max_length=50)
     cost = models.IntegerField()
     packimage = models.ImageField(upload_to='packs/')

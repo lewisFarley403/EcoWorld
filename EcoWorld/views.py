@@ -4,12 +4,13 @@ this module defines the views used in this app:
     - `testAddDrink` : This view allows the user to test adding a drink event (for testing purposes)
 Author:
     -Lewis Farley (lf507@exeter.ac.uk)
+    -Chris Lynch (cl1037@exeter.ac.uk)
 """
 
 from django.shortcuts import render
 from .models import drinkEvent,User,waterFountain,pack,ownsCard,challenge,ongoingChallenge
 import json
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from .utils import getUsersChallenges
 from datetime import datetime
@@ -60,13 +61,83 @@ def store(request):
         inventory =ownsCard.objects.get(user=user,card=card)
         inventory.quantity += 1
         inventory.save()
+        title= card.title
         # return card as json
-        return HttpResponse(json.dumps({"title": card.title, "description": card.description, "rarity": card.rarity.title, "image": card.image.url}))
+        return HttpResponse(json.dumps({"title": title, "description": card.description, "rarity": card.rarity.title, "image": card.image.url}))
 
     elif request.method == "GET":
         packs = pack.objects.all()
-        return render(request, "ecoWorld/store.html",{ "packs": packs })
+        pack_list = []
+        for pack_ in packs:
+            image_url = pack_.packimage.url
+            id = pack_.id
+            
+
+            pack_list.append({
+                "id" : id,
+                "title": pack_.title,
+                "cost" : pack_.cost,
+                "image_url": image_url,
+                "common_prob": pack_.commonProb,
+                "rare_prob": pack_.rareProb,
+                "epic_prob": pack_.epicProb,
+                "legendary_prob": pack_.legendaryProb,
+                "color_class": pack_.color_class,
+
+            })
+        
+
+        return render(request, "ecoWorld/store.html",{ "packs": pack_list })
+    
     return HttpResponse("Invalid request")
+
+
+@login_required
+def buy_pack(request):
+    """Handles pack purchase validation before redirecting to the opening screen."""
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            user = request.user
+            pack_id = data.get("pack_id")
+            try:
+                selected_pack = pack.objects.get(id=pack_id)
+            except pack.DoesNotExist:
+                return JsonResponse({"error": "Invalid pack selected"}, status=400)
+
+            if selected_pack.cost > user.profile.number_of_coins:
+                return JsonResponse({"error": "Insufficient coins"}, status=400)
+
+            user.profile.number_of_coins -= selected_pack.cost
+            user.profile.save()
+
+            return JsonResponse({"success": True})
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+@login_required
+def pack_opening_page(request):
+    pack_id = request.GET.get("pack_id")
+    
+    try:
+        selected_pack = pack.objects.get(id=pack_id)
+    except pack.DoesNotExist:
+        return JsonResponse({"error": "Invalid pack ID"}, status=400)
+    
+    card_received = selected_pack.openPack()
+    inventory, _ = ownsCard.objects.get_or_create(user=request.user, card=card_received)
+    inventory.quantity += 1
+    inventory.save()
+
+    image_url = card_received.image.url
+    return render(request, "EcoWorld/pack_opening_page.html", {"image": image_url})
+
+
+
+
 @login_required
 def challenge(request):
     challenges = getUsersChallenges(request.user)
@@ -87,7 +158,6 @@ def completeChallenge(request):
         worth = chal.challenge.worth
         chal.submitted_on = datetime.now()
         
-        # worth = challenge.objects.get(id=chal).worth
         user.profile.number_of_coins += worth
         user.save()
         chal.save()

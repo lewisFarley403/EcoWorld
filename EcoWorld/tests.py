@@ -1,6 +1,16 @@
 from django.test import TestCase
 from EcoWorld.models import pack, card, cardRarity, ownsCard
 
+"""
+Testing class for the packmodels
+Methods:
+    - setUp() : Sets up the card rarity objects so they can be identified by their ID in a different table in the DB and sets up the pack for testing
+    - testPackCreation() : Checks that each attribute in the DB has been set correctly by utils.py for use in the website
+    - testPackStrMethod() : Checks that the str method works correctly
+Author:
+    -Chris Lynch (cl1037@exeter.ac.uk)
+
+"""
 #Used to test if the pack models database is set up correctly and items are placed properly
 class TestPackModels(TestCase):
     #Sets up test item in database
@@ -10,7 +20,7 @@ class TestPackModels(TestCase):
         self.epic = cardRarity.objects.create(title="Epic")
         self.legendary = cardRarity.objects.create(title="Legendary")
         self.mythic = cardRarity.objects.create(title="Mythic")
-        pack.objects.create(title="TestPack", cost=50, packimage="packs/basicpack.png", commonProb=0.5, rareProb=0.3, epicProb=0.15, legendaryProb=0.05)
+        pack.objects.create(title="TestPack", cost=50, packimage="packs/basicpack.png", commonProb=0.5, rareProb=0.3, epicProb=0.15, legendaryProb=0.05,color_class="blue")
 
 
     #Tests that when the item is created it is properly implemented with the correct values
@@ -18,6 +28,11 @@ class TestPackModels(TestCase):
         testPack = pack.objects.get(title="TestPack")
         self.assertEqual(testPack.cost, 50) 
         self.assertEqual(testPack.packimage, "packs/basicpack.png")
+        self.assertEqual(testPack.commonProb, 0.5)
+        self.assertEqual(testPack.rareProb,0.3)
+        self.assertEqual(testPack.epicProb, 0.15)
+        self.assertEqual(testPack.legendaryProb, 0.05)
+        self.assertEqual(testPack.color_class, "blue")
 
     #Test that the __Str__ object works properly when initialising an item in the database
     def testPackStrMethod(self):
@@ -25,6 +40,24 @@ class TestPackModels(TestCase):
         self.assertEqual(str(testPack), "TestPack")
 
 
+
+
+"""
+Testing class for the card models in the database and making sure they are all set correctly
+
+Methods: 
+    - setUp() : Sets up each card rarity object so it can be linked to another table with its ID, sets up every card types rarity to check they all work
+    - testCardCommon() : Tests if the common card rarity works properly
+    - testCardRare() : Tests if the rare card rarity works properly
+    - testCardEpic() : Tests if the epic card rarity works properly
+    - testCardLegendary() : Tests if the legendary card rarity works properly
+    - testCardMythic() : Tests if the mythic card rarity works properly
+    - testCardStrMethod() : Checks if the str method for cards works properly
+
+Author:
+    -Chris Lynch (cl1037@exeter.ac.uk)
+
+"""
 #Tests that the card models database works and everything is implemented properly
 class TestCardModels(TestCase):
     
