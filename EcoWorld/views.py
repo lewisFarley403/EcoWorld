@@ -55,7 +55,6 @@ def dashboard(request):
             "pfp_url": pfp_url,
             "coins" : user.profile.number_of_coins
             })
-        print(userinfo)
 
         return render(request, "EcoWorld/dashboard.html", {"userinfo":userinfo[0]})
 
