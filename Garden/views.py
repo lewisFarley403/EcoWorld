@@ -29,6 +29,7 @@ def show_garden(request):
 
     Author:
     Chris Lynch (cl1037@exeter.ac.uk)
+    Lewis Farley (lf507@exeter.ac.uk)
     """
     g = garden.objects.get(userID=request.user)
     squares = g.gardensquare_set.all()
