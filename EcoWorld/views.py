@@ -71,7 +71,6 @@ def store(request):
         for pack_ in packs:
             image_url = pack_.packimage.url
             id = pack_.id
-            
 
             pack_list.append({
                 "id" : id,
@@ -85,9 +84,25 @@ def store(request):
                 "color_class": pack_.color_class,
 
             })
+            
+        user = request.user
+        user = User.objects.get(id=user.id)
+        username = user.username
+        pfp_url = user.profile.profile_picture
+        pfp_url = "/media/pfps/" + pfp_url
+
+        userinfo = []
+        userinfo.append({
+            "username": user.username,
+            "pfp_url": pfp_url,
+            "coins" : user.profile.number_of_coins
+            })
+        print(pfp_url)
+
+
         
 
-        return render(request, "ecoWorld/store.html",{ "packs": pack_list })
+        return render(request, "ecoWorld/store.html",{ "packs": pack_list, "userinfo": userinfo[0]})
     
     return HttpResponse("Invalid request")
 
