@@ -6,138 +6,424 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Garden</title>
     <style>
-        #modal{
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-            overflow-y: scroll;
+        body {
+            background-color: #00dea5;
+            height: auto;
+            font-family: Arial, Helvetica, sans-serif;
+            overflow-y: hidden;
 
         }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto; /* 15% from the top and centered */
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%; /* Could be more or less, depending on screen size */
-            overflow-y: scroll;
+        .header {
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%; 
+            z-index: 1000;
         }
+
+
+        .navbar {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .left-links a,
+        .navbar .right-links span {
+            margin-right: 20px;
+            font-size: 16px;
+            text-decoration: none;
+            color: #003c3c;
+        }
+
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #003c3c;
+        }
+
+        .navbar .right-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 10px;
+            border: 2px solid #00dea5;
+        }
+
+
+        .grid-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            width: 50%;
+            position: relative;
+            left: 5%;
+            margin-bottom: 20%;
+        }
+
+        .main-container {
+            display: flex;
+            justify-content: space-between; 
+            align-items: flex-start;
+            width: 90%;
+            margin: 0 auto;
+            padding-top: 120px; 
+        }
+
+
         .grid-container {
             display: grid;
-            grid-template-columns: repeat({{ size }}, 1fr);
-            aspect-ratio: 1/1;  /* Maintain square aspect ratio */
-            height: 60vh;
-            max-width: 100%;
-            margin: 0 auto;
+            grid-template-columns: repeat(5, 2fr);
+            grid-template-rows: repeat(5, 2fr); 
+            width: 350px; 
+            height: 350px; 
         }
+
         .grid-container img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            display: block;
+            object-fit: cover; 
         }
+
+        .inventory-box {
+            width: 40%;
+            height: 500px; 
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            overflow-y: auto;
+
+        }
+
+        .inventory-box .h1 {
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .inventory-items {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 15px; 
+    padding: 10px;
+}
+
+.inventory-item {
+    display: flex;
+    justify-content: center;
+    transition: 0.5s ease-in-out;
+
+    
+}
+.inventory-item:hover {
+    scale: (1.1);
+    
+    
+}
+
+
+.card-container {
+    position: relative;
+    width: 90px; 
+    height: 150px;
+}
+
+
+.card-container img {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+.quantity-badge {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background-color: black;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
     </style>
 </head>
+<header class="header">
+    <nav class="navbar">
+        <div class="left-links">
+            <a href="/ecoworld/dashboard">Home</a>
+            <a href="/ecoworld/challenge">Challenges</a>
+            <a href="/guides">Guides</a>
+            <a href="/garden">Garden</a>
+            <a href="/ecoworld/store">Store</a>
+        </div>
+        <div class="logo">Eco World - Your Garden</div>
+        <div class="right-links">
+            <span>{{ userinfo.username }}</span>
+            {% load static %}
+            <img src="{{ userinfo.pfp_url }}" alt="Username" class="profile-pic">
+            <span style="padding-left: 20px;">Coins: {{ userinfo.coins }}</span>
+        </div>
+    </nav>
+</header>
 <body>
     <script>
-        var squareClicked = null;
-    </script>
-    <div id ="modal">
+        
+function allowDrop(event) {
+    event.preventDefault(); 
+}
+document.addEventListener("DOMContentLoaded", function () {
+    let draggableCards = document.querySelectorAll(".card-container");
 
-        <div class="modal-content">
-            <span class="close" onclick = "closeModal()">&times;</span>
-            <p>Some text in the Modal..</p>
-            {% for card in availableCards %}
-                <img src="{{MEDIA_URL}}{{card.image}}" alt="{{ card.title }}" onclick="handleAddToGarden('{{card.id}}')">
-            {% endfor %}
-    </div>
+    draggableCards.forEach(card => {
+        card.addEventListener("dragstart", drag);
+    });
+});
+
+
+function drag(event) {
+    console.log("Drag started:", event.target); 
+
+    let draggedElement = event.target.closest(".card-container");
+
+    if (!draggedElement) {
+        console.error("Drag failed: No valid card container found!");
+        return;
+    }
+
+    let cardId = draggedElement.getAttribute("data-card-id");  
+    let cardImage = draggedElement.getAttribute("data-card-image");
+
+    let img = new Image();
+    img.src = cardImage;
+    img.style.width = "10px";
+    img.style.height = "10px";
+    event.dataTransfer.setDragImage(img, 40, 40);
+
+    console.log("Dragging - cardId:", cardId, "cardImage:", cardImage);
+
+    if (!cardId) {
+        console.error("No card ID found on drag!");
+        return;
+    }
+
+    event.dataTransfer.setData("cardId", cardId);
+    event.dataTransfer.setData("cardImage", cardImage);
+
+    event.target.addEventListener("dragend", function () {
+    draggedElement.classList.remove("dragging");
+    });
+}
+
+
+
+function drop(event, row, col) {
+    event.preventDefault();
+
+    let cardId = event.dataTransfer.getData("cardId");
+    let cardImage = event.dataTransfer.getData("cardImage"); 
+    let csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+
+    console.log(`Attempting to place card ID: ${cardId} at Row: ${row}, Col: ${col}`);
+    if (!cardId) {
+        alert("No card ID found!");
+        return;
+    }
+
+    fetch('/garden/addCard/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
+            row: row,
+            col: col,
+            card_id: parseInt(cardId)
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log("Server Response:", data); 
+        if (data.success) {
+            let targetSquare = event.target.closest(".grid-square");
+
+            
+            let newCardImage = document.createElement("img");
+            newCardImage.src = data.card_image;
+            newCardImage.alt = "Card Image";
+            newCardImage.setAttribute("data-card-id", cardId);
+            console.log("Before appending, card has data-card-id:", newCardImage.getAttribute("data-card-id")); 
+            newCardImage.addEventListener("click", function() {
+                let clickedCardId = this.getAttribute("data-card-id");
+                console.log("Clicked card:", row, col, clickedCardId); 
+                removeCard(row, col, clickedCardId);
+            });
+
+  
+            targetSquare.innerHTML = "";
+            targetSquare.appendChild(newCardImage);
+
+            console.log("After appending, checking the DOM directly...");
+            console.log("Image element in DOM:", targetSquare.querySelector("img"));
+            console.log("Retrieved from DOM:", targetSquare.querySelector("img").getAttribute("data-card-id")); 
+
+            
+            let inventoryCard = document.querySelector(`.card-container[data-card-id="${cardId}"]`);
+            if (inventoryCard) {
+                let quantityBadge = inventoryCard.querySelector(".quantity-badge");
+                let currentQuantity = parseInt(quantityBadge.innerText);
+
+                if (currentQuantity > 1) {
+                    quantityBadge.innerText = currentQuantity - 1;
+                } else {
+                    inventoryCard.parentNode.removeChild(inventoryCard);
+                }
+            }
+        } else {
+            alert("Error: " + data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+}
+
+function removeCard(row, col) {
+    let csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+
+    console.log(`Removing card at Row: ${row}, Col: ${col}`);
+
+    fetch('/garden/removeCard/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
+            row: row,
+            col: col
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            let targetSquare = document.querySelector(`.grid-square[data-row="${row}"][data-col="${col}"]`);
+            targetSquare.innerHTML = `<img src="{{ MEDIA_URL }}cards/dirt.jpeg" alt="Empty Square">`;
+
+            
+            let cardId = data.card_id;
+
+            console.log(`Returned card ID ${cardId} to inventory`);
+
+            let inventoryCard = document.querySelector(`.card-container[data-card-id="${cardId}"]`);
+            if (inventoryCard) {
+                let quantityBadge = inventoryCard.querySelector(".quantity-badge");
+                quantityBadge.innerText = parseInt(quantityBadge.innerText) + 1;
+            } else {
+               
+                let inventoryContainer = document.querySelector(".inventory-items");
+                let newInventoryCard = document.createElement("div");
+                newInventoryCard.classList.add("inventory-item");
+                newInventoryCard.innerHTML = `
+                    <div class="card-container" draggable="true" ondragstart="drag(event)"
+                        data-card-id="${cardId}" data-card-image="${data.card_image}">
+                        <img src="${data.card_image}" alt="Card Image">
+                        <span class="quantity-badge">1</span>
+                    </div>`;
+                inventoryContainer.appendChild(newInventoryCard);
+            }
+        } else {
+            alert("Error: " + data.message);
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+    });
+}
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".grid-square img").forEach(img => {
+        img.addEventListener("click", function() {
+            let row = this.parentNode.getAttribute("data-row");
+            let col = this.parentNode.getAttribute("data-col");
+            let cardId = this.getAttribute("data-card-id");
+            console.log("Clicked card from DOM Load:", row, col, cardId);
+            removeCard(row, col, cardId);
+        });
+    });
+});
+
+
+
+    </script>
+    
     </div>
     {%csrf_token%}
-    <div>
-        <h1>Garden</h1>
-        <p>Here is a list of all the plants in the garden:</p>
-        <div class="grid-container">
-            {% for row in squares %}
-                {% for square in row %}
-                    {% if square.cardID %}
-                        <img src="{{ square.cardID.image.url }}" data-row ='{{forloop.parentloop.counter}}' data-col=""  onclick="handleCardClick('{{forloop.parentloop.counter}}','{{forloop.counter}}',event)" alt="{{ square.cardID.title }}">
-                    {% else %}
-                        <img src="{{ MEDIA_URL }}cards/dirt.jpeg" onclick = "openModal('{{forloop.parentloop.counter}}','{{forloop.counter}}')"alt="Default Image">
-                    {% endif %}
+    <div class="main-container">
+        <div class="grid-wrapper">
+            <div class="grid-container">
+                {% for row in squares %}
+                    {% for square in row %}
+                        <div class="grid-square" 
+                             ondragover="allowDrop(event)" 
+                             ondrop="drop(event, '{{ forloop.parentloop.counter }}', '{{ forloop.counter }}')"
+                             data-row="{{ forloop.parentloop.counter }}" 
+                             data-col="{{ forloop.counter }}">
+                            {% if square.cardID %}
+                                <img src="{{ square.cardID.image.url }}" alt="{{ square.cardID.title }}">
+                            {% else %}
+                                <img src="{{ MEDIA_URL }}cards/dirt.jpeg" alt="Empty Square">
+                            {% endif %}
+                        </div>
+                    {% endfor %}
                 {% endfor %}
-            {% endfor %}
-        </div>
-    </div>
-
-    <script>
-        function handleCardClick(row, col, event) {
-            console.log(event.target);
-
-            // const csrfToken = document.getElementById("csrf_token").value;  // Get CSRF token
-            const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
-            console.log(row, col)
-            // console.log(csrfToken)
-            fetch('/garden/removeCard/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken // Add CSRF token in the headers
-                },
-                body: JSON.stringify({ row: row, col: col })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("Card removed successfully!");
-                    // event.src="{{ MEDIA_URL }}cards/dirt.jpeg";
-                    location.reload(); // Refresh the page
-                } else {
-                    alert("Error: " + data.message);
-                }
-            })
-            .catch(error => console.error('Error:', error));
+            </div>
             
-        }
-
-        function openModal(row, col){
-            squareClicked = [row,col]
-            console.log(row, col);
-            document.getElementById('modal').style.display = 'block';
-        }
-        function closeModal(){
-            document.getElementById('modal').style.display = 'none';
-            squareClicked=null;
-        }
-
-        function handleAddToGarden(cardID){
-            console.log(cardID);
-            const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
-            fetch('/garden/addCard/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken
-                },
-                body: JSON.stringify({ row: squareClicked[0], col: squareClicked[1], cardID: cardID })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert("Card added successfully!");
-                    location.reload();
-                } else {
-                    alert("Error: " + data.message);
-                }
-            })
-            .catch(error => console.error('Error:', error));
-
-        }
-    </script>
+        </div>
+        <div class="inventory-box">
+            <h3>User Inventory</h3>
+            <div class="inventory-items">
+                {% for item in playerInventory %}
+                    <div class="inventory-item">
+                        <div class="card-container" 
+                             draggable="true" 
+                             ondragstart="drag(event)" 
+                             data-card-id="{{ item.card__id }}"
+                             data-card-image="{{ MEDIA_URL }}{{ item.card__image }}">
+                            <img src="{{ MEDIA_URL }}{{ item.card__image }}" alt="{{ item.card__title }}">
+                            <span class="quantity-badge">{{ item.quantity }}</span>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No items in inventory.</p>
+                {% endfor %}
+            </div>
+        </div>
+        
+        
+    </div>
 </body>
 </html>

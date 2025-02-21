@@ -1,313 +1,232 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-    <body>
-        <div class="container">
-            <h1 class="title">Game Pack Shop</h1>
-            <div class="grid">
-                <div class="card blue">
-                    <h2>Basic Pack</h2>
-                    <p>A starter pack with essential items.</p>
-                    <p class="price">$4.99</p>
-                    <button class="buy-button">Buy Now</button>
-                </div>
-                <div class="card purple">
-                    <h2>Premium Pack</h2>
-                    <p>A pack with exclusive rewards.</p>
-                    <p class="price">$9.99</p>
-                    <button class="buy-button">Buy Now</button>
-                </div>
-                <div class="card orange">
-                    <h2>Exclusive Pack</h2>
-                    <p>The ultimate pack with rare items.</p>
-                    <p class="price">$19.99</p>
-                    <button class="buy-button">Buy Now</button>
-                </div>
-            </div>
-        </div>
-    </body>
-</html> -->
-
-
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Pack Shop</title>
-    <style>
-        body {
-            background-color: #1a202c;
-            color: white;
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            min-height: 100vh;
-        }
-        h1 {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        .pack {
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            width: 250px;
-        }
-        .bg-blue { background-color: #3b82f6; }
-        .bg-purple { background-color: #8b5cf6; }
-        .bg-orange { background-color: #f97316; }
-        .buy-btn {
-            margin-top: 10px;
-            width: 100%;
-            background-color: black;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        .buy-btn:hover {
-            background-color: #2d3748;
-        }
-    </style>
-</head>
-<body>
-    <h1>Game Pack Shop</h1>
-    <div class="grid">
-        <div class="pack bg-blue">
-            <h2>Common Pack</h2>
-            <p>A pack with {{packs.basic_pack.commonProb  }}% chance of common, {{common.rareProb }} chance of rare, {{common.epicProb }} chance of epic and {{common.legendaryProb }} chance of legendary</p>
-            <p><strong>$4.99</strong></p>
-            <button class="buy-btn" onclick="alert('Purchased: Basic Pack')">Buy Now</button>
-        </div>
-        <div class="pack bg-purple">
-            <h2>Premium Pack</h2>
-            <p>A pack with exclusive rewards.</p>
-            <p><strong>$9.99</strong></p>
-            <button class="buy-btn" onclick="alert('Purchased: Premium Pack')">Buy Now</button>
-        </div>
-        <div class="pack bg-orange">
-            <h2>Exclusive Pack</h2>
-            <p>The ultimate pack with rare items.</p>
-            <p><strong>$19.99</strong></p>
-            <button class="buy-btn" onclick="alert('Purchased: Exclusive Pack')">Buy Now</button>
-        </div>
-    </div>
-</body>
-</html> -->
-
-
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Pack Shop</title>
-    <style>
-        body {
-            background-color: #1a202c; 
-            color: white; 
-            font-family: Arial, sans-serif;
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>EcoWorld - Store </title>
+        <style>
+
+        .header {
+            background-color: #fff;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
-            justify-content: center; /* Center the content vertically */
-            padding: 20px;
-            min-height: 100vh; /* Full height of the viewport */
-            margin: 0; /* Remove default margin */
-        }
-        .pack {
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            width: 250px;
-            margin: 10px;
-        }
-        .blue { background-color: #3b82f6; }
-        .purple { background-color: #8b5cf6; }
-        .orange { background-color: #f97316; }
-        .buy-btn {
-            margin-top: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            top: 0;
             width: 100%;
-            background-color: black;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        .buy-btn:hover {
-            background-color: #2d3748;
-        }
-        .modal{
-            display: none;
             position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
         }
-        /* .modal{
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-            overflow-y: scroll;
 
-        }
-        .modal-content {
-            background-color: #fefefe;
-            margin: 15% auto; /* 15% from the top and centered */
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%; /* Could be more or less, depending on screen size */
-            overflow-y: scroll;
-        } */
-    </style>
-    <!-- <style>
-        body {
-            /* background-color: #1a202c;  */
-            /* color: white; White text color */
-            font-family: Arial, sans-serif;
+        .navbar {
+            width: 100%;
+            max-width: 1200px;
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center; /* Center the content vertically */
-            padding: 20px;
-            min-height: 100vh; /* Full height of the viewport */
-            margin: 0; /* Remove default margin */
         }
-        h1 {
-            font-size: 2.5rem;
+
+        .navbar .left-links a,
+        .navbar .right-links span {
+            margin-right: 20px;
+            font-size: 16px;
+            text-decoration: none;
+            color: #003c3c;
+        }
+
+        .navbar .logo {
+            font-size: 24px;
             font-weight: bold;
-            margin-bottom: 20px;
+            color: #003c3c;
         }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Flexible grid columns */
-            gap: 20px;
-            justify-items: center; /* Center the items within the grid */
-            width: 100%;
-            max-width: 1200px; /* Limit the maximum width of the grid */
+
+        .navbar .right-links {
+            display: flex;
+            align-items: center;
         }
-        .pack {
-            padding: 20px;
-            border-radius: 16px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            text-align: center;
-            width: 250px;
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 10px;
+            border: 2px solid #00dea5;
         }
-        .bg-blue { background-color: #3b82f6; }
-        .bg-purple { background-color: #8b5cf6; }
-        .bg-orange { background-color: #f97316; }
-        .buy-btn {
-            margin-top: 10px;
-            width: 100%;
-            background-color: black;
-            color: white;
-            padding: 10px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        .buy-btn:hover {
-            background-color: #2d3748;
-        }
-    </style> -->
-</head>
-<body>
-    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-    <div class = 'modal'>
-        <div class = 'modal-content'>
-            <span class = 'close' onclick="closeModal()">&times;</span>
-            <h2>You have won:</h2>
-            <p id = 'modal-card-name'></p>
-            <p id = 'modal-card-description'></p>
-            <p id = 'modal-card-rarity'></p>
-            <img src="" alt="Card Image" id = 'modal-card-image'>
+            body {
+                background: linear-gradient(to bottom, #0e4d46, rgb(13, 143, 13));
+                color: white; 
+                font-family: Arial, sans-serif;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+                overflow-y: hidden;
+                overflow-x: hidden;
+            }
+
+            .h1 {
+                margin-bottom: 25px;
+                color: white;
+                text-align: center;
+                font-size: 40px;
+                width: 100%;
+                font-weight: bold;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+
+            .packSection {
+                width: 80%;
+                height: 450px; 
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 40px;
+                padding: 20px;
+                border-radius: 10px;
+            }
+
+            .packBox {
+                height: 350px;
+                width: 240px;
+                padding: 60px;
+                background-color: white;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                border-radius: 10px;
+                transition: 1s ease-in-out;
+            }
+            .packBox:hover {
+                transform: scale(1.1);
+            }
+
+            .packBox img {
+                height: 350px;
+                width: 240px;
+                outline: 1px solid white;
+
+            }
+
+            .packBox:hover .packInfo {
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .packInfo {
+                position: absolute;
+                top: 20%;
+                left: 50%;
+                transform: translate(-50%, 10px);
+                background-color: white;
+                color: #0e4d46;
+                padding: 10px;
+                font-weight: bold;
+                border-radius: 3px;
+                width: 300px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+                font-size: 12px;
+                font-family: Arial, sans-serif;
+                opacity: 0;
+                visibility: hidden;
+                transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+                z-index: 10;
+                width: 150px;
+            }
+
+            .buy-btn {
+                margin-top: 10px;
+                width: 100%;
+                background-color: black;
+                color: white;
+                padding: 10px;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: bold;
+            }
+            .buy-btn:hover {
+                background-color: #2d3748;
+            }
+
+            
+        </style>
+    </head>
+       <header class="header">
+            <nav class="navbar">
+                <div class="left-links">
+                    <a href="/ecoworld/dashboard">Home</a>
+                    <a href="/ecoworld/challenge">Challenges</a>
+                    <a href="/guides">Guides</a>
+                    <a href="/garden">Garden</a>
+                    <a href="/ecoworld/store">Store</a>
+                </div>
+                <div class="logo">Eco World</div>
+                <div class="right-links">
+                    <span>{{ userinfo.username }}</span>
+                    {% load static %}
+                    <img src="{{ userinfo.pfp_url }}" alt="Username" class="profile-pic">
+                    <span style="padding-left: 20px;">Coins: {{ userinfo.coins }}</span>
+                </div>
+            </nav>
+    </header>
+    <body>
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        
+
+
+        <div class="h1">Welcome to the Store!</div>
+        <div class="packSection">
+            {% for pack in packs %}
+                <div class="packBox">
+                    <img class="img" src="{{ pack.image_url}}"><br>
+                    <div class="packInfo">
+                        <h2>{{ pack.title }}</h2>
+                        <h4>This is a basic pack which has the following chances: </h4>
+                        <p>Common: {{ pack.common_prob }} chance</p>
+                        <p>Rare: {{ pack.rare_prob }} chance</p>
+                        <p>Epic: {{ pack.epic_prob }} chance</p>
+                        <p>Legendary: {{ pack.legendary_prob }} chance</p>
+
+                    </div>
+                    <button class="buy-btn" onclick="handleBuy('{{pack.id}}')">Buy Now!</button>
+                </div>
+            {% endfor %}
         </div>
 
-    </div>
-    <h1>Game Pack Shop</h1>
 
-    <div id="packs-container">
-        {% for pack in packs %}
-        <div class="pack {{ pack.color_class|lower }}">
-            <h2>{{ pack.title }}</h2>
-            <p><strong>Cost:</strong> ${{ pack.cost }}</p>
-            <p>
-                A pack with {{ pack.commonProb|floatformat:2 }}% chance of common, 
-                {{ pack.rareProb|floatformat:2 }}% chance of rare, 
-                {{ pack.epicProb|floatformat:2 }}% chance of epic, 
-                and {{ pack.legendaryProb|floatformat:2 }}% chance of legendary.
-            </p>
-            <button class="buy-btn" onclick="handleBuy('{{pack.id}}')">Buy Now</button>
-        </div>
-        {% endfor %}
-
-    </div>
+        
     <script>
         function handleBuy(packId) {
-            const csrf = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
-            console.log(`Purchased: ${packId}`);
-            fetch(`/ecoworld/buyPack/`, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrf,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    pack: packId
-                })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data);
-                //make modal visible
-                document.querySelector('.modal').style.display = 'block';
-                //set the image
-                document.querySelector('#modal-card-image').src = data.image;
-                //set the name
-                document.querySelector('#modal-card-name').innerText = data.name;
-                //set the description
-                document.querySelector('#modal-card-description').innerText = data.description;
-                //set the rarity
-                document.querySelector('#modal-card-rarity').innerText = data.rarity;
+        console.log(`Attempting to buy pack: ${packId}`);
 
+        fetch("/ecoworld/buyPack/", {
+            method: "POST",
+            headers: {
+                "X-CSRFToken": document.querySelector('input[name="csrfmiddlewaretoken"]').value,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                pack_id: packId 
             })
-            .catch(error => {
-                console.error('Error:', error);
-            });
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Server Response:", data);
 
-        }
-        function closeModal(){
-            document.querySelector('.modal').style.display = 'none';
-        }
-    </script>
-</body>
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+            window.location.href = `/ecoworld/packopening/?pack_id=${packId}`;
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("An error occurred while processing your purchase.");
+        });
+    }
+
+    </script>     
+    </body>
 </html>

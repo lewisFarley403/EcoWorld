@@ -4,12 +4,13 @@ this module defines the views used in this app:
     - `testAddDrink` : This view allows the user to test adding a drink event (for testing purposes)
 Author:
     -Lewis Farley (lf507@exeter.ac.uk)
+    -Chris Lynch (cl1037@exeter.ac.uk)
 """
 
 from django.shortcuts import render
 from .models import drinkEvent,User,waterFountain,pack,ownsCard,challenge,ongoingChallenge
 import json
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from .utils import getUsersChallenges
 from datetime import datetime
@@ -35,7 +36,27 @@ def addDrink(request):
 
 
 def dashboard(request):
-    return render(request, "EcoWorld/dashboard.html")
+    """
+    Dashboard on request takes user info to send to dashboard
+    Returns: render request and userinfo to be displayed
+
+    Author: 
+    Chris Lynch (cl1037@exeter.ac.uk)
+    """
+    if request.method == "GET":
+        user = request.user
+        user = User.objects.get(id=user.id)
+        pfp_url = user.profile.profile_picture
+        pfp_url = "/media/pfps/" + pfp_url
+
+        userinfo = []
+        userinfo.append({
+            "username": user.username,
+            "pfp_url": pfp_url,
+            "coins" : user.profile.number_of_coins
+            })
+
+        return render(request, "EcoWorld/dashboard.html", {"userinfo":userinfo[0]})
 
 def testAddDrink(request):
 
@@ -44,29 +65,129 @@ def testAddDrink(request):
 
 @login_required
 def store(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        user = request.user
-        p = data["pack"]
-        user = User.objects.get(id=user.id)
-        p = pack.objects.get(id=p)
-        if user is None or p is None:
-            return HttpResponse("Invalid user or pack")
-        if p.cost > user.profile.number_of_coins:
-            return HttpResponse("Insufficient coins")
-        user.profile.number_of_coins -= p.cost
-        user.profile.save()
-        card = p.openPack()
-        inventory =ownsCard.objects.get(user=user,card=card)
-        inventory.quantity += 1
-        inventory.save()
-        # return card as json
-        return HttpResponse(json.dumps({"title": card.title, "description": card.description, "rarity": card.rarity.title, "image": card.image.url}))
-
-    elif request.method == "GET":
+    """
+    This view renders the store for the ecoworld page. This pages purpose is to allow users to purchase packs to unlock cards with their coins
+    It requires the user to be logged in
+    Returns:
+    Render request plus two dictionaries one of user data for the header and one of the pack data for viewing
+    Author:
+    Chris Lynch (cl1037@exeter.ac.uk)
+    
+    """
+    if request.method == "GET":
         packs = pack.objects.all()
-        return render(request, "ecoWorld/store.html",{ "packs": packs })
+        pack_list = []
+        #Gets all info from each of the 3 packs
+        for pack_ in packs:
+            image_url = pack_.packimage.url
+            id = pack_.id
+            #Adds the pack info to the list
+            pack_list.append({
+                "id" : id,
+                "title": pack_.title,
+                "cost" : pack_.cost,
+                "image_url": image_url,
+                "common_prob": pack_.commonProb,
+                "rare_prob": pack_.rareProb,
+                "epic_prob": pack_.epicProb,
+                "legendary_prob": pack_.legendaryProb,
+                "color_class": pack_.color_class,
+
+            })
+        
+        #Function to get the user data and then adds it to the user dictionary
+        user = request.user
+        user = User.objects.get(id=user.id)
+        pfp_url = user.profile.profile_picture
+        pfp_url = "/media/pfps/" + pfp_url
+
+        userinfo = []
+        userinfo.append({
+            "username": user.username,
+            "pfp_url": pfp_url,
+            "coins" : user.profile.number_of_coins
+            })
+        
+        #Sends the info to the page
+        return render(request, "ecoWorld/store.html",{ "packs": pack_list, "userinfo": userinfo[0]})
+    
     return HttpResponse("Invalid request")
+
+
+@login_required
+
+def buy_pack(request):
+    """
+    Function to handle purchasing a pack and making sure the user can
+    Returns:
+    Appropriate error if error
+    No coins if the user doesnt have enough
+    Success if it can be bought
+
+    Author: 
+    Chris Lynch (cl1037@exeter.ac.uk)
+    """
+    if request.method == "POST":
+        #Error handling where it tries to get the appropriate data
+        try:
+            data = json.loads(request.body)
+            user = request.user
+            pack_id = data.get("pack_id")
+            try:
+                selected_pack = pack.objects.get(id=pack_id)
+            except pack.DoesNotExist:
+                return JsonResponse({"error": "Invalid pack selected"}, status=400)
+
+            #Checks if user can buy the pack
+            if selected_pack.cost > user.profile.number_of_coins:
+                return JsonResponse({"error": "Insufficient coins"}, status=400)
+
+            #If pack found it takes the coins out and gives success
+            user.profile.number_of_coins -= selected_pack.cost
+            user.profile.save()
+
+            return JsonResponse({"success": True})
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+    return JsonResponse({"error": "Invalid request method"}, status=405)
+
+@login_required
+def pack_opening_page(request):
+    """
+    Webpage to render the pack opening animation. When a pack is bought it redirects to here where it will send the correct info 
+    to the page so the right pack gets opened
+    It has a function to buy pack from the packs model in models.py
+    Returns:
+    Bought pack card won
+
+    Author:
+    Chris Lynch (cl1037@exeter.ac.uk)
+    
+    """
+    #Gets pack id
+    pack_id = request.GET.get("pack_id")
+    #Error checks if it works
+    try:
+        selected_pack = pack.objects.get(id=pack_id)
+    except pack.DoesNotExist:
+        return JsonResponse({"error": "Invalid pack ID"}, status=400)
+    
+    #Card received variable when opening a pack, adds to inventory and saves
+    card_received = selected_pack.openPack()
+    inventory, _ = ownsCard.objects.get_or_create(user=request.user, card=card_received)
+    inventory.quantity += 1
+    inventory.save()
+
+
+    #Image of the card won to return to the page
+    image_url = card_received.image.url
+    return render(request, "EcoWorld/pack_opening_page.html", {"image": image_url})
+
+
+
+
 @login_required
 def challenge(request):
     challenges = getUsersChallenges(request.user)
@@ -87,7 +208,6 @@ def completeChallenge(request):
         worth = chal.challenge.worth
         chal.submitted_on = datetime.now()
         
-        # worth = challenge.objects.get(id=chal).worth
         user.profile.number_of_coins += worth
         user.save()
         chal.save()

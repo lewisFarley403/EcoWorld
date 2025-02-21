@@ -8,97 +8,178 @@ Author:
     -Lewis Farley (lf507@exeter.ac.uk)
 """
 
+from venv import logger
 from django.shortcuts import render
-from .models import garden
+from .models import garden, gardenSquare
 from django.http import JsonResponse
-from EcoWorld.models import ownsCard,card
+from EcoWorld.models import ownsCard,card, User
 import json
 from django.core import serializers
 
 # Create your views here.
 from django.contrib.auth.decorators import login_required
 from django.conf import settings
-@login_required  # Ensure that only logged-in users can access the profile
+@login_required
 def show_garden(request):
     """
-    This view renders the garden.html page to allow the user to view their garden.
-    It requires the user to be logged in. If the user is not logged in, it redirects to the login page.
-    Attributes:
-        request : HttpRequest : The HTTP request object
+    Function to show the gardens page when loading into the garden. As well as this it gets all the info about the garden for that
+    user along with basic user info for the header and gets the players inventory for the right side of the page
     Returns:
-        render : HttpResponse : The rendered HTML page
+    Render request, the template, the garden size, userinfo and player inventory
+
     Author:
-        - Lewis Farley (lf507@exeter.ac.uk)
+    Chris Lynch (cl1037@exeter.ac.uk)
+    Lewis Farley (lf507@exeter.ac.uk)
     """
     g = garden.objects.get(userID=request.user)
     squares = g.gardensquare_set.all()
-    processedSquares = [[squares[i*g.size+j] for j in range (g.size)] for i in range (g.size)]
+    processedSquares = [[squares[i * g.size + j] for j in range(g.size)] for i in range(g.size)]
+
+    user = request.user
+    user = User.objects.get(id=user.id)
+    pfp_url = "/media/pfps/" + user.profile.profile_picture
+
+    userinfo = {
+        "username": user.username,
+        "pfp_url": pfp_url,
+        "coins": user.profile.number_of_coins
+    }
+
+ 
+    playerInventoryStorage = ownsCard.objects.filter(user=request.user).values(
+        'card__title', 'card__image', 'quantity', 'card__id'
+    )
+
+    playerItems = [item for item in playerInventoryStorage if item["quantity"] > 0]
+
+    return render(request, 'Garden/garden.html', {
+        'squares': processedSquares,
+        'MEDIA_URL': settings.MEDIA_URL,
+        'size': g.size,
+        "userinfo": userinfo,
+        "playerInventory": playerItems 
+    })
 
 
-    playerInventory = ownsCard.objects.filter(user=request.user)
-    availableCards = [ card.card for card in playerInventory if card.quantity>0 and card.card not in [square.cardID for square in squares]]
-    serialized=json.loads(serializers.serialize('json', availableCards))
-    final = [obj["fields"]|{'id':obj['pk']} for obj in serialized]
-
-    return render(request, 'Garden/garden.html', {'squares': processedSquares,'MEDIA_URL':settings.MEDIA_URL,'size':g.size,'availableCards':final})
-def remove_card(request):
-    """
-    Removes a card from the users garden square,
-    with the coordinate of this square being passed in the body of the request
-    Attributes:
-        request : HttpRequest : The HTTP request object
-    Returns:
-        JsonResponse : The JSON response object
-    Author:
-        - Lewis Farley (lf507@exeter.ac.uk)
-    """
-    if request.method =="POST":
-        body =json.loads(request.body)
-        row = int(body['row'])
-        col = int(body['col'])
-        g = garden.objects.get(userID=request.user)
-        squareID = (row-1)*g.size+(col-1)
-        square = g.gardensquare_set.get(gardenID=g,squareID=squareID)
-        square.cardID = None
-        square.save()
-    # return json to say success    
-    return JsonResponse({'success': True, 'message': 'Card removed!'})
-def getAvailableCards(request):
-    g = garden.objects.get(userID=request.user)
-    squares = g.gardensquare_set.all()
-    playerInventory = ownsCard.objects.filter(user=request.user)
-    # availableCards = [ card.card for card in playerInventory if card.card not in [square.cardID for square in squares]]
-
-    # with new db that has quantity
-    availableCards = [ card.card for card in playerInventory if card.quantity>0 and card.card not in [square.cardID for square in squares]]
-    print("AVAILABLE CARDS")
-    print(availableCards[0].quantity)
-    serialized=json.loads(serializers.serialize('json', availableCards))
-    final = [obj["fields"] for obj in serialized]
-    return JsonResponse({'success': True,'cards':final})
+"""
+Function to add a card into the garden. It takes the card id and image from inventory along with the row and col of the garden square
+From here it checks to see if the card is valid before adding the card to the square and then removing one from the inventory
+Returns:
+The card image for the script
+Author:
+Chris Lynch (cl1037@exeter.ac.uk)
+"""  
 
 def addCard(request):
-    """
-    This view adds a card to a square in the users garden.
-    The row, col and cardID to be added are placed in the body of the request
-    Attributes:
-        request : HttpRequest : The HTTP request object
-    Returns:
     
+    if request.method == "POST":
+        data = json.loads(request.body)
+
+        row = int(data["row"])
+        col = int(data["col"])
+        card_id = int(data["card_id"]) 
+        user = request.user
+
+        try:
+           
+            selected_card = card.objects.get(id=card_id)
+
+           
+            owned_card = ownsCard.objects.get(user=user, card=selected_card)
+            if owned_card.quantity <= 0:
+                return JsonResponse({"success": False, "message": "You don't have enough of this card."})
+
+            
+            g = garden.objects.get(userID=user)
+            squareID = (row - 1) * g.size + (col - 1) 
+            square, created = gardenSquare.objects.get_or_create(gardenID=g, squareID=squareID)  
+
+
+            
+            if square.cardID is not None:
+                return JsonResponse({"success": False, "message": "This square is already occupied."})
+
+        
+            square.cardID = selected_card
+            square.save()
+
+            
+            owned_card.quantity -= 1
+            owned_card.save()
+
+            
+            return JsonResponse({
+                "success": True,
+                "message": "Card placed successfully!",
+                "card_image": f"/media/{selected_card.image}" 
+            })
+
+        except card.DoesNotExist:
+            print("Error: Card does not exist!")  
+            return JsonResponse({"success": False, "message": "Invalid card ID."})
+        except gardenSquare.DoesNotExist:
+            print("Error: Garden square does not exist!")  
+            return JsonResponse({"success": False, "message": "Invalid garden square."})
+        except ownsCard.DoesNotExist:
+            print("Error: User does not own this card!") 
+            return JsonResponse({"success": False, "message": "You don't own this card."})
+
+    return JsonResponse({"success": False, "message": "Invalid request."})
+
+
+def removeCard(request):
     """
-    if request.method =="POST":
-        body = json.loads(request.body)
-        g=garden.objects.get(userID=request.user)
-        row = int(body['row'])
-        col = int(body['col'])
-        cardID = int(body['cardID'])
-        c = card.objects.get(id=cardID)
-        squareID = (row-1)*g.size+(col-1)
-        square = g.gardensquare_set.get(gardenID=g,squareID=squareID)
-        square.cardID = c
-        # maybe check if this quantity is >0
-        print(ownsCard.objects.filter(user=request.user,card=c))
-        ownsCard.objects.get(user=request.user,card=c).quantity-=1
-        ownsCard.objects.get(user=request.user,card=c).save()
-        square.save()
-        return JsonResponse({'success': True, 'message': 'Card added!'})
+    Function which removes a card when left clicked on. 
+    It gets the data sent from the garden about the row and column clicked on, checks if card exists,
+    if it does exist then it removes it from the garden saves it and add that quantity back to user inventory
+    Returns:
+    Returns the card ID and image used for it incase
+
+    Author :
+    Chris Lynch (cl1037@exeter.ac.uk)
+    """
+
+    if request.method == "POST":
+        data = json.loads(request.body)
+
+        row = int(data["row"])
+        col = int(data["col"])
+        user = request.user
+
+        try:
+            g = garden.objects.get(userID=user)
+            squareID = (row - 1) * g.size + (col - 1)  
+            square = gardenSquare.objects.get(gardenID=g, squareID=squareID)
+
+            if square.cardID is None:
+                return JsonResponse({"success": False, "message": "No card in this square."})
+
+            
+            selected_card = square.cardID
+            card_id = selected_card.id  
+
+            print(f"Removing card {selected_card.title} (ID: {card_id}) from Row: {row}, Col: {col}")
+
+            owned_card, created = ownsCard.objects.get_or_create(user=user, card=selected_card)
+            owned_card.quantity += 1
+            owned_card.save()
+
+            
+            square.cardID = None
+            square.save()
+
+            return JsonResponse({
+                "success": True,
+                "message": "Card removed successfully!",
+                "card_id": card_id, 
+                "card_image": f"/media/{selected_card.image}" 
+            })
+
+        except gardenSquare.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Invalid garden square."})
+        except card.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Invalid card."})
+        except ownsCard.DoesNotExist:
+            return JsonResponse({"success": False, "message": "You don't own this card."})
+
+    return JsonResponse({"success": False, "message": "Invalid request."})
