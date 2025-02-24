@@ -80,7 +80,7 @@ def addCard(request):
            
             owned_card = ownsCard.objects.get(user=user, card=selected_card)
             if owned_card.quantity <= 0:
-                return JsonResponse({"success": False, "message": "You don't have enough of this card."})
+                return JsonResponse({"success": False, "message": "You dont have enough of this card."})
 
             
             g = garden.objects.get(userID=user)
@@ -105,13 +105,10 @@ def addCard(request):
             return JsonResponse({"success": True,"message": "Card placed successfully!","card_image": f"/media/{selected_card.image}"})
 
         except card.DoesNotExist:
-            print("Error: Card does not exist!")  
             return JsonResponse({"success": False, "message": "Invalid card ID"})
         except gardenSquare.DoesNotExist:
-            print("Error: Garden square does not exist!")  
             return JsonResponse({"success": False, "message": "Invalid garden square"})
         except ownsCard.DoesNotExist:
-            print("Error: User does not own this card!") 
             return JsonResponse({"success": False, "message": "You dont own this card"})
 
     return JsonResponse({"success": False, "message": "Invalid request."})
