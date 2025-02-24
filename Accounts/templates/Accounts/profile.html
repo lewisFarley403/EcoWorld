@@ -1,55 +1,188 @@
 {% extends 'base.html' %}
 {% load static %}
+
 {% block title %}User Profile{% endblock %}
 
 {% block content %}
     {% block extra_css %}
-    <link rel="stylesheet" href="{% static 'Accounts/css/profile.css' %}">
-{% endblock %}
-    <div class="profile-container">
-        <h2>Your Profile</h2>
+        <link rel="stylesheet" href="{% static 'Accounts/css/profile.css' %}">
+    {% endblock %}
+    <style>
+        #modal{
+            display: none; /* Hidden by default */
+            position: fixed; /* Stay in place */
+            z-index: 1; /* Sit on top */
+            left: 0;
+            top: 0;
+            width: 100%; /* Full width */
+            height: 100%; /* Full height */
+            overflow: auto; /* Enable scroll if needed */
+            background-color: rgb(0,0,0); /* Fallback color */
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            overflow-y: scroll;
 
-        <!-- Profile Picture Display (centered) -->
-        <div class="profile-picture-container">
-            <img src="{% static 'Accounts/pfps/' %}{{ profile.profile_picture }}" alt="Profile Picture" class="profile-picture" />
+        }
+        .modal-cont {
+            background-color: #fefefe;
+            margin: 15% auto; /* 15% from the top and centered */
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; /* Could be more or less, depending on screen size */
+            overflow-y: scroll;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat({{ size }}, 1fr);
+            aspect-ratio: 1/1;  /* Maintain square aspect ratio */
+            height: 60vh;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        .grid-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+    </style>
+    <div class="profile-container">
+        <!-- Left Sidebar -->
+        <div class="profile-sidebar">
+            <h2>{{ profile.username }}</h2>
+            <div class="profile-picture-container">
+                <img src="{% static 'Accounts/pfps/' %}{{ profile.profile_picture }}" alt="Profile Picture" class="profile-picture">
+            </div>
+            <button type="button" id="selectProfilePictureBtn">Change Profile Picture</button>
+            <div class="bio-section">
+                <p>{{ profile.bio }}</p>
+            </div>
+            <form method="POST">
+                {% csrf_token %}
+                <label for="bio">Edit Bio:</label>
+                <textarea name="bio" id="bio" rows="4">{{ profile.bio }}</textarea>
+                <button type="submit">Update Profile</button>
+            </form>
         </div>
 
-        <form method="POST">
-            {% csrf_token %}
-            <label for="bio">Bio:</label>
-            <textarea name="bio" id="bio" rows="4">{{ profile.bio }}</textarea>
+        <!-- Right Main Content -->
+        <div class="profile-main">
+            <div class="garden-card">
+                <script>
+                    var squareClicked = null;
+                </script>
+                <div id ="modal">
 
-            <h3>Select Profile Picture:</h3>
-            <button type="button" id="selectProfilePictureBtn">Select Profile Picture</button>
-
-            <!-- Hidden input field to store the selected profile picture -->
-            <input type="hidden" name="profile_picture" id="profilePictureInput" value="{{ profile.profile_picture }}">
-
-            <!-- Popup Modal -->
-            <div id="profilePictureModal" class="modal">
-                <div class="modal-content">
-                    <span id="closeModal" class="close">&times;</span>
-                    <h2>Select a Profile Picture</h2>
-                    <div class="image-gallery">
-                        <img src="{% static 'Accounts/pfps/pfp1.png' %}" alt="Profile 1" class="profile-image" data-image="pfp1.png">
-                        <img src="{% static 'Accounts/pfps/pfp2.png' %}" alt="Profile 2" class="profile-image" data-image="pfp2.png">
-                        <img src="{% static 'Accounts/pfps/pfp3.png' %}" alt="Profile 3" class="profile-image" data-image="pfp3.png">
-                        <img src="{% static 'Accounts/pfps/pfp4.png' %}" alt="Profile 4" class="profile-image" data-image="pfp4.png">
-                        <img src="{% static 'Accounts/pfps/pfp5.png' %}" alt="Profile 5" class="profile-image" data-image="pfp5.png">
+                    <div class="modal-cont">
+                        <span class="close" onclick = "closeModal()">&times;</span>
+                        <p>Some text in the Modal..</p>
+                        {% for card in availableCards %}
+                            <img src="{{MEDIA_URL}}{{card.image}}" alt="{{ card.title }}" onclick="handleAddToGarden('{{card.id}}')">
+                        {% endfor %}
                     </div>
-                    <button type="button" id="confirmSelectionBtn">Confirm Selection</button>
                 </div>
+                {%csrf_token%}
+                <div>
+                    <h1>Garden</h1>
+                    <p>Here is a list of all the plants in the garden:</p>
+                    <div class="grid-container">
+                        {% for row in squares %}
+                            {% for square in row %}
+                                {% if square.cardID %}
+                                    <img src="{{ square.cardID.image.url }}" data-row ='{{forloop.parentloop.counter}}' data-col=""  onclick="handleCardClick('{{forloop.parentloop.counter}}','{{forloop.counter}}',event)" alt="{{ square.cardID.title }}">
+                                {% else %}
+                                    <img src="{{ MEDIA_URL }}cards/dirt.jpeg" onclick = "openModal('{{forloop.parentloop.counter}}','{{forloop.counter}}')"alt="Default Image">
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <script>
+                    function handleCardClick(row, col, event) {
+                        console.log(event.target);
+
+                        // const csrfToken = document.getElementById("csrf_token").value;  // Get CSRF token
+                        const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+                        console.log(row, col)
+                        // console.log(csrfToken)
+                        fetch('/garden/removeCard/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken // Add CSRF token in the headers
+                            },
+                            body: JSON.stringify({ row: row, col: col })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert("Card removed successfully!");
+                                    // event.src="{{ MEDIA_URL }}cards/dirt.jpeg";
+                                    location.reload(); // Refresh the page
+                                } else {
+                                    alert("Error: " + data.message);
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+
+                    }
+
+                    function openModal(row, col){
+                        squareClicked = [row,col]
+                        console.log(row, col);
+                        document.getElementById('modal').style.display = 'block';
+                    }
+                    function closeModal(){
+                        document.getElementById('modal').style.display = 'none';
+                        squareClicked=null;
+                    }
+
+                    function handleAddToGarden(cardID){
+                        console.log(cardID);
+                        const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+                        fetch('/garden/addCard/', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRFToken': csrfToken
+                            },
+                            body: JSON.stringify({ row: squareClicked[0], col: squareClicked[1], cardID: cardID })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    alert("Card added successfully!");
+                                    location.reload();
+                                } else {
+                                    alert("Error: " + data.message);
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+
+                    }
+                </script>
             </div>
+        </div>
 
-            <button type="submit">Update Profile</button>
-            <button type="button" onclick="window.location.href='/ecoworld/dashboard/'">To the Homepage!</button>
-
-
-            
-        </form>
+        <!-- Popup Modal -->
+        <div id="profilePictureModal" class="modal">
+            <div class="modal-content">
+                <span id="closeModal" class="close">&times;</span>
+                <h2>Select a Profile Picture</h2>
+                <div class="image-gallery">
+                    <img src="{% static 'Accounts/pfps/pfp1.png' %}" alt="Profile 1" class="profile-image" data-image="pfp1.png">
+                    <img src="{% static 'Accounts/pfps/pfp2.png' %}" alt="Profile 2" class="profile-image" data-image="pfp2.png">
+                    <img src="{% static 'Accounts/pfps/pfp3.png' %}" alt="Profile 3" class="profile-image" data-image="pfp3.png">
+                    <img src="{% static 'Accounts/pfps/pfp4.png' %}" alt="Profile 4" class="profile-image" data-image="pfp4.png">
+                    <img src="{% static 'Accounts/pfps/pfp5.png' %}" alt="Profile 5" class="profile-image" data-image="pfp5.png">
+                </div>
+                <input type="hidden" name="profile_picture" id="profilePictureInput" value="{{ profile.profile_picture }}">
+                <button type="button" id="confirmSelectionBtn">Confirm Selection</button>
+            </div>
+        </div>
     </div>
-    {% block extra_js %}
-    <script src="{% static 'Accounts/js/profile.js' %}"></script>
-{% endblock %}
 
+    {% block extra_js %}
+        <script src="{% static 'Accounts/js/profile.js' %}"></script>
+    {% endblock %}
 {% endblock %}
