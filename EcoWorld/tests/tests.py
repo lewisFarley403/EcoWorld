@@ -1,10 +1,12 @@
 import json
+import os
 from django.test import TestCase, Client
-
+from django.core.management import call_command
 from Accounts.models import Profile
-from .models import pack, card, cardRarity, ownsCard, User
+from EcoWorld.models import pack, card, cardRarity, ownsCard, User,ongoingChallenge
 from django.urls import reverse
-
+from django.conf import settings
+from datetime import timedelta
 """
 Testing class for the packmodels
 Methods:
@@ -195,7 +197,7 @@ class TestStore(TestCase):
     #Tests that when the user is logged in they can view the page correctly and if not they cant and checks if the template receives the info given to it
     def testStoreLoadsProperly(self):
         self.client.login(username="testuser1", password="1234")
-        response = self.client.get(reverse('store'))
+        response = self.client.get(reverse('EcoWorld:store'))
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "ecoWorld/store.html")
@@ -225,7 +227,7 @@ class TestStore(TestCase):
 
         #Buys a certain pack from the store and saves the response
         response = self.client.post(
-            reverse('buyPack'),
+            reverse('EcoWorld:buyPack'),
             json.dumps({'pack_id': self.pack1.id}),
             content_type='application/json'
         )
@@ -243,7 +245,7 @@ class TestStore(TestCase):
 
         #Logged in with the user on 0 coins gets response to buying a pack
         response = self.client.post(
-            reverse('buyPack'),
+            reverse('EcoWorld:buyPack'),
             json.dumps({'pack_id': self.pack1.id}),
             content_type='application/json'
         )
@@ -253,3 +255,119 @@ class TestStore(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {"error": "Insufficient coins"})
         self.assertEqual(self.profile1.number_of_coins, 0)
+
+class TestChallenge(TestCase):
+    '''
+    test the functionality to do with challenges
+    author:
+        Lewis Farley (lf507@exeter.ac.uk)
+    '''
+    def setUp(self):
+
+        # Get the absolute path to the initialDb.json file in the root directory
+        fixture_path = os.path.join(os.path.dirname(__file__), 'initialDb.json')
+
+        print(fixture_path)
+        # Load initialDb.json into the test database
+        call_command("loaddata", fixture_path)
+        # create user
+            
+        form_data = {
+
+
+             'first_name': 'John',
+             'last_name': 'Doe',
+             'username': 'testuser',
+             'email': 'testuser@gmail.com',
+             'password1':'P@ssword123',
+             'password2':'P@ssword123'
+        }
+        _ = self.client.post('/accounts/signup/', form_data)
+
+         # g = garden.objects.get(user.username=user)
+        user=User.objects.get(username='testuser')
+        self.assertEqual(user.profile.number_of_coins,0)
+    def test_challenge_view(self):
+        '''
+        test the challenge view for first time user
+        Author:
+            Lewis Farley (lf507@exeter.ac.uk)
+        '''
+        self.client.login(username='testuser', password='P@ssword123')
+        ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
+        self.assertEqual(len(ongoingChallenges), 0)
+        response = self.client.get(reverse('EcoWorld:challenge'))
+        ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
+        self.assertEqual(len(ongoingChallenges), settings.NUM_CHALLENGES)
+    def test_mark_challenge_complete(self):
+        '''
+        test the mark challenge complete functionality
+        Author:
+            Lewis Farley (
+        '''
+        self.client.login(username='testuser', password='P@ssword123')
+        response = self.client.get(reverse('EcoWorld:challenge'))
+        ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
+        self.assertEqual(len(ongoingChallenges), settings.NUM_CHALLENGES)
+        challenge = ongoingChallenges[0]
+        self.assertEqual(challenge.submitted_on, None)
+        
+        response = self.client.post(
+            reverse('EcoWorld:completeChallenge'),  # The URL you're posting to
+            json.dumps({'id': challenge.id}),  # The data you want to send, serialized as JSON
+            content_type='application/json'  # The content type must be set to application/json
+        )
+        ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
+        self.assertNotEqual(ongoingChallenges[0].submitted_on, None)
+    def test_challenge_reset(self):
+        '''
+        test the challenge reset functionality
+        Author:
+            Lewis Farley (
+        '''
+        settings.CHALLENGE_EXPIRY = timedelta(seconds=5)  # The time in seconds before a challenge expires
+        # delete ongoing challenges
+        ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
+        ongoingChallenges.delete()
+        # check that the challenges have been deleted
+        ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
+        self.assertEqual(len(ongoingChallenges), 0)
+        self.client.login(username='testuser', password='P@ssword123')
+        response = self.client.get(reverse('EcoWorld:challenge'))
+        # mark the challenges as completed
+        ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
+        i =ongoingChallenges[0].id
+        response = self.client.post(
+            reverse('EcoWorld:completeChallenge'),  # The URL you're posting to
+            json.dumps({'id': i}),  # The data you want to send, serialized as JSON
+            content_type='application/json'  # The content type must be set to application/json
+        )
+        # wait for them to reset
+        import time
+        time.sleep(settings.CHALLENGE_EXPIRY.total_seconds())
+
+        # check that the challenges have been reset
+        self.client.get(reverse('EcoWorld:challenge'))
+        ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
+        self.assertEqual(ongoingChallenges[0].submitted_on,None)
+    def test_coin_reward(self):
+        '''
+        test the challenge reward functionality
+        Author:
+            Lewis Farley (
+        '''
+        self.client.login(username='testuser', password='P@ssword123')
+        response = self.client.get(reverse('EcoWorld:challenge'))
+        ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
+        i =ongoingChallenges[0].id
+        response = self.client.post(
+            reverse('EcoWorld:completeChallenge'),  # The URL you're posting to
+            json.dumps({'id': i}),  # The data you want to send, serialized as JSON
+            content_type='application/json'  # The content type must be set to application/json
+        )
+        user=User.objects.get(username='testuser')
+        self.assertEqual(user.profile.number_of_coins,settings.CHALLENGE_WORTH)
+
+
+
+    
