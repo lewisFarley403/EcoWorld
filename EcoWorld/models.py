@@ -1,3 +1,5 @@
+from django.db import models
+from django.contrib.auth.models import User
 """
 This module defines the database models for the EcoWorld app:
     - `challenge` : Model for storing challenge information
@@ -145,6 +147,13 @@ class ownsCard(models.Model):
     quantity = models.IntegerField(default=0)
     def __str__(self):
         return self.user.username + " owns " + self.card.title
+
+class WaterBottleFill(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='bottle_uploads/')
+    timestamp = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"{self.user.username} - {self.timestamp}"
     
 class pack(models.Model):
     """
@@ -194,6 +203,4 @@ class pack(models.Model):
         cards = card.objects.filter(rarity=rarity)
         cardToReturn = random.choice(cards)
         return cardToReturn
-    
-
     

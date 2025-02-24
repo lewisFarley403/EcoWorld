@@ -7,13 +7,15 @@ Author:
     -Chris Lynch (cl1037@exeter.ac.uk)
 """
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import drinkEvent,User,waterFountain,pack,ownsCard,challenge,ongoingChallenge
 import json
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from .utils import getUsersChallenges
 from datetime import datetime
+from qr_code.qrcode.utils import QRCodeOptions
+from .forms import WaterBottleFillForm
 
 # Create your views here.
 def addDrink(request):
@@ -58,10 +60,29 @@ def dashboard(request):
 
         return render(request, "EcoWorld/dashboard.html", {"userinfo":userinfo[0]})
 
-def testAddDrink(request):
+def generate_qr_code(request):
+    """
+    This Generates a QR code and renders it on a template (For functionality)
+    """
+    qr_options = QRCodeOptions(size='M' , border=6, error_correction='L')
+    qr_data = "https://EcoWorld.com/scan/" #Change this to website name I have no idea
+    return render(request, 'EcoWorld/qr_code.html', {'qr_data': qr_data, 'qr_options': qr_options})
 
-    print("add drink post req")
-    return render(request, "ecoWorld/addDrink.html")
+def scan_qr_code(request):
+    return render(request, 'EcoWorld/scan_qr_code.html')
+
+def upload_bottle_photo(request):
+    if request.method == 'POST':
+        form = WaterBottleFillForm(request.POST, request.FILES)
+        if form.is_valid():
+            water_fill = form.save(commit=False)
+            water_fill.user = request.user
+            water_fill.save()
+            return redirect('success_page') #Create a success page
+    else:
+        form = WaterBottleFillForm()
+
+    return render(request, 'EcoWorld/upload_photo.html', {'form': form})
 
 @login_required
 def store(request):

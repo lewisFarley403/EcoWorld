@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class EcoworldConfig(AppConfig):
+class EcoWorldConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "EcoWorld"

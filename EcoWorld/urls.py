@@ -11,17 +11,20 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf.urls.static import static
 
-from .views import addDrink, buy_pack,testAddDrink,store,pack_opening_page # Import the view
+from .views import addDrink, buy_pack,testAddDrink,store,pack_opening_page, testAddDrink, upload_bottle_photo, scan_qr_code, generate_qr_code # Import the view
 from . import views
 
+app_name = 'EcoWorld'
 urlpatterns = [
     path('addDrink/', addDrink, name='home'),  # Root URL
     path("drink/", testAddDrink, name='addDrinkTest'),  # URL for the signup page
+    path('scan/', scan_qr_code, name='scan_qr'),
+    path('upload_photo/', upload_bottle_photo, name="upload_photo"),
+    path('generate_qr/', generate_qr_code, name="generate_qr"),
     path("store/", store, name='store'),  # URL for the signup page
     path('buyPack/', buy_pack, name='buyPack'),  # URL for the signup page
     path("packopening/", pack_opening_page, name='packopening'),
     path("dashboard/", views.dashboard, name='dashboard'),  # URL for the dashboard page
     path("challenge/", views.challenge, name='challenge'),  # URL for the challenge page
     path("completeChallenge/", views.completeChallenge, name='completeChallenge'),  # URL for the complete challenge page
-    
 ]
