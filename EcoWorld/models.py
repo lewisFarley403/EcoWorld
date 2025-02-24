@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.conf import settings
 """
 This module defines the database models for the EcoWorld app:
     - `challenge` : Model for storing challenge information
@@ -36,7 +37,7 @@ class challenge(models.Model):
     description = models.TextField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_on = models.DateField()
-    worth = models.IntegerField(default=10)
+    worth = models.IntegerField(default=settings.CHALLENGE_WORTH)
     def __str__(self):
         return self.name
 class ongoingChallenge(models.Model):

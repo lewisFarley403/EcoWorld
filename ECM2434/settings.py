@@ -143,3 +143,5 @@ NUM_CHALLENGES=3
 from datetime import datetime, timedelta
 
 CHALLENGE_EXPIRY = timedelta(seconds=10)  # The time in seconds before a challenge expires
+
+CHALLENGE_WORTH = 10  # The number of points a challenge is worth
