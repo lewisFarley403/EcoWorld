@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "Accounts",
     "EcoWorld",
+    "guides",
     "Garden",
     "qr_code",
 ]

@@ -1,0 +1,223 @@
+/* General Styles */
+body {
+    font-family: 'poppins', cursive;
+    background-color: skyblue;
+    background-image: url("../res/background.png");
+    background-size: cover;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    position: relative;
+    overflow: hidden;
+}
+
+.leaf {
+    position: fixed;
+    top: -10%;
+    width: 50px;
+    height: auto;
+    z-index: -1;
+    pointer-events: none;
+    animation: fallingLeaves linear forwards;
+}
+
+@keyframes fallingLeaves {
+    0% {
+        transform: translateY(-10vh) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(110vh) rotate(var(--rotation));
+        opacity: 0;
+    }
+}
+
+
+h1.text-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #00dea5;
+    text-shadow:
+        -2px -2px 0 black,
+         2px -2px 0 black,
+        -2px  2px 0 black,
+         2px  2px 0 black;
+    font-size: 3vw;
+    margin: 0% ;
+}
+
+.card {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    border-radius: 10px;
+}
+
+.question-box {
+    background-color: #00dea5;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    display: none;
+    position: relative;
+    transition: transform 0.5s ease-in-out;
+}
+
+.question-box.active {
+    display: block;
+}
+
+.question-box.slide-in-next {
+    transform: translateX(0);
+}
+
+
+.question-box.slide-out-next {
+    transform: translateX(-100%);
+}
+
+.question-box.slide-in-prev {
+    transform: translateX(0);
+}
+
+.question-box.slide-out-prev {
+    transform: translateX(100%);
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #00dea5;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #03c091;
+}
+
+button:active {
+    transform: scale(0.95);
+    box-shadow: 3px 2px 20px 1px rgba(0, 0, 0, 0.15);
+}
+
+.answer-box {
+    display: block;
+    padding: 12px;
+    margin: 8px 0;
+    background-color: #00dea5;
+    border: 2px solid #03c091;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.answer-box:hover {
+    background-color: #03c091;
+}
+
+.answer-box.selected {
+    background-color: #03c091;
+    color: white;
+    border-color: #03c091;
+    font-weight: bold;
+}
+
+#progress-bar-container {
+    width: 100%;
+    background-color: #f0f0f0;
+    height: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#progress-bar {
+    height: 100%;
+    background-color: #00dea5;
+    width: 0%;
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+@font-face {
+    font-family: 'jotione';
+    src: url("../fonts/JotiOne-Regular.ttf") format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'poppins';
+    src: url("../fonts/Poppins-Medium.ttf") format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'jotione', cursive;
+    color: #333;
+}
+
+button {
+    font-family: 'jotione', cursive;
+    padding: 10px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.paragraph-box {
+    background-color: #00dea5;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+    font-size: 18px;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.header {
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px 20px;
+}
+
+.navbar {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar .left-links a,
+.navbar .right-links span {
+    margin-right: 20px;
+    font-size: 16px;
+    text-decoration: none;
+    color: #003c3c;
+}
+
+.navbar .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #003c3c;
+}
+
+.navbar .right-links {
+    display: flex;
+    align-items: center;
+}
