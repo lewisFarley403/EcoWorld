@@ -9,6 +9,7 @@ author:
 # views.py
 
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
 from django.shortcuts import render, redirect
 from .forms import SignUpForm, ProfileUpdateForm
 from .models import Profile
@@ -54,6 +55,7 @@ def signup(request):
             createGarden(user)
             #creates cards owned by user set default as 0.
             createOwnsDb(user)
+            login(request, user)
             return redirect('/ecoworld/')  # Redirect to the login page after successful registration
     else:
         form = SignUpForm()

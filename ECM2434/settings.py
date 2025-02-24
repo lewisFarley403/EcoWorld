@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['whniecm2434.pythonanywhere.com','127.0.0.1']
 
 STATIC_ROOT = BASE_DIR / 'static'
 
+LOGIN_REDIRECT_URL = '/ecoworld/'  # The URL to redirect to after a successful login
 
 # Application definition
 
