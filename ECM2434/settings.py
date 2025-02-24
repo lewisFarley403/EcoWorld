@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-kyoddd82$!d_nttqwz9-u%kt8+ql)(@hgpkqm2&&70nf6ri7eu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['whniecm2434.pythonanywhere.com','127.0.0.1']
 
 
 STATIC_ROOT = BASE_DIR / 'static'
@@ -138,3 +138,8 @@ MEDIA_URL = '/media/'  # The URL to access media files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')  # Path to the directory where media files are stored
 
 GARDEN_SIZE=5
+
+NUM_CHALLENGES=3
+from datetime import datetime, timedelta
+
+CHALLENGE_EXPIRY = timedelta(seconds=10)  # The time in seconds before a challenge expires

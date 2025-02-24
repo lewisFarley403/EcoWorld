@@ -1,0 +1,281 @@
+[
+    {
+        "model": "auth.user",
+        "pk": 1,
+        "fields": {
+            "username": "taskmaster",
+            "first_name": "Test",
+            "last_name": "User",
+            "email": "taskmaster@ecoworld.com",
+            "password": "P@ssword123", 
+            "is_superuser": true,
+            "is_staff": true,
+            "is_active": true,
+            "date_joined": "2025-02-17T12:00:00Z"
+        }
+    },
+    {
+        "model": "EcoWorld.challenge",
+        "pk": 1,
+        "fields": {
+            "name": "Fridge Check",
+            "description": "Find one food item in your fridge or cupboard that needs to be eaten soon and plan a meal around it to prevent waste.",
+            "created_by": 1,
+            "created_on": "2025-02-16"
+        }
+    },
+    {
+        "model": "EcoWorld.challenge",
+        "pk": 2,
+        "fields": {
+            "name": "Inbox Detox",
+            "description": "Delete at least 50 unnecessary emails or files to reduce digital storage emissions.",
+            "created_by": 1,
+            "created_on": "2025-02-16"
+        }
+    },
+    {
+        "model": "EcoWorld.challenge",
+        "pk": 3,
+        "fields": {
+            "name": "Light Patrol",
+            "description": "Take 5 minutes to check for any unnecessary lights on in the house/area you are in.",
+            "created_by": 1,
+            "created_on": "2025-02-16"
+        }
+    },
+    {
+        "model": "EcoWorld.cardRarity",
+        "pk": 1,
+        "fields": { "title": "common" }
+    },
+    {
+        "model": "EcoWorld.cardRarity",
+        "pk": 2,
+        "fields": { "title": "rare" }
+    },
+    {
+        "model": "EcoWorld.cardRarity",
+        "pk": 3,
+        "fields": { "title": "epic" }
+    },
+    {
+        "model": "EcoWorld.cardRarity",
+        "pk": 4,
+        "fields": { "title": "legendary" }
+    },
+    {
+        "model": "EcoWorld.cardRarity",
+        "pk": 5,
+        "fields": { "title": "mythic" }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 1,
+        "fields": {
+            "title": "Ancient Tree",
+            "description": "Mythical Card forged from legendary cards",
+            "rarity": 5,
+            "image": "cards/ancienttree.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 2,
+        "fields": {
+            "title": "Bush",
+            "description": "A humble common bush",
+            "rarity": 1,
+            "image": "cards/bush.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 3,
+        "fields": {
+            "title": "Cactus",
+            "description": "A spiky cactus straight from the desert",
+            "rarity": 2,
+            "image": "cards/cactus.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 4,
+        "fields": {
+            "title": "Cherry Blossom",
+            "description": "A blooming cherry blossom tree from the Sakura forest",
+            "rarity": 4,
+            "image": "cards/cherryBlossom.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 5,
+        "fields": {
+            "title": "Dandelion Patch",
+            "description": "A patch of common dandelions",
+            "rarity": 1,
+            "image": "cards/dandelion.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 6,
+        "fields": {
+            "title": "Golden Tree",
+            "description": "The legendary Golden tree",
+            "rarity": 4,
+            "image": "cards/goldenTree.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 7,
+        "fields": {
+            "title": "Maple Tree",
+            "description": "Found around Canada",
+            "rarity": 4,
+            "image": "cards/mapleTree.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 8,
+        "fields": {
+            "title": "Oak Tree",
+            "description": "A simple but gracious oak tree",
+            "rarity": 3,
+            "image": "cards/oakTree.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 9,
+        "fields": {
+            "title": "Orange Tree",
+            "description": "Filled with plenty of ripe fruit",
+            "rarity": 3,
+            "image": "cards/orangeTree.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 10,
+        "fields": {
+            "title": "Rainbow Flower",
+            "description": "Something you wish was actually real",
+            "rarity": 2,
+            "image": "cards/rainbowflower.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 11,
+        "fields": {
+            "title": "Scarecrow",
+            "description": "Just a casual field scarecrow",
+            "rarity": 3,
+            "image": "cards/scarecrow.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 12,
+        "fields": {
+            "title": "Starry Tree",
+            "description": "Straight from the milky way",
+            "rarity": 3,
+            "image": "cards/starryTree.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 13,
+        "fields": {
+            "title": "Statue",
+            "description": "A head bust of an important historical recycler",
+            "rarity": 3,
+            "image": "cards/statue.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 14,
+        "fields": {
+            "title": "Sunflower",
+            "description": "Shines bright in the fields",
+            "rarity": 2,
+            "image": "cards/sunflower.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 15,
+        "fields": {
+            "title": "Tulip Patch",
+            "description": "A simple patch of tulips",
+            "rarity": 2,
+            "image": "cards/tulip.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 16,
+        "fields": {
+            "title": "Log",
+            "description": "From a long lost oak tree",
+            "rarity": 1,
+            "image": "cards/log.png"
+        }
+    },
+    {
+        "model": "EcoWorld.card",
+        "pk": 17,
+        "fields": {
+            "title": "Olive Tree",
+            "description": "From the fields of ancient Greece",
+            "rarity": 3,
+            "image": "cards/olivetree.png"
+        }
+    },
+    {
+        "model": "EcoWorld.pack",
+        "pk": 1,
+        "fields": {
+            "title": "Basic Pack",
+            "cost": 20,
+            "packimage": "packs/basicpack.png",
+            "commonProb": 0.5,
+            "rareProb": 0.35,
+            "epicProb": 0.1,
+            "legendaryProb": 0.05
+        }
+    },
+    {
+        "model": "EcoWorld.pack",
+        "pk": 2,
+        "fields": {
+            "title": "Rare Pack",
+            "cost": 45,
+            "packimage": "packs/rarepack.png",
+            "commonProb": 0.35,
+            "rareProb": 0.35,
+            "epicProb": 0.175,
+            "legendaryProb": 0.125
+        }
+    },
+    {
+        "model": "EcoWorld.pack",
+        "pk": 3,
+        "fields": {
+            "title": "Icon Pack",
+            "cost": 100,
+            "packimage": "packs/iconpack.png",
+            "commonProb": 0.1,
+            "rareProb": 0.4,
+            "epicProb": 0.25,
+            "legendaryProb": 0.25
+        }
+    }
+]

@@ -49,3 +49,5 @@ confirmBtn.onclick = function() {
         alert("Please select a profile picture.");
     }
 }
+
+
