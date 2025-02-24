@@ -43,6 +43,8 @@ def dashboard(request):
     Author: 
     Chris Lynch (cl1037@exeter.ac.uk)
     """
+
+    #Upon loading the page the dashboard needs its username and pfp along with coins, this function here gives it to the dashboard html file
     if request.method == "GET":
         user = request.user
         user = User.objects.get(id=user.id)

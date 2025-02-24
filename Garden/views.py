@@ -31,6 +31,8 @@ def show_garden(request):
     Chris Lynch (cl1037@exeter.ac.uk)
     Lewis Farley (lf507@exeter.ac.uk)
     """
+    #Upon loading the store page all necessary details are required to be retrieved such as the users current garden, the squares,
+    #user profile info and the pfp. Once this has been taken in the page can load by rendering each of these things in the html file
     g = garden.objects.get(userID=request.user)
     squares = g.gardensquare_set.all()
     processedSquares = [[squares[i * g.size + j] for j in range(g.size)] for i in range(g.size)]
@@ -39,26 +41,14 @@ def show_garden(request):
     user = User.objects.get(id=user.id)
     pfp_url = "/media/pfps/" + user.profile.profile_picture
 
-    userinfo = {
-        "username": user.username,
-        "pfp_url": pfp_url,
-        "coins": user.profile.number_of_coins
-    }
+    userinfo = {"username": user.username,"pfp_url": pfp_url,"coins": user.profile.number_of_coins}
 
- 
-    playerInventoryStorage = ownsCard.objects.filter(user=request.user).values(
-        'card__title', 'card__image', 'quantity', 'card__id'
-    )
-
+    #Gets the full inventory db of the user
+    playerInventoryStorage = ownsCard.objects.filter(user=request.user).values('card__title', 'card__image', 'quantity', 'card__id')
+    #Gets all inventory items from the user inventory that are actually owned by the user so it shows for them to place
     playerItems = [item for item in playerInventoryStorage if item["quantity"] > 0]
 
-    return render(request, 'Garden/garden.html', {
-        'squares': processedSquares,
-        'MEDIA_URL': settings.MEDIA_URL,
-        'size': g.size,
-        "userinfo": userinfo,
-        "playerInventory": playerItems 
-    })
+    return render(request, 'Garden/garden.html', {'squares': processedSquares,'MEDIA_URL': settings.MEDIA_URL,'size': g.size,"userinfo": userinfo,"playerInventory": playerItems})
 
 
 """
@@ -80,8 +70,11 @@ def addCard(request):
         card_id = int(data["card_id"]) 
         user = request.user
 
+        #Gets the data of the garden square wanted along with the card id of the card going into the garden and user info
+
         try:
-           
+            
+            #Gets the selected card and checks if they have enough, then will add the card to the exact garden coordinate
             selected_card = card.objects.get(id=card_id)
 
            
@@ -99,7 +92,8 @@ def addCard(request):
             if square.cardID is not None:
                 return JsonResponse({"success": False, "message": "This square is already occupied."})
 
-        
+            #Once all checks complete and the addition is valid it will save the garden square and remove 1 of it from the user
+            #inventory
             square.cardID = selected_card
             square.save()
 
@@ -107,22 +101,18 @@ def addCard(request):
             owned_card.quantity -= 1
             owned_card.save()
 
-            
-            return JsonResponse({
-                "success": True,
-                "message": "Card placed successfully!",
-                "card_image": f"/media/{selected_card.image}" 
-            })
+            #Returns the necessary info
+            return JsonResponse({"success": True,"message": "Card placed successfully!","card_image": f"/media/{selected_card.image}"})
 
         except card.DoesNotExist:
             print("Error: Card does not exist!")  
-            return JsonResponse({"success": False, "message": "Invalid card ID."})
+            return JsonResponse({"success": False, "message": "Invalid card ID"})
         except gardenSquare.DoesNotExist:
             print("Error: Garden square does not exist!")  
-            return JsonResponse({"success": False, "message": "Invalid garden square."})
+            return JsonResponse({"success": False, "message": "Invalid garden square"})
         except ownsCard.DoesNotExist:
             print("Error: User does not own this card!") 
-            return JsonResponse({"success": False, "message": "You don't own this card."})
+            return JsonResponse({"success": False, "message": "You dont own this card"})
 
     return JsonResponse({"success": False, "message": "Invalid request."})
 
@@ -142,23 +132,24 @@ def removeCard(request):
     if request.method == "POST":
         data = json.loads(request.body)
 
+        #Once data received it takes the square coordinates and the user info
         row = int(data["row"])
         col = int(data["col"])
         user = request.user
 
+        #Try for checking the square is valid to remove from and then if it is it removes the card from the square and adds 1 back to the inventory
+        #Of the card that was removed
         try:
             g = garden.objects.get(userID=user)
             squareID = (row - 1) * g.size + (col - 1)  
             square = gardenSquare.objects.get(gardenID=g, squareID=squareID)
 
             if square.cardID is None:
-                return JsonResponse({"success": False, "message": "No card in this square."})
+                return JsonResponse({"success": False, "message": "No card in this square"})
 
             
             selected_card = square.cardID
             card_id = selected_card.id  
-
-            print(f"Removing card {selected_card.title} (ID: {card_id}) from Row: {row}, Col: {col}")
 
             owned_card, created = ownsCard.objects.get_or_create(user=user, card=selected_card)
             owned_card.quantity += 1
@@ -168,18 +159,13 @@ def removeCard(request):
             square.cardID = None
             square.save()
 
-            return JsonResponse({
-                "success": True,
-                "message": "Card removed successfully!",
-                "card_id": card_id, 
-                "card_image": f"/media/{selected_card.image}" 
-            })
+            return JsonResponse({"success": True,"message": "Card removed successfully!","card_id": card_id, "card_image": f"/media/{selected_card.image}"})
 
         except gardenSquare.DoesNotExist:
-            return JsonResponse({"success": False, "message": "Invalid garden square."})
+            return JsonResponse({"success": False, "message": "Invalid garden square"})
         except card.DoesNotExist:
-            return JsonResponse({"success": False, "message": "Invalid card."})
+            return JsonResponse({"success": False, "message": "Invalid card"})
         except ownsCard.DoesNotExist:
-            return JsonResponse({"success": False, "message": "You don't own this card."})
+            return JsonResponse({"success": False, "message": "You dont own this card"})
 
-    return JsonResponse({"success": False, "message": "Invalid request."})
+    return JsonResponse({"success": False, "message": "Invalid request"})

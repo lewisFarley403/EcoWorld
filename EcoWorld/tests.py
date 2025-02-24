@@ -1,5 +1,9 @@
-from django.test import TestCase
-from EcoWorld.models import pack, card, cardRarity, ownsCard
+import json
+from django.test import TestCase, Client
+
+from Accounts.models import Profile
+from .models import pack, card, cardRarity, ownsCard, User
+from django.urls import reverse
 
 """
 Testing class for the packmodels
@@ -123,5 +127,129 @@ class TestCardModels(TestCase):
 
 
 
+"""
+Test class to make sure that when the user accesses the store all the correct things load and packs are bought properly or dealt with if not
+Methods:
+    setUp() : Method to set up test user accounts to access the store with coins or with no coins
+    testStoreLoadsProperly() : Tests that users who are logged in only can buy a pack from the store and access the store
+    testBuyPackSuccess() : Tests that if the user has coins they can buy a pack
+    testBuyPackFail() : Tests that if the user hasnt got sufficient funding then they cant buy a pack
 
-    
+Author:
+Chris Lynch cl1037@exeter.ac.uk
+"""
+class TestStore(TestCase):
+    #Sets up the test with necessary variables for later
+    def setUp(self):
+        self.client = Client()
+
+        #Creates users for test
+        self.user1 = User.objects.create_user(username="testuser1", password="1234")
+        self.user2 = User.objects.create_user(username="testuser2", password="1234")
+
+        #Creates the user profiles 
+        self.profile1, _ = Profile.objects.get_or_create(user=self.user1)
+        self.profile1.number_of_coins = 0
+        self.profile1.profile_picture = "pfp1.png"
+        self.profile1.save()
+
+        self.profile2, _ = Profile.objects.get_or_create(user=self.user2)
+        self.profile2.number_of_coins = 9999999
+        self.profile2.profile_picture = "pfp2.png"
+        self.profile2.save()
+
+        #Definitions for each of the 3 packs to be used in the tests
+        self.pack1 = pack.objects.create(
+            title="Basic Pack",
+            cost=20,
+            packimage="packs/basicpack.png",
+            commonProb=0.5,
+            rareProb=0.35,
+            epicProb=0.1,
+            legendaryProb=0.05,
+            color_class="blue",
+        )
+
+        self.pack2 = pack.objects.create(
+            title="Rare Pack",
+            cost=45,
+            packimage="packs/rarepack.png",
+            commonProb=0.35,
+            rareProb=0.35,
+            epicProb=0.175,
+            legendaryProb=0.125,
+            color_class="blue",
+        )
+        
+        self.pack3 = pack.objects.create(
+            title="Icon Pack",
+            cost=100,
+            packimage="packs/iconpack.png",
+            commonProb=0.1,
+            rareProb=0.4,
+            epicProb=0.25,
+            legendaryProb=0.25,
+            color_class="blue",
+        )
+
+    #Tests that when the user is logged in they can view the page correctly and if not they cant and checks if the template receives the info given to it
+    def testStoreLoadsProperly(self):
+        self.client.login(username="testuser1", password="1234")
+        response = self.client.get(reverse('store'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "ecoWorld/store.html")
+
+        #User info tests to make sure the page has what it needs from the user
+        self.assertIn("userinfo", response.context)
+        self.assertEqual(response.context["userinfo"]["username"], "testuser1")
+        self.assertEqual(response.context["userinfo"]["coins"], 0)
+        self.assertEqual(response.context["userinfo"]["pfp_url"], "/media/pfps/pfp1.png")
+
+        #Checks that all 3 packs are present
+        self.assertIn("packs", response.context)
+        self.assertEqual(len(response.context["packs"]), 3)
+
+        #Checks all the packs are correctly shown
+        for p in response.context["packs"]:
+            if p["title"] == "Basic Pack":
+                self.assertEqual(p["image_url"], "/media/packs/basicpack.png")
+            elif p["title"] == "Rare Pack":
+                self.assertEqual(p["image_url"], "/media/packs/rarepack.png")
+            elif p["title"] == "Icon Pack":
+                self.assertEqual(p["image_url"], "/media/packs/iconpack.png")
+
+    #Tests if the buy pack works if the user has coins
+    def testBuyPackSuccess(self):
+        self.client.login(username="testuser2", password="1234")
+
+        #Buys a certain pack from the store and saves the response
+        response = self.client.post(
+            reverse('buyPack'),
+            json.dumps({'pack_id': self.pack1.id}),
+            content_type='application/json'
+        )
+
+        self.profile2 = Profile.objects.get(user=self.user2)
+
+        #Checks that given the user logged in and pack bought the correct number of coins has been deducted and pack worked
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"success": True})
+        self.assertEqual(self.profile2.number_of_coins, 9999979)
+
+    #Test to check if user has insufficient coins they cant buy a pack
+    def testBuyPackFail(self):
+        self.client.login(username="testuser1", password="1234")
+
+        #Logged in with the user on 0 coins gets response to buying a pack
+        response = self.client.post(
+            reverse('buyPack'),
+            json.dumps({'pack_id': self.pack1.id}),
+            content_type='application/json'
+        )
+
+        self.profile1 = Profile.objects.get(user=self.user1)
+        #Checks that the coins are still at 0 and that the pack couldnt be bought
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), {"error": "Insufficient coins"})
+        self.assertEqual(self.profile1.number_of_coins, 0)
