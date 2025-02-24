@@ -3,10 +3,11 @@ module defines views for the Accounts app:
     - `signup` : This view allows the user to sign up for an account
     - `profile` : This view allows the user to view and update their profile
 author:
-    - Ethan Sweeney (es1057@exeter.ac.uk) 
+    - Ethan Sweeney (es1052@exeter.ac.uk) 
 """
 
 # views.py
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from .forms import SignUpForm, ProfileUpdateForm
@@ -17,6 +18,20 @@ from EcoWorld.models import ownsCard
 import json
 from django.core import serializers
 from django.conf import settings
+
+
+def privacy_policy(request):
+
+    """
+    This view renders the privacy policy page.
+    Attributes:
+        request : HttpRequest : The HTTP request object
+    Returns:
+        render : HttpResponse : The rendered HTML page
+    """
+    return render(request, 'Accounts/privacy_policy.html')
+
+
 def signup(request):
     """
     This view allows the user to sign up for an account.
@@ -27,7 +42,7 @@ def signup(request):
     Returns:
         render : HttpResponse : The HTTP response object
     Author:
-        Ethan Sweeney (es1057@exeter.ac.uk)
+        Ethan Sweeney (es1052@exeter.ac.uk)
     """
     if request.method == 'POST':
         form = SignUpForm(request.POST)
@@ -55,7 +70,7 @@ def profile(request):
     Returns:
         render : HttpResponse : The rendered HTML page
     Author:
-        - Ethan Sweeney (es1057@exeter.ac.uk)
+        - Ethan Sweeney (es1052@exeter.ac.uk)
 
     """
     profile = Profile.objects.get(user=request.user)

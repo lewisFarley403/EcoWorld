@@ -8,7 +8,7 @@ Usage:
     
 It creates database tables for storing user profile information.
 
-@author Ethan Sweeney (es1057@exeter.ac.uk)
+@author Ethan Sweeney (es1052@exeter.ac.uk)
 """
 
 
@@ -27,13 +27,14 @@ class Profile(models.Model):
     Methods:
         __str__(): Returns the username of the user.
     author:
-        -Ethan Sweeney (es1057@exeter.ac.uk)
+        -Ethan Sweeney (es1052@exeter.ac.uk)
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(blank=True)
     first_name = models.TextField(blank=True)
     last_name = models.TextField(blank=True)
-    profile_picture = models.CharField(max_length=255, blank=True, null=True)  # Store the image file name
+    defaultpfp = "/pfp1.png"
+    profile_picture = models.CharField(max_length=255, default=defaultpfp)  # Store the image file name
     number_of_coins = models.IntegerField(default=0)
     def __str__(self):
         return self.user.username

@@ -14,7 +14,7 @@ author:
 """
 
 from django.db import models
-
+import random
 from Accounts.models import User
 # Create your models here.
 class challenge(models.Model):
@@ -138,6 +138,7 @@ class ownsCard(models.Model):
         __str__(): Returns the name of the user and the card they own.
     Author:
         -Lewis Farley (lf507@exeter.ac.uk)
+        -Chris Lynch (cl1037@exeter.ac.uk)
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     card = models.ForeignKey(card, on_delete=models.CASCADE)
@@ -146,10 +147,53 @@ class ownsCard(models.Model):
         return self.user.username + " owns " + self.card.title
     
 class pack(models.Model):
+    """
+    Model for storing Packs so they can be bought in store
+
+    Attributes: 
+        -title: CharField: Used as the name of the pack
+        -Cost: IntegerField: Uses as the coin cost for buying a pack
+        -packimage: ImageField: Used for the imaging for the pack in the store
+        -commonProb: FloatField : Used as a propability for pack rarity
+        -rareProb: FloatField : Used as a propability for pack rarity
+        -epicProb: FloatField : Used as a propability for pack rarity
+        -legendaryProb: FloatField : Used as a propability for pack rarity
+        -colour_class: Charfield : Used when pack opening for the colouring of the background
+
+    Methods:
+    __str__(): Returns the title of the pack
+    openPack() : Used to open a pack in the store
+
+    Author:
+    Chris Lynch (cl1037@exeter.ac.uk)
+    Lewis Farley (lf507@exeter.ac.uk)
+    
+    """
     title = models.CharField(max_length=50)
     cost = models.IntegerField()
     packimage = models.ImageField(upload_to='packs/')
+    commonProb = models.FloatField(default=0.5)
+    rareProb = models.FloatField(default=0.35)
+    epicProb = models.FloatField(default=0.1)
+    legendaryProb = models.FloatField(default=0.05)
+    color_class = models.CharField(max_length=50, default="blue")
+
     def __str__(self):
         return self.title
+    def openPack(self):
+        #Open the pack and return
+        r=random.random()
+        if r<self.commonProb:
+            rarity = cardRarity.objects.get(title="common")
+        elif r<self.commonProb+self.rareProb:
+            rarity = cardRarity.objects.get(title="rare")
+        elif r<self.commonProb+self.rareProb+self.epicProb:
+            rarity = cardRarity.objects.get(title="epic")
+        else:
+            rarity = cardRarity.objects.get(title="legendary")
+        cards = card.objects.filter(rarity=rarity)
+        cardToReturn = random.choice(cards)
+        return cardToReturn
+    
 
     
