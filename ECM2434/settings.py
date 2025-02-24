@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-kyoddd82$!d_nttqwz9-u%kt8+ql)(@hgpkqm2&&70nf6ri7eu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['whniecm2434.pythonanywhere.com','127.0.0.1']
 
 
 STATIC_ROOT = BASE_DIR / 'static'
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "EcoWorld",
     "guides",
     "Garden",
+    "qr_code",
 ]
 
 MIDDLEWARE = [
@@ -143,3 +144,5 @@ NUM_CHALLENGES=3
 from datetime import datetime, timedelta
 
 CHALLENGE_EXPIRY = timedelta(seconds=10)  # The time in seconds before a challenge expires
+
+CHALLENGE_WORTH = 10  # The number of points a challenge is worth

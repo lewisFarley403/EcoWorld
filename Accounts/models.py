@@ -15,7 +15,6 @@ It creates database tables for storing user profile information.
 # models.py
 from django.db import models
 from django.contrib.auth.models import User
-
 class Profile(models.Model):
     """
     Model for storing user profile information.
@@ -34,7 +33,10 @@ class Profile(models.Model):
     bio = models.TextField(blank=True)
     first_name = models.TextField(blank=True)
     last_name = models.TextField(blank=True)
-    profile_picture = models.CharField(max_length=255, blank=True, null=True)  # Store the image file name
+    defaultpfp = "/pfp1.png"
+    profile_picture = models.CharField(max_length=255, default=defaultpfp)  # Store the image file name
     number_of_coins = models.IntegerField(default=0)
     def __str__(self):
         return self.user.username
+
+
