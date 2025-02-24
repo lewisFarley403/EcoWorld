@@ -16,6 +16,7 @@ from . import views
 
 app_name = 'EcoWorld'
 urlpatterns = [
+    path("", views.dashboard, name='dashboard'),  # URL for the dashboard page
     path('addDrink/', addDrink, name='home'),  # Root URL
     path('scan/', scan_qr_code, name='scan_qr'),
     path('upload_photo/', upload_bottle_photo, name="upload_photo"),

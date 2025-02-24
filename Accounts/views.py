@@ -54,7 +54,7 @@ def signup(request):
             createGarden(user)
             #creates cards owned by user set default as 0.
             createOwnsDb(user)
-            return redirect('login')  # Redirect to the login page after successful registration
+            return redirect('/ecoworld/')  # Redirect to the login page after successful registration
     else:
         form = SignUpForm()
     return render(request, 'Accounts/signup.html', {'form': form})

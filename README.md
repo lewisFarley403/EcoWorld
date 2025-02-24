@@ -9,15 +9,29 @@ interactive challenges, rewards, and  educational content that fosters
 awareness and actionable steps towards environmental sustainability.
 
 ### Team Members
+- Ethan Sweeney
+- Lewis Farley
+- Sam Gates
+- Theo Armes
+- Johnny Say
+- Chris lynch
+- Charlie Shortman
 
 ### Project Structure
 
 ### Technologies Used
+- Django
+- HTML
+- CSS
+- JavaScript
+- sqlite3
 
 ### Installation and Setup
 - install the dependancies ```pip install -r requirements.txt```
 - ```python manage.py makemigrations```
 - ```python manage.py migrate```
+- ```python manage.py loaddata initialDb.json```
+
 - run django server ```python manage.py runserver```
 
 
