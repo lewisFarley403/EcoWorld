@@ -61,6 +61,9 @@ def dashboard(request):
         return render(request, "EcoWorld/dashboard.html", {"userinfo":userinfo[0]})
 
 def generate_qr_code(request):
+    """
+    This Generates a QR code and renders it on a template (For functionality)
+    """
     qr_options = QRCodeOptions(size='M' , border=6, error_correction='L')
     qr_data = "https://EcoWorld.com/scan/" #Change this to website name I have no idea
     return render(request, 'EcoWorld/qr_code.html', {'qr_data': qr_data, 'qr_options': qr_options})
