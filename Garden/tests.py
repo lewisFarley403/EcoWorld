@@ -1,11 +1,3 @@
-import json
-from django.test import TestCase, Client
-
-from Accounts.models import Profile
-from EcoWorld.models import pack, cardRarity, ownsCard, card
-from .models import garden, gardenSquare, User
-from django.urls import reverse
-
 """
 Test class for the garden app. This sets up a garden with users and then checks what happenes when adding and removing owned cards in the garden
 Methods:
@@ -22,6 +14,14 @@ Chris Lynch (cl1037@exeter.ac.uk)
 
 
 """
+import json
+from django.test import TestCase, Client
+from django.urls import reverse
+
+from Accounts.models import Profile
+from EcoWorld.models import cardRarity, ownsCard, card
+from .models import garden, gardenSquare, User
+
 class TestGarden(TestCase):
 
     def setUp(self):
@@ -31,21 +31,31 @@ class TestGarden(TestCase):
         self.user1 = User.objects.create_user(username="testuser1", password="1234")
 
         #Create profile
-        self.profile1, _ = Profile.objects.get_or_create(user=self.user1, defaults={"number_of_coins": 100, "profile_picture": "pfp1.png"})
+        self.profile1, _ = Profile.objects.get_or_create(user=self.user1, 
+                                                        defaults={"number_of_coins": 100,
+                                                                "profile_picture": "pfp1.png"})
 
         #Create card raritys for the cards being used
         self.common_rarity, _ = cardRarity.objects.get_or_create(id=1, defaults={"title": "common"})
         self.rare_rarity, _ = cardRarity.objects.get_or_create(id=2, defaults={"title": "rare"})
-        self.legendary_rarity, _ = cardRarity.objects.get_or_create(id=4, defaults={"title": "legendary"})
+        self.legendary_rarity, _ = cardRarity.objects.get_or_create(id=4,
+                                                                    defaults={"title": "legendary"})
 
         #Give the cards their rarities so they dont crash when placed
-        self.card1 = card.objects.create(title="Bush", image="cards/bush.png", rarity=self.common_rarity)
-        self.card2 = card.objects.create(title="Cactus", image="cards/cactus.png", rarity=self.rare_rarity)
-        self.card3 = card.objects.create(title="Cherry Blossom", image="cards/cherryBlossom.png", rarity=self.legendary_rarity)
+        self.card1 = card.objects.create(title="Bush",
+                                        image="cards/bush.png",
+                                        rarity=self.common_rarity)
+        self.card2 = card.objects.create(title="Cactus",
+                                        image="cards/cactus.png",
+                                        rarity=self.rare_rarity)
+        self.card3 = card.objects.create(title="Cherry Blossom",
+                                        image="cards/cherryBlossom.png",
+                                        rarity=self.legendary_rarity)
 
         #Giving user 1 bush cards for placement
-        self.owns_card1, _ = ownsCard.objects.get_or_create(user=self.user1, card=self.card1, defaults={"quantity": 2})
-        
+        self.owns_card1, _ = ownsCard.objects.get_or_create(user=self.user1,
+                                                            card=self.card1,
+                                                            defaults={"quantity": 2})
 
         #Creating the garden for user 1 to use in tests
         self.garden1 = garden.objects.create(userID=self.user1, size=3)
@@ -53,7 +63,9 @@ class TestGarden(TestCase):
         for row in range(self.garden1.size):
             for col in range(self.garden1.size):
                 squareID = row * self.garden1.size + col
-                gardenSquare.objects.get_or_create(gardenID=self.garden1, squareID=squareID, defaults={"cardID": None})
+                gardenSquare.objects.get_or_create(gardenID=self.garden1,
+                                                   squareID=squareID,
+                                                   defaults={"cardID": None})
 
 
         self.garden_square1 = gardenSquare.objects.get(gardenID=self.garden1, squareID=0)
@@ -61,13 +73,21 @@ class TestGarden(TestCase):
         self.garden_square1.save()
 
 
-    #Tests if the garden page requires the login 
+    #Tests if the garden page requires the login
     def testGardenlogin(self):
+        '''
+        Tests if the garden page requires the login
+        Author: Chris Lynch (cl1037@exeter.ac.uk)
+        '''
         response = self.client.get(reverse('home'))
         self.assertEqual(response.status_code, 302)
 
     #Tests the garden works on entry to it with the user
     def testGardenView(self):
+        '''
+        Tests the garden works on entry to it with the user
+        Author: Chris Lynch (cl1037@exeter.ac.uk)
+        '''
         self.client.login(username="testuser1", password="1234")
         response = self.client.get(reverse('home'))
 
@@ -76,6 +96,10 @@ class TestGarden(TestCase):
 
     #Tests that when a user has a card and places it in an available square it works
     def testAddCardToGardenSuccess(self):
+        '''
+        Tests that when a user has a card and places it in an available square it works
+        Author: Chris Lynch (cl1037@exeter.ac.uk)
+        '''
         self.client.login(username="testuser1", password="1234")
 
         #Once logged in places card in designated square
@@ -96,6 +120,10 @@ class TestGarden(TestCase):
 
     #Tests that if the square is occupied the card cant be placed there
     def testAddCardToGardenFailIfOccupied(self):
+        '''
+        Tests that if the square is occupied the card cant be placed there
+        Author: Chris Lynch (cl1037@exeter.ac.uk)
+        '''
         self.client.login(username="testuser1", password="1234")
 
         #Once logged in tries to place card in wrong place where another card is already there
@@ -112,6 +140,10 @@ class TestGarden(TestCase):
 
     #Test to check that a card can be removed successfully
     def testRemoveCardSuccess(self):
+        '''
+        Test to check that a card can be removed successfully
+        Author: Chris Lynch (cl1037@exeter.ac.uk)
+        '''
         self.client.login(username="testuser1", password="1234")
 
         #Once logged in user "clicks" on square removing it from the square with a card already in it
@@ -137,6 +169,10 @@ class TestGarden(TestCase):
 
     #Tests to check that if user clicks on empty square it doesnt crash
     def testRemoveCardEmptySquare(self):
+        '''
+        Tests to check that if user clicks on empty square it doesnt crash
+        Author: Chris Lynch (cl1037@exeter.ac.uk)
+        '''
         self.client.login(username="testuser1", password="1234")
 
         #Once logged in user tries to click to remove on an empty square
