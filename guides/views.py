@@ -14,6 +14,15 @@ paragraphs = [
     "Your diet plays a significant role in your environmental footprint. Reducing meat and dairy consumption, particularly beef and lamb, can lower greenhouse gas emissions, as livestock farming is a major contributor to climate change. Incorporate more plant-based meals into your diet, such as fruits, vegetables, legumes, and grains. When buying seafood, choose sustainably sourced options to help protect ocean ecosystems. Additionally, avoid food waste by planning meals, storing food properly, and using leftovers creatively."
 ]
 
+score = 0
+best = 0
+previous = 0
+
+def update_results(score_new,best_new,previous_new):
+    global score,best,previous
+    score = score_new
+    best = best_new
+    previous = previous_new
 
 
 @login_required
@@ -21,24 +30,26 @@ def registerScore_view(request):
     data = json.loads(request.body)
     score = int(data['score'])
     user = User.objects.get(id=request.user.id)
-    print(score)
-    print(user)
     try:
         results = quiz_results.objects.get(user=user,id=1)
     except quiz_results.DoesNotExist:
         results = quiz_results(user=user, best_result=0, previous_best=0, new_result=0)
         results.save()
-    high_score = results.best_result
-    results.previous_best = high_score
+    results.previous_best = results.best_result
     results.new_result = score
     if score > results.previous_best:
         results.best_result = score
+    update_results(score,results.best_result,results.previous_best)
+    print('updated results')
+    print(score)
     results.save()
     return JsonResponse({'status': 'success', 'redirect_url': '/guides/results/'})
 
 @login_required
 def results_view(request):
-    return render(request, 'guides/results.html')
+    print('results rendering')
+    print(score)
+    return render(request, 'guides/results.html', {'score':score, 'best':best, 'previous':previous})
 
 @login_required
 def content_view(request):
