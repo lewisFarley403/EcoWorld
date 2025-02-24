@@ -7,12 +7,13 @@ Author:
 """
 
 from django.shortcuts import render
-from .models import drinkEvent,User,waterFountain,challenge,ongoingChallenge
+from .models import drinkEvent,User,waterFountain,pack,ownsCard,challenge,ongoingChallenge
 import json
 from django.http import HttpResponse
-from .utils import getUsersChallenges
 from django.contrib.auth.decorators import login_required
+from .utils import getUsersChallenges
 from datetime import datetime
+
 # Create your views here.
 def addDrink(request):
     print("add drink post req")
@@ -37,7 +38,35 @@ def dashboard(request):
     return render(request, "EcoWorld/dashboard.html")
 
 def testAddDrink(request):
-    return render(request, "EcoWorld/addDrink.html")
+
+    print("add drink post req")
+    return render(request, "ecoWorld/addDrink.html")
+
+@login_required
+def store(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        user = request.user
+        p = data["pack"]
+        user = User.objects.get(id=user.id)
+        p = pack.objects.get(id=p)
+        if user is None or p is None:
+            return HttpResponse("Invalid user or pack")
+        if p.cost > user.profile.number_of_coins:
+            return HttpResponse("Insufficient coins")
+        user.profile.number_of_coins -= p.cost
+        user.profile.save()
+        card = p.openPack()
+        inventory =ownsCard.objects.get(user=user,card=card)
+        inventory.quantity += 1
+        inventory.save()
+        # return card as json
+        return HttpResponse(json.dumps({"title": card.title, "description": card.description, "rarity": card.rarity.title, "image": card.image.url}))
+
+    elif request.method == "GET":
+        packs = pack.objects.all()
+        return render(request, "ecoWorld/store.html",{ "packs": packs })
+    return HttpResponse("Invalid request")
 @login_required
 def challenge(request):
     challenges = getUsersChallenges(request.user)
@@ -64,3 +93,4 @@ def completeChallenge(request):
         chal.save()
         return HttpResponse("Challenge completed")
     return HttpResponse("Invalid request type")
+
