@@ -20,7 +20,6 @@
             background-color: rgb(0,0,0); /* Fallback color */
             background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
             overflow-y: scroll;
-
         }
         .modal-cont {
             background-color: #fefefe;
@@ -60,6 +59,8 @@
                 {% csrf_token %}
                 <label for="bio">Edit Bio:</label>
                 <textarea name="bio" id="bio" rows="4">{{ profile.bio }}</textarea>
+                <!-- Add the hidden input field inside the form -->
+                <input type="hidden" name="profile_picture" id="profilePictureInput" value="{{ profile.profile_picture }}">
                 <button type="submit">Update Profile</button>
             </form>
         </div>
@@ -177,7 +178,12 @@
                     <img src="{% static 'Accounts/pfps/pfp5.png' %}" alt="Profile 5" class="profile-image" data-image="pfp5.png">
                 </div>
                 <input type="hidden" name="profile_picture" id="profilePictureInput" value="{{ profile.profile_picture }}">
-                <button type="button" id="confirmSelectionBtn">Confirm Selection</button>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" name="bio" value="{{ profile.bio }}">
+                    <input type="hidden" name="profile_picture" id="profilePictureInput" value="{{ profile.profile_picture }}">
+                    <button id="confirmSelectionBtn" type="submit">Confirm Selection</button>
+                </form>
             </div>
         </div>
     </div>
@@ -186,3 +192,4 @@
         <script src="{% static 'Accounts/js/profile.js' %}"></script>
     {% endblock %}
 {% endblock %}
+
