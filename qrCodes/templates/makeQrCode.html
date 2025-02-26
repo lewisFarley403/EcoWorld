@@ -114,11 +114,13 @@ body::before {
     <div class = 'qr-container'>
         <h1>Select Fountain</h1>
         <label for="options">Choose an option:</label>
-        <select id="qr-input" name="options" onchange="generateQRCode()">
-            {% for fountain in fountains %}
-                <option value="{{ fountain.id }}">{{ fountain.name }}</option>
-            {% endfor %}
-        </select>
+       <select id="qr-input" name="options" onchange="generateQRCode()">
+    <option value="" selected disabled hidden>Select a fountain</option>
+    {% for fountain in fountains %}
+        <option value="{{ fountain.id }}">{{ fountain.name }}</option>
+    {% endfor %}
+</select>
+
         <!-- Include QRCode.js library -->
         <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
         <div id="qrcode">
