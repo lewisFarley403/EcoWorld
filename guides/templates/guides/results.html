@@ -1,0 +1,59 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results</title>
+    <link rel="stylesheet" href="{% static 'guides/css/style.css' %}">
+</head>
+<body>
+
+    <header class="header">
+        <nav class="navbar">
+            <div class="left-links">
+                <a href="/ecoworld/dashboard/">Home</a>
+            </div>
+            <div class="logo">Eco World</div>
+            <div class="right-links">
+                <span>Username</span>
+                <img src="{% static 'EcoWorld/res/Username.png' %}" alt="Username" class="card-image">
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-5">
+        <div class="card shadow p-4">
+            <h1 class="text-center text-success">Your Quiz Results</h1>
+
+            <h2 class="paragraph-box">
+                New Score: {{ score }}<br>
+                Previous Best: {{ previous }}<br>
+                Best Score: {{ best }}
+            </h2>
+
+            {% if score == 6 %}
+                <p class="text-center text-success">Well done!</p>
+                {% if score < 6 %}
+                    <div class="text-center">
+                        <button class="btn btn-success" disabled>Retake Quiz</button>
+                    </div>
+                {% else %}
+                    <div class="text-center">
+                        <button class="btn btn-success" onclick="window.location.href='/guides/quiz/'">Retake Quiz</button>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="text-center">
+                    <button class="btn btn-success" onclick="window.location.href='/guides/quiz/'">Retake Quiz</button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="{% static 'guides/js/fallingLeaves.js' %}"></script>
+
+</body>
+</html>
