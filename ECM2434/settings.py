@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "EcoWorld",
     "Garden",
     "qr_code",
+    'guides',
 ]
 
 MIDDLEWARE = [
