@@ -34,5 +34,8 @@ def scanCode(request):
     print("User drank more than 20 minutes ago")
     drinkEvent.objects.create(user=user,fountain=waterFountain.objects.get(id=fountain_id))
     print(fountain_id)
+    user.profile.number_of_coins += settings.VALUE_OF_DRINK
+    user.profile.save()
+    
     return render(request,'thankyou.html')
         
