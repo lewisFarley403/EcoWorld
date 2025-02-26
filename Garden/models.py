@@ -53,7 +53,8 @@ class gardenSquare(models.Model):
         Adds meta data to the gardenSquare
         in this case ensures for each gardenID, the squareID is unique
         Attributes:
-            -unique_together: Tuple : Ensures that the gardenID and squareID are unique together
+            -unique_together: Tuple : Ensures that the gardenID and
+             squareID are unique together
         Methods:
             -__str__(): Returns the garden ID.
         Author:
