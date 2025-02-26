@@ -1,13 +1,3 @@
-"""
-this module defines the views used in this app:
-    -show_garden : This view renders the garden.html page to allow the user to view their garden
-    -remove_card : This view removes a card from a garden square
-    -getAvailableCards : This view returns the cards available to the user
-    -addCard : This view adds a card to a garden square
-Author:
-    -Lewis Farley (lf507@exeter.ac.uk)
-"""
-
 from venv import logger
 from django.shortcuts import render
 from .models import garden, gardenSquare
