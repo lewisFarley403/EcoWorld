@@ -1,0 +1,53 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="{% static 'guides/css/style.css' %}">
+</head>
+<body>
+
+    <header class="header">
+        <nav class="navbar">
+            <div class="left-links">
+                <a href="/ecoworld/dashboard/">Home</a>
+            </div>
+            <div class="logo">Eco World</div>
+            <div class="right-links">
+                <span>Username</span>
+                <img src="{% static 'EcoWorld/res/Username.png' %}" alt="Username" class="card-image">
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-5">
+        <div class="card shadow p-4">
+            <h1 class="text-center text-success">Sustainability Quiz</h1>
+
+            <!-- Progress Bar -->
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+
+            <form id="quiz-form">
+                {% csrf_token %}
+                <!-- Questions will be dynamically inserted here -->
+                <div id="questions-container"></div>
+
+                <!-- Navigation Buttons -->
+                <button type="button" id="back-button" style="display:none;">Back</button>
+                <button type="button" id="next-button">Next</button>
+                <button type="button" id="submit-button" style="display:none;">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="{% static 'guides/js/quiz.js' %}"></script>
+    <script src="{% static 'guides/js/fallingLeaves.js' %}"></script>
+
+</body>
+</html>

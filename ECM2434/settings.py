@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "Garden",
     "qr_code",
     "qrCodes",
+    'guides',
 ]
 
 MIDDLEWARE = [
