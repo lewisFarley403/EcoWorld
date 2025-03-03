@@ -1,0 +1,71 @@
+<!-- 
+{% load static %}
+
+<head>
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+</head>
+<header class="header">
+<nav class="navbar">
+    <div class="left-links">
+        <a href="/ecoworld/dashboard">Home</a>
+        <a href="/ecoworld/challenge">Challenges</a>
+        <a href="/guides">Guides</a>
+        <a href="/garden">Garden</a>
+        <a href="/ecoworld/store">Store</a>
+    </div>
+    <div class="logo">Eco World</div>
+    <div class="right-links">
+        <span>{{ userinfo.username }}</span>
+        {% load static %}
+        <a href = "/accounts/profile">
+            <img src="{{ userinfo.pfp_url }}" alt="Username" class="profile-pic">
+        </a>
+        <span style="padding-left: 20px;">Coins: {{ userinfo.coins }}</span>
+    </div>
+</nav>
+</header>
+ -->
+
+ {% load static %}
+
+<head>
+    <!-- Link to the global navbar.css file -->
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <!-- Add a script to fetch user info from the API -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch user info from the API endpoint
+            fetch('/api/userinfo/')
+                .then(response => response.json())
+                .then(data => {
+                    // Update the navbar with the user data
+                    document.getElementById('username').innerText = data.username;
+                    document.getElementById('pfp').src = data.pfp_url;
+                    document.getElementById('coins').innerText = `Coins: ${data.coins}`;
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                });
+        });
+    </script>
+</head>
+
+<header class="header">
+    <nav class="navbar">
+        <div class="left-links">
+            <a href="/ecoworld/dashboard">Home</a>
+            <a href="/ecoworld/challenge">Challenges</a>
+            <a href="/guides">Guides</a>
+            <a href="/garden">Garden</a>
+            <a href="/ecoworld/store">Store</a>
+        </div>
+        <div class="logo">Eco World</div>
+        <div class="right-links">
+            <span id="username">Loading...</span> <!-- Placeholder for username -->
+            <a href="/accounts/profile">
+                <img id="pfp" src="" alt="Username" class="profile-pic"> <!-- Placeholder for profile picture -->
+            </a>
+            <span style="padding-left: 20px;" id="coins">Loading...</span> <!-- Placeholder for coins -->
+        </div>
+    </nav>
+</header>

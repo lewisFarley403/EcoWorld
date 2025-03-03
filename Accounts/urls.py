@@ -17,5 +17,7 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('profile/', views.profile, name='profile'),
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
+    path('api/userinfo/', views.user_info, name='user_info'),
+
     
 ]
