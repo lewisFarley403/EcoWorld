@@ -9,9 +9,9 @@ author:
 # views.py
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
-from .forms import SignUpForm, ProfileUpdateForm
+from .forms import SignUpForm
 from .models import Profile
 from .utils import createGarden, createOwnsDb
 from Garden.models import garden
@@ -125,3 +125,20 @@ def user_info(request):
         'coins': request.user.profile.number_of_coins,
     }
     return JsonResponse(user_info)
+
+
+"""
+This view allows the user to delete their account.
+Attributes:
+    request : HttpRequest : The HTTP request object
+Returns:
+    redirect : HttpResponse : The HTTP page at the base URL
+Author:
+    - Ethan Sweeney (es1052@exeter.ac.uk)
+"""
+@login_required
+def delete_account(request):
+    user = request.user
+    logout(request)  # Log out the user before deleting
+    user.delete()  # Delete the user from the database
+    return redirect('/')  # Redirect to homepage or any other page
