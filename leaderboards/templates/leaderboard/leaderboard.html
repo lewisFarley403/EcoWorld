@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/leaderboard.css' %}">
+</head>
+<body>
+    <script src="{% static 'js/leaderboard.js' %}"></script>
+    <div id="nav">
+        {% include "partials/navbar.html" %}
+    </div>
+
+    <div id = 'top3'>
+        <div class = 'player-container'>
+            <img id = 'firstPfp' class = 'pfp'/>
+            <p id = 'firstName'>Player 1</p>
+        </div>
+
+        <div class = 'player-container'>
+            <img id = 'secondPfp'/>
+            <p id = 'secondName'>Player 1</p>
+        </div>
+
+        <div class = 'player-container'>
+            <img id = 'thirdPfp'/>
+            <p id = 'thirdName'>Player 1</p>
+        </div>
+    </div>
+
+    <div id = 'leaderboard'>
+
+    </div>
+    
+</body>
+</html>
+

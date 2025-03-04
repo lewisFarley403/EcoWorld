@@ -9,8 +9,8 @@ usage:
 author:
     - Ethan Sweeney (es1052@exeter.ac.uk)
 """
-
-from django.db.models.signals import post_save
+from leaderboards.models import UserEarntCoins
+from django.db.models.signals import post_save,pre_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
 from .models import Profile
@@ -33,3 +33,19 @@ def create_or_update_profile(sender, instance, created, **kwargs):
         Profile.objects.create(user=instance)
     else:
         instance.profile.save()
+
+@receiver(pre_save, sender=Profile)
+def track_coin_addition(sender, instance, **kwargs):
+    
+    """Detects when number_of_coins increases and creates a new instance of 
+    UserEarntCoins for the benefit of the leaderboard.
+    Author: Lewis Farley (lf507@exeter.ac.uk)
+    """
+    if instance.pk:  # Check if it's an update (not a new object)
+        previous = Profile.objects.get(pk=instance.pk)
+        if instance.number_of_coins > previous.number_of_coins:
+            added_amount = instance.number_of_coins - previous.number_of_coins
+            coin_added(instance, added_amount)
+def coin_added(instance, added_amount):
+    e = UserEarntCoins.objects.create(user=instance.user, score=added_amount)
+    e.save()

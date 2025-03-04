@@ -19,6 +19,8 @@ from EcoWorld.models import ownsCard
 import json
 from django.core import serializers
 from django.conf import settings
+from django.http import JsonResponse
+
 
 
 def privacy_policy(request):
@@ -104,3 +106,22 @@ def profile(request):
 
     # If it's a GET request, show the form
     return render(request, 'Accounts/profile.html', {'profile': profile,'squares': processedSquares,'MEDIA_URL':settings.MEDIA_URL,'size':g.size,'availableCards':final})
+
+@login_required
+def user_info(request):
+    """
+    This view returns the user information in JSON format.
+    Attributes:
+        request : HttpRequest : The HTTP request object
+    Returns:
+        JsonResponse : HttpResponse : The JSON response object
+    Author:
+        - Lewis Farley (lf507@exeter.ac.uk)
+    """
+    # pfp_url = "/media/pfps/" + pfp_url
+    user_info = {
+        'username': request.user.username,
+        'pfp_url': "/media/pfps/" +request.user.profile.profile_picture if request.user.profile.profile_picture else '',
+        'coins': request.user.profile.number_of_coins,
+    }
+    return JsonResponse(user_info)
