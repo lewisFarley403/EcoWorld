@@ -33,6 +33,12 @@
             </div>
             <button type="submit" class="login-button">Log In</button>
         </form>
+        <!-- Forgot Password Button -->
+        <div class="forgot-password">
+            <button type="button" class="forgot-password-button" onclick="window.location.href='{% url 'password_reset' %}'">
+                Forgot Password?
+            </button>
+        </div>
         <div class="signup-link">
             Don't have an account? <a href="{% url 'signup' %}">Sign Up</a>
         </div>
