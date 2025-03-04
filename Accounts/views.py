@@ -5,7 +5,7 @@ module defines views for the Accounts app:
 author:
     - Ethan Sweeney (es1052@exeter.ac.uk) 
 """
-
+from django.contrib import messages
 # views.py
 
 from django.contrib.auth.decorators import login_required
@@ -127,18 +127,20 @@ def user_info(request):
     return JsonResponse(user_info)
 
 
-"""
-This view allows the user to delete their account.
-Attributes:
-    request : HttpRequest : The HTTP request object
-Returns:
-    redirect : HttpResponse : The HTTP page at the base URL
-Author:
-    - Ethan Sweeney (es1052@exeter.ac.uk)
-"""
+
 @login_required
 def delete_account(request):
+    """
+    This view allows the user to delete their account.
+    Attributes:
+        request : HttpRequest : The HTTP request object
+    Returns:
+        redirect : HttpResponse : The HTTP page at the base URL
+    Author:
+        - Ethan Sweeney (es1052@exeter.ac.uk)
+    """
     user = request.user
     logout(request)  # Log out the user before deleting
     user.delete()  # Delete the user from the database
-    return redirect('/')  # Redirect to homepage or any other page
+    messages.success(request, 'Your account has been deleted successfully.')
+    return redirect('/')  # Redirect to login page
