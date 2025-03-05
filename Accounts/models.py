@@ -40,3 +40,23 @@ class Profile(models.Model):
         return self.user.username
 
 
+class Friends(models.Model):
+    userID1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="FriendOne")
+    userID2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="FriendTwo")
+
+    class Meta:
+        unique_together = ("userID1", "userID2")
+    
+    def __str__(self):
+        return f"{self.userID1.username} is friends with {self.userID2.username}"
+
+
+class FriendRequests(models.Model):
+    senderID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_requests")
+    receiverID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_requests")
+
+    class Meta:
+        unique_together = ("senderID", "receiverID") 
+
+    def __str__(self):
+        return f"{self.senderID.username} sent a request to {self.receiverID.username}"
