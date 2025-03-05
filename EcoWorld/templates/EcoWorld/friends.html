@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco World - Friends</title>
+    <style>
+
+body {
+            background-color: #00dea5;
+            height: auto;
+            font-family: Arial, Helvetica, sans-serif;
+            overflow-y: hidden;
+
+        }
+        .header {
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%; 
+            z-index: 1000;
+        }
+
+
+        .navbar {
+            width: 100%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar .left-links a,
+        .navbar .right-links span {
+            margin-right: 20px;
+            font-size: 16px;
+            text-decoration: none;
+            color: #003c3c;
+        }
+
+        .navbar .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #003c3c;
+        }
+
+        .navbar .right-links {
+            display: flex;
+            align-items: center;
+        }
+
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-left: 10px;
+            border: 2px solid #00dea5;
+        }
+
+        .frienditemsContainer {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center; 
+            align-items: center; 
+        }
+
+        .userFriendsbox {
+            position: absolute;
+            left: 175px;
+            top: 125px;
+            background-color: white;
+            height: 500px;
+            width: 500px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .userAddFriendbox {
+            position: absolute;
+            right: 125px;
+            top: 125px;
+            background-color: white;
+            height: 200px;
+            width: 500px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            flex-direction: column;
+        }
+
+
+        .userAddFriendbox form {
+            display: flex;
+            flex-direction: column; 
+            align-items: center;
+            width: 100%;
+        }
+
+        .addFriendtextbox {
+            width: 80%;
+            height: 40px;
+            font-size: 18px;
+            padding: 5px 10px;
+            margin-bottom: 10px; 
+            border: 2px solid #00dea5;
+            border-radius: 5px;
+        }
+
+        .addFriendButton {
+            width: 50%;
+            height: 40px;
+            background-color: #00dea5;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out;
+        }
+
+        .addFriendButton:hover {
+            background-color: #003c3c;
+            color: white;
+        }
+
+        .userRequestBox {
+            position: absolute;
+            right: 125px;
+            top: 400px;
+            height: 200px;
+            width: 500px;
+            background-color: white;
+            border-radius: 10px;
+            align-items: center;
+            justify-content: center;
+            display: flex;
+        }
+
+        
+
+
+    </style>
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="left-links">
+                <a href="/ecoworld/dashboard">Home</a>
+                <a href="/ecoworld/challenge">Challenges</a>
+                <a href="/guides">Guides</a>
+                <a href="/garden">Garden</a>
+                <a href="/ecoworld/store">Store</a>
+            </div>
+            <div class="logo">Eco World</div>
+            <div class="right-links">
+                <span>{{ userinfo.username }}</span>
+                {% load static %}
+                <a href = "/accounts/profile">
+                    <img src="{{ userinfo.pfp_url }}" alt="Username" class="profile-pic">
+                </a>
+                <span style="padding-left: 20px;">Coins: {{ userinfo.coins }}</span>
+                <a href = "/ecoworld/friends">
+                    <img src="/media/misc/friend.png" class="profile-pic">
+                </a>
+            </div>
+        </nav>
+    </header>
+    <div class="frienditemsContainer">
+        <div class="userFriendsbox">
+            <h1>Your Friends List</h1>
+        </div>
+
+
+        <div class="userAddFriendbox">
+            <h3>Add a Friend!</h3>
+            <form method="POST" action="/ecoworld/friends/">
+                {% csrf_token %}
+                <input class="addFriendtextbox" type="text" placeholder="Enter your friends username" name="friendUsername">
+                <button type="submit" class="addFriendButton">Add your friend!</button>
+            </form>
+        </div>
+
+        <div class="userRequestBox">
+            <h3>Your Friend Requests</h3>
+        </div>
+    </div>
+    
+</body>
+
+</html>

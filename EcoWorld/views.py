@@ -138,7 +138,6 @@ def store(request):
 
 
 @login_required
-
 def buy_pack(request):
     """
     Function to handle purchasing a pack and making sure the user can
@@ -237,3 +236,39 @@ def completeChallenge(request):
         return HttpResponse("Challenge completed")
     return HttpResponse("Invalid request type")
 
+@login_required
+def friends(request):
+    if request.method == "GET":
+        user = request.user
+        user = User.objects.get(id=user.id)
+        pfp_url = user.profile.profile_picture
+        pfp_url = "/media/pfps/" + pfp_url
+
+        userinfo = []
+        userinfo.append({
+            "username": user.username,
+            "pfp_url": pfp_url,
+            "coins" : user.profile.number_of_coins
+            })
+            
+        return render(request, "EcoWorld/friends.html", {"userinfo" : userinfo[0]})
+    
+    elif request.method == "POST":
+
+        #Gets user data for the navbar
+        user = request.user
+        user = User.objects.get(id=user.id)
+        pfp_url = user.profile.profile_picture
+        pfp_url = "/media/pfps/" + pfp_url
+
+        userinfo = []
+        userinfo.append({
+            "username": user.username,
+            "pfp_url": pfp_url,
+            "coins" : user.profile.number_of_coins
+            })
+        
+        #Get the username sent in the form
+        username = request.POST.get("friendUsername")
+    
+        return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0]})
