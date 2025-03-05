@@ -251,8 +251,12 @@ def friends(request):
             "pfp_url": pfp_url,
             "coins" : user.profile.number_of_coins
             })
+        
 
-        return render(request, "EcoWorld/friends.html", {"userinfo" : userinfo[0]})
+        friendreqs = FriendRequests.objects.filter(receiverID=user)
+        
+
+        return render(request, "EcoWorld/friends.html", {"userinfo" : userinfo[0], "friendreqs": friendreqs})
     
     elif request.method == "POST":
 

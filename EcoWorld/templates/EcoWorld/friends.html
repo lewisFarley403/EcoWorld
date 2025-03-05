@@ -200,6 +200,16 @@ body {
 
         <div class="userRequestBox">
             <h3>Your Friend Requests</h3>
+            {% if friendreqs %}
+                <ul>
+                    {% for request in friendreqs %}
+                    <p>{{ request.senderID.username }}</p>
+                    {% endfor %}
+                </ul>
+            {% else %}
+            <p>No friend requests</p>
+            {% endif %}
+                
         </div>
     </div>
     
