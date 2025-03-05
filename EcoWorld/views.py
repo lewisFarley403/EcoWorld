@@ -14,6 +14,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from .utils import getUsersChallenges
 from datetime import datetime
+from Accounts.models import Friends, FriendRequests
 # from qr_code.qrcode.utils import QRCodeOptions
 from .forms import WaterBottleFillForm
 
@@ -250,7 +251,7 @@ def friends(request):
             "pfp_url": pfp_url,
             "coins" : user.profile.number_of_coins
             })
-            
+
         return render(request, "EcoWorld/friends.html", {"userinfo" : userinfo[0]})
     
     elif request.method == "POST":
@@ -258,6 +259,9 @@ def friends(request):
         #Gets user data for the navbar
         user = request.user
         user = User.objects.get(id=user.id)
+        userID = request.user.id
+
+
         pfp_url = user.profile.profile_picture
         pfp_url = "/media/pfps/" + pfp_url
 
@@ -270,5 +274,32 @@ def friends(request):
         
         #Get the username sent in the form
         username = request.POST.get("friendUsername")
-    
-        return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0]})
+        error = None
+        
+        #Gets the requested user for the friend request
+        requestedUser = User.objects.filter(username=username).first()
+        
+
+
+        #Check for user existing
+        if not requestedUser:
+            error = "User Not Found!"
+            return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error})
+        
+        #Check if user tried to add themselves
+        if username == user.username:
+            error = "You cant request yourself"
+            return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error}) 
+        
+        requestedUserID = requestedUser.id
+        existing_request = FriendRequests.objects.filter(senderID=userID, receiverID=requestedUserID).exists() or FriendRequests.objects.filter(senderID=requestedUserID, receiverID=userID).exists()
+        
+        #Checks if pending request already made
+        if existing_request:
+            error = "Friend request already pending"
+            return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error})
+        
+        #Add request to database
+        FriendRequests.objects.create(senderID=request.user, receiverID=requestedUser)
+        AddMessage = "Friend request sent!"
+        return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"addmessage": AddMessage})
