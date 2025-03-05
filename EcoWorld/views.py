@@ -252,7 +252,7 @@ def friends(request):
             "coins" : user.profile.number_of_coins
             })
         
-
+        #Gets pending requests
         friendreqs = FriendRequests.objects.filter(receiverID=user)
         
 
@@ -276,34 +276,40 @@ def friends(request):
             "coins" : user.profile.number_of_coins
             })
         
+        #Gets pending requests
+        friendreqs = FriendRequests.objects.filter(receiverID=user)
+
         #Get the username sent in the form
         username = request.POST.get("friendUsername")
-        error = None
-        
-        #Gets the requested user for the friend request
-        requestedUser = User.objects.filter(username=username).first()
-        
+        if username:
+            error = None
+            #Gets the requested user for the friend request
+            requestedUser = User.objects.filter(username=username).first()
+            
 
 
-        #Check for user existing
-        if not requestedUser:
-            error = "User Not Found!"
-            return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error})
-        
-        #Check if user tried to add themselves
-        if username == user.username:
-            error = "You cant request yourself"
-            return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error}) 
-        
-        requestedUserID = requestedUser.id
-        existing_request = FriendRequests.objects.filter(senderID=userID, receiverID=requestedUserID).exists() or FriendRequests.objects.filter(senderID=requestedUserID, receiverID=userID).exists()
-        
-        #Checks if pending request already made
-        if existing_request:
-            error = "Friend request already pending"
-            return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error})
-        
-        #Add request to database
-        FriendRequests.objects.create(senderID=request.user, receiverID=requestedUser)
-        AddMessage = "Friend request sent!"
-        return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"addmessage": AddMessage})
+            #Check for user existing
+            if not requestedUser:
+                error = "User Not Found!"
+                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs})
+            
+            #Check if user tried to add themselves
+            if username == user.username:
+                error = "You cant request yourself"
+                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs}) 
+            
+            requestedUserID = requestedUser.id
+            existing_request = FriendRequests.objects.filter(senderID=userID, receiverID=requestedUserID).exists() or FriendRequests.objects.filter(senderID=requestedUserID, receiverID=userID).exists()
+            
+            #Checks if pending request already made
+            if existing_request:
+                error = "Friend request already pending"
+                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs})
+            
+            #Add request to database
+            FriendRequests.objects.create(senderID=request.user, receiverID=requestedUser)
+            AddMessage = "Friend request sent!"
+            return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs, "addmessage": AddMessage})
+
+        else:
+            return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs})
