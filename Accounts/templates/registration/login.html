@@ -9,6 +9,13 @@
     <link rel="stylesheet" href="{% static 'Accounts/css/login.css' %}">
 </head>
 <body>
+{% if messages %}
+  <script>
+    {% for message in messages %}
+      alert("{{ message }}");
+    {% endfor %}
+  </script>
+{% endif %}
 <div class="left-side">
     <div class="arch-photo">
         <img src="{% static 'Accounts/res/login-page-arch.png' %}" alt="Leafy Arch">
