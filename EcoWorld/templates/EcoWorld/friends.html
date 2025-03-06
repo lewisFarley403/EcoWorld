@@ -83,6 +83,7 @@ body {
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-direction: column;
         }
 
         .userAddFriendbox {
@@ -201,6 +202,50 @@ body {
             font-weight: bold;
             padding-right: 30px;
         }
+
+        .friendContainer {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            height: 50px;
+            border-bottom: 2px solid black;
+            width: 100%;
+            font-weight: bold;
+            font-size: 16px;
+
+        }
+
+        .gardenViewButton {
+            width: 100px;
+            height: 40px;
+            color: white;
+            background-color: #12a012;
+            transition: 0.5s ease-in-out;
+            font-weight: bold;
+        }
+
+        .gardenViewButton:hover {
+            transition: 0.5s ease-in-out;
+            background-color: #19ff2c;
+        }
+
+        .removeButton {
+            width: 100px;
+            height: 40px;
+            color: white;
+            background-color: #c30303;
+            transition: 0.5s ease-in-out;
+            font-weight: bold;
+        }
+
+        .removeButton:hover {
+            transition: 0.5s ease-in-out;
+            background-color: #ff2a2a;
+        }
+
+
+
+
         
 
 
@@ -233,9 +278,35 @@ body {
     <div class="frienditemsContainer">
         <div class="userFriendsbox">
             <h1>Your Friends List</h1>
+            {% if friends %}
+                <ul>
+                    {% for friend in friends %}
+                    <div class="friendContainer">
+                        {% if friend.userID1 == request.user %}
+                            <p class="username">{{ friend.userID2.username }}</p>
+                            <button class="gardenViewButton">View Friends Garden</button>
+                            <form method="POST" action="/ecoworld/friends/">
+                                {% csrf_token %}
+                                <button type="submit" class="removeButton" name="remove" value="{{ friend.userID2 }}">Remove Friend</button>
+                            </form>
+                        {% else %}
+                        <p class="username">{{ friend.userID1.username }}</p>
+                        <button class="gardenViewButton">View Friends Garden</button>
+                        <form method="POST" action="/ecoworld/friends/">
+                            {% csrf_token %}
+                            <button type="submit" class="removeButton" name="remove" value="{{ friend.userID1}}">Remove Friend</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                        
+  
+                    {% endfor %}
+                </ul>
+            {% else %}
+            <p>You currently have no friends!</p>
+            {% endif %}
 
 
-            
         </div>
 
 
