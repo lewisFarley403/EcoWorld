@@ -392,3 +392,21 @@ def friends(request):
 
 
             return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs,"friends" : userFriends})
+
+
+def mergecards(request):
+    if request.method == "GET":
+        user = request.user
+        user = User.objects.get(id=user.id)
+        pfp_url = user.profile.profile_picture
+        pfp_url = "/media/pfps/" + pfp_url
+
+        userinfo = []
+        userinfo.append({
+            "username": user.username,
+            "pfp_url": pfp_url,
+            "coins" : user.profile.number_of_coins
+            })
+        return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0]})
+    
+    
