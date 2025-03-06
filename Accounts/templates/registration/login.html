@@ -9,6 +9,13 @@
     <link rel="stylesheet" href="{% static 'Accounts/css/login.css' %}">
 </head>
 <body>
+{% if messages %}
+  <script>
+    {% for message in messages %}
+      alert("{{ message }}");
+    {% endfor %}
+  </script>
+{% endif %}
 <div class="left-side">
     <div class="arch-photo">
         <img src="{% static 'Accounts/res/login-page-arch.png' %}" alt="Leafy Arch">
@@ -33,6 +40,12 @@
             </div>
             <button type="submit" class="login-button">Log In</button>
         </form>
+        <!-- Forgot Password Button -->
+        <div class="forgot-password">
+            <button type="button" class="forgot-password-button" onclick="window.location.href='{% url 'password_reset' %}'">
+                Forgot Password?
+            </button>
+        </div>
         <div class="signup-link">
             Don't have an account? <a href="{% url 'signup' %}">Sign Up</a>
         </div>

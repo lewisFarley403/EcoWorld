@@ -92,9 +92,9 @@ class drinkEvent(models.Model):
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     fountain = models.ForeignKey(waterFountain, on_delete=models.CASCADE)
-    drank_on = models.DateField()
+    drank_on = models.DateTimeField(auto_now_add=True)
     def __str__(self):
-        return self.user.username + " drank from " + self.fountain.name
+        return self.user.username + " drank from " + self.fountain.name+" on "+str(self.drank_on)
     
 
 

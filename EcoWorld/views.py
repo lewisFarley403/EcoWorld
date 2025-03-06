@@ -14,7 +14,7 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from .utils import getUsersChallenges
 from datetime import datetime
-from qr_code.qrcode.utils import QRCodeOptions
+# from qr_code.qrcode.utils import QRCodeOptions
 from .forms import WaterBottleFillForm
 
 # Create your views here.

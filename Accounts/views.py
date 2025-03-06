@@ -5,13 +5,13 @@ module defines views for the Accounts app:
 author:
     - Ethan Sweeney (es1052@exeter.ac.uk) 
 """
-
+from django.contrib import messages
 # views.py
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
-from .forms import SignUpForm, ProfileUpdateForm
+from .forms import SignUpForm
 from .models import Profile
 from .utils import createGarden, createOwnsDb
 from Garden.models import garden
@@ -19,6 +19,8 @@ from EcoWorld.models import ownsCard
 import json
 from django.core import serializers
 from django.conf import settings
+from django.http import JsonResponse
+
 
 
 def privacy_policy(request):
@@ -104,3 +106,41 @@ def profile(request):
 
     # If it's a GET request, show the form
     return render(request, 'Accounts/profile.html', {'profile': profile,'squares': processedSquares,'MEDIA_URL':settings.MEDIA_URL,'size':g.size,'availableCards':final})
+
+@login_required
+def user_info(request):
+    """
+    This view returns the user information in JSON format.
+    Attributes:
+        request : HttpRequest : The HTTP request object
+    Returns:
+        JsonResponse : HttpResponse : The JSON response object
+    Author:
+        - Lewis Farley (lf507@exeter.ac.uk)
+    """
+    # pfp_url = "/media/pfps/" + pfp_url
+    user_info = {
+        'username': request.user.username,
+        'pfp_url': "/media/pfps/" +request.user.profile.profile_picture if request.user.profile.profile_picture else '',
+        'coins': request.user.profile.number_of_coins,
+    }
+    return JsonResponse(user_info)
+
+
+
+@login_required
+def delete_account(request):
+    """
+    This view allows the user to delete their account.
+    Attributes:
+        request : HttpRequest : The HTTP request object
+    Returns:
+        redirect : HttpResponse : The HTTP page at the base URL
+    Author:
+        - Ethan Sweeney (es1052@exeter.ac.uk)
+    """
+    user = request.user
+    logout(request)  # Log out the user before deleting
+    user.delete()  # Delete the user from the database
+    messages.success(request, 'Your account has been deleted successfully.')
+    return redirect('/')  # Redirect to login page

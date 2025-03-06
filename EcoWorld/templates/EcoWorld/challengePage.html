@@ -346,9 +346,7 @@
                 <div class="challenge-card">
                     <h2>{{ challenge.challenge.name }}</h2>
                     <p>{{ challenge.challenge.description }}</p>
-                    <div class="progress-bar">
-                        <div class="progress" style="width: {{ challenge.progress }}%"></div>
-                    </div>
+
                     {% if challenge.submitted_on != None %}
                         <p>Completed!</p>
                     {% else %}
@@ -357,8 +355,13 @@
                     <!-- <button onclick="completeChallenge('{{ challenge.id }}')">Complete Challenge</button> -->
                 </div>
             {% endfor %}
+            <div class="challenge-card">
+                <h2>Fill Water Bottle</h2>
+                <p>Fill Water Bottle At A Fountain on to avoid using a single use plastic bottle!</p>
+                <a href ='/qrcode/scanner'>
+                    <button >Fill Water Bottle Now</button>
+                </a>
         </div>
-        <button onclick="createChallenge()">Create New Challenge</button>
     </div>
 
     <script>

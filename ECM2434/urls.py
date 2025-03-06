@@ -23,7 +23,10 @@ urlpatterns = [
     path("", include("Accounts.urls")),
     path("accounts/", include("Accounts.urls")),
     path("ecoworld/", include("EcoWorld.urls")),
+    path("qrcode/", include("qrCodes.urls")),
     path("garden/", include("Garden.urls")),
+    path("guides/", include("guides.urls")),
+    path("leaderboards/", include("leaderboards.urls")),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 print(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
 print(urlpatterns[1])
