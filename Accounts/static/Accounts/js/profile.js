@@ -1,53 +1,19 @@
-// Get elements
-var modal = document.getElementById("profilePictureModal");
-var btn = document.getElementById("selectProfilePictureBtn");
-var closeBtn = document.getElementById("closeModal");
-var confirmBtn = document.getElementById("confirmSelectionBtn");
-var selectedImage = null;
+document.addEventListener('DOMContentLoaded', function() {
+    const pfpOptions = ['pfp1.png', 'pfp2.png', 'pfp3.png', 'pfp4.png', 'pfp5.png'];
+    const btn = document.getElementById("selectProfilePictureBtn");
 
-// Open the modal when the button is clicked
-btn.onclick = function() {
-    modal.style.display = "block";
-}
+    if (btn) {
+        btn.onclick = function() {
+            const randomPfp = pfpOptions[Math.floor(Math.random() * pfpOptions.length)];
+            const timestamp = new Date().getTime();
 
-// Close the modal when the close button is clicked
-closeBtn.onclick = function() {
-    modal.style.display = "none";
-}
+            const profilePicInput = document.getElementById("profilePictureInput");
+            const profilePic = document.querySelector('.profile-picture');
 
-// Close the modal if the user clicks anywhere outside the modal
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-}
-
-// Handle image selection
-var profileImages = document.querySelectorAll(".profile-image");
-profileImages.forEach(function(image) {
-    image.onclick = function() {
-        // Deselect any previously selected image
-        profileImages.forEach(function(img) {
-            img.style.borderColor = "transparent";
-        });
-
-        // Select the clicked image
-        image.style.borderColor = "#007BFF";
-        selectedImage = image.getAttribute("data-image");
-
-        // Set the hidden input field's value to the selected image
-        document.getElementById("profilePictureInput").value = selectedImage;
+            if (profilePicInput && profilePic) {
+                profilePicInput.value = randomPfp;
+                profilePic.src = `/static/Accounts/pfps/${randomPfp}?v=${timestamp}`;
+            }
+        }
     }
 });
-
-// Confirm the selection and close the modal
-confirmBtn.onclick = function() {
-    if (selectedImage) {
-        // Close the modal
-        modal.style.display = "none";
-    } else {
-        alert("Please select a profile picture.");
-    }
-}
-
-
