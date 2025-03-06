@@ -6,12 +6,12 @@ Author:
     -Lewis Farley (lf507@exeter.ac.uk)
     -Chris Lynch (cl1037@exeter.ac.uk)
 """
-
-from django.shortcuts import render, redirect
+from django.contrib.auth.models import Permission
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import drinkEvent,User,waterFountain,pack,ownsCard,challenge,ongoingChallenge
 import json
 from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from .utils import getUsersChallenges
 from datetime import datetime
 # from qr_code.qrcode.utils import QRCodeOptions
@@ -237,3 +237,19 @@ def completeChallenge(request):
         return HttpResponse("Challenge completed")
     return HttpResponse("Invalid request type")
 
+@permission_required("your_app.can_view_admin_button")  # Only existing admins can access
+def admin_page(request):
+    users = User.objects.exclude(user_permissions__codename="can_view_admin_button")
+    return render(request, "EcoWorld/admin_page.html", {"users": users})
+
+@permission_required("your_app.can_view_admin_button")  # Only admins can promote others
+def grant_admin(request, user_id):
+    if not request.user.has_perm("your_app.can_view_admin_button"):
+        return HttpResponse("You do not have permission to do this.", status=403)
+
+    user = get_object_or_404(User, id=user_id)
+    permission = Permission.objects.get(codename="can_view_admin_button")
+
+    user.user_permissions.add(permission)
+
+    return HttpResponse(f"Admin permissions granted to {user.username}.")
