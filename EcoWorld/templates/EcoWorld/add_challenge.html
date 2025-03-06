@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>Add Challenge</title>
+    <link rel="stylesheet" href="{% static 'EcoWorld/css/dashboard.css' %}">
+</head>
+<body>
+    <h2>Add New Challenge</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="button">Add Challenge</button>
+    </form>
+    <a href="{% url 'EcoWorld:admin_page' %}">Back to Admin Page</a>
+</body>
+</html>

@@ -26,5 +26,5 @@ urlpatterns = [
     path("completeChallenge/", views.completeChallenge, name='completeChallenge'),  # URL for the complete challenge page
     path("admin/", views.admin_page, name="admin_page"),
     path("grant-admin/<int:user_id>/", views.grant_admin, name="grant_admin"),
-
+    path("add-challenge/", views.add_challenge, name="add_challenge"),  # URL for adding challenges
 ]

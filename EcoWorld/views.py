@@ -15,7 +15,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from .utils import getUsersChallenges
 from datetime import datetime
 # from qr_code.qrcode.utils import QRCodeOptions
-from .forms import WaterBottleFillForm
+from .forms import WaterBottleFillForm, ChallengeForm
 
 # Create your views here.
 def addDrink(request):
@@ -239,11 +239,26 @@ def completeChallenge(request):
 
 @permission_required("Accounts.can_view_admin_button")  # Only existing admins can access
 def admin_page(request):
+    """
+    This view renders the admin page, which allows admins to do things a regular user cannot.
+    Returns: render request and a list of users who are not admins
+
+    Author:
+    Ethan Sweeney (es1052@exeter.ac.uk)
+    """
     users = User.objects.exclude(user_permissions__codename="can_view_admin_button")
     return render(request, "EcoWorld/admin_page.html", {"users": users})
 
 @permission_required("Accounts.can_view_admin_button")  # Only admins can promote others
 def grant_admin(request, user_id):
+    """
+    This view grants the can_view_admin_button permission to a user, effectively promoting them to an admin.
+
+    Returns: Reloading of the admin page with the updated list of users.
+
+    Author:
+    Ethan Sweeney (es1052@exeter.ac.uk)
+    """
     if not request.user.has_perm("Accounts.can_view_admin_button"):
         return HttpResponse("You do not have permission to do this.", status=403)
 
@@ -258,3 +273,17 @@ def grant_admin(request, user_id):
 
     users = User.objects.exclude(user_permissions__codename="can_view_admin_button")
     return render(request, "EcoWorld/admin_page.html", {"users": users})
+
+
+
+@permission_required("Accounts.can_view_admin_button")  # Only allowed admins can add challenges
+def add_challenge(request):
+    if request.method == 'POST':
+        form = ChallengeForm(request.POST)
+        if form.is_valid():
+            # Save the form with the current user as the creator
+            form.save(created_by=request.user)
+            return redirect("EcoWorld:admin_page")  # Redirect back to the admin page after saving
+    else:
+        form = ChallengeForm()
+    return render(request, "EcoWorld/add_challenge.html", {"form": form})
