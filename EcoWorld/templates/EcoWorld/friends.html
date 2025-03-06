@@ -146,8 +146,61 @@ body {
             align-items: center;
             justify-content: center;
             display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            font-weight: bold;
         }
 
+        .requestContainer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 50px;
+            border-bottom: 2px solid black;
+        }
+
+        .buttonContainer {
+            display: flex;
+            padding: 10px;
+            align-items: center; 
+        }
+        .addbutton {
+            background-color: green;
+            transition: 0.5s ease-in-out;
+            height: 40px;
+            width: 40px;
+            padding-right: 5px;
+            font-size: 20px;
+            color: white;
+
+        }
+
+        .addbutton:hover {
+            background-color: #00dea5;
+            transition: 0.5s ease-in-out;
+        }
+
+        .rejectbutton {
+            background-color: rgb(143, 5, 5);
+            transition: 0.5s ease-in-out;
+            height: 40px;
+            width: 40px;
+            font-size: 20px;
+            color: white;
+            font-weight: bold;
+
+        }
+
+        .rejectbutton:hover {
+            background-color: #ed0808;
+            transition: 0.5s ease-in-out;
+        }
+
+        .username {
+            flex: 1;
+            font-weight: bold;
+            padding-right: 30px;
+        }
         
 
 
@@ -180,6 +233,9 @@ body {
     <div class="frienditemsContainer">
         <div class="userFriendsbox">
             <h1>Your Friends List</h1>
+
+
+            
         </div>
 
 
@@ -199,15 +255,28 @@ body {
         </div>
 
         <div class="userRequestBox">
-            <h3>Your Friend Requests</h3>
+            <h3 style="padding-top: 20px;">Your Friend Requests</h3>
             {% if friendreqs %}
                 <ul>
                     {% for request in friendreqs %}
-                    <p>{{ request.senderID.username }}</p>
+                    <div class="requestContainer">
+                        <p class="username">{{ request.senderID.username }}</p>
+
+                        <form action="/ecoworld/friends/" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" value="{{ request.senderID.username}}", name="friendar">
+                            <div class="buttonContainer">
+                                <button name="friendaction" type="submit" value="accept" class="addbutton">✔</button>
+                                <button name="friendaction" type="submit" value="reject" class="rejectbutton">X</button>
+                            </div>
+                            
+                        </form>
+                    </div>
+                    
                     {% endfor %}
                 </ul>
             {% else %}
-            <p>No friend requests</p>
+            <p>No friend requests pending</p>
             {% endif %}
                 
         </div>

@@ -281,6 +281,10 @@ def friends(request):
 
         #Get the username sent in the form
         username = request.POST.get("friendUsername")
+        #Get friend request if sent
+        friendAccOrRej = request.POST.get("friendar")
+        friendAction = request.POST.get("friendaction")
+
         if username:
             error = None
             #Gets the requested user for the friend request
@@ -311,5 +315,35 @@ def friends(request):
             AddMessage = "Friend request sent!"
             return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs, "addmessage": AddMessage})
 
+        elif friendAccOrRej:
+            #Gets requested user for DB
+            requestedUser = User.objects.filter(username=friendAccOrRej).first()
+
+            #If accepted friend request
+            if friendAction == "accept":
+                #Creates row in friends table and removes from requests
+                Friends.objects.create(userID1=user, userID2=requestedUser)
+                FriendRequests.objects.filter(senderID=requestedUser, receiverID=user).delete()
+
+                #Gets active requests again to return
+                friendreqs = FriendRequests.objects.filter(receiverID=user)
+
+
+                return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs})
+            
+            else:
+                #Deletes friend request info as its a reject
+                FriendRequests.objects.filter(senderID=requestedUser, receiverID=user).delete()
+
+                #Updates data on friend requests
+                friendreqs = FriendRequests.objects.filter(receiverID=user)
+
+                return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs})
+            
+
+            
+
+            
+     
         else:
             return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs})
