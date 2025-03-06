@@ -238,8 +238,21 @@ def completeChallenge(request):
         return HttpResponse("Challenge completed")
     return HttpResponse("Invalid request type")
 
+
+
+
 @login_required
 def friends(request):
+    """
+    Web portal for friends in the ecoworld system. This page has 3 main parts: A current friends list, a search bar to add friends
+    and a requests box. 
+    It uses the models created in accounts for friends and friend requests
+    Depending on the action made it has returns for adding a friend in the search, accepting or declining a friend request and 
+    removing a friend from the friends list
+
+    Author:
+    Chris Lynch (cl1037@exeter.ac.uk)
+    """
     if request.method == "GET":
         user = request.user
         user = User.objects.get(id=user.id)
@@ -367,7 +380,7 @@ def friends(request):
             
 
             
-     
+        #If removing a friend
         else:
             removeUser = User.objects.filter(username=removeUser).first()
             removeUserID = removeUser.id
