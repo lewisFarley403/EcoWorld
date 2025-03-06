@@ -247,7 +247,8 @@ def admin_page(request):
     Ethan Sweeney (es1052@exeter.ac.uk)
     """
     users = User.objects.exclude(user_permissions__codename="can_view_admin_button")
-    return render(request, "EcoWorld/admin_page.html", {"users": users})
+    missing_rows = range(max(0, 3 - users.count()))
+    return render(request, "EcoWorld/admin_page.html", {"users": users, "missing_rows": missing_rows})
 
 @permission_required("Accounts.can_view_admin_button")  # Only admins can promote others
 def grant_admin(request, user_id):
@@ -271,8 +272,7 @@ def grant_admin(request, user_id):
     if hasattr(user, '_perm_cache'):
         del user._perm_cache
 
-    users = User.objects.exclude(user_permissions__codename="can_view_admin_button")
-    return render(request, "EcoWorld/admin_page.html", {"users": users})
+    return redirect("EcoWorld:admin_page")
 
 
 
