@@ -2,21 +2,25 @@
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
+    background-color: #00dea5;
+    align-content: center;
 }
 table {
     width: 100%;
     border-collapse: collapse;
 }
+
 th, td {
     padding: 10px;
-    border: 1px solid #ddd;
+    border: 1px solid black;
     text-align: left;
+    color: white;
 }
 th {
-    background-color: #f4f4f4;
+    background-color: #0e4d46;
 }
 button {
-    background-color: #28a745;
+    background-color: #0e4d46;
     color: white;
     padding: 5px 10px;
     border: none;
@@ -25,6 +29,13 @@ button {
 button:hover {
     background-color: #218838;
 }
+
+.admin-page-button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
 /* Header Section */
 .header {
     background-color: #fff;
