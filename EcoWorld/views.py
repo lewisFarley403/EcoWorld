@@ -237,14 +237,14 @@ def completeChallenge(request):
         return HttpResponse("Challenge completed")
     return HttpResponse("Invalid request type")
 
-@permission_required("your_app.can_view_admin_button")  # Only existing admins can access
+@permission_required("Accounts.can_view_admin_button")  # Only existing admins can access
 def admin_page(request):
     users = User.objects.exclude(user_permissions__codename="can_view_admin_button")
     return render(request, "EcoWorld/admin_page.html", {"users": users})
 
-@permission_required("your_app.can_view_admin_button")  # Only admins can promote others
+@permission_required("Accounts.can_view_admin_button")  # Only admins can promote others
 def grant_admin(request, user_id):
-    if not request.user.has_perm("your_app.can_view_admin_button"):
+    if not request.user.has_perm("Accounts.can_view_admin_button"):
         return HttpResponse("You do not have permission to do this.", status=403)
 
     user = get_object_or_404(User, id=user_id)
@@ -252,4 +252,9 @@ def grant_admin(request, user_id):
 
     user.user_permissions.add(permission)
 
-    return HttpResponse(f"Admin permissions granted to {user.username}.")
+    # Clear the permission cache for the modified user
+    if hasattr(user, '_perm_cache'):
+        del user._perm_cache
+
+    users = User.objects.exclude(user_permissions__codename="can_view_admin_button")
+    return render(request, "EcoWorld/admin_page.html", {"users": users})
