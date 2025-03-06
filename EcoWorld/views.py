@@ -37,6 +37,28 @@ def addDrink(request):
     return HttpResponse("Invalid request type 2")
 
 
+def getUserInfo(request):
+    """
+    This function gets the user info for the navbar
+    Returns: user info to be displayed on the navbar
+
+    Author:
+    Ethan Sweeney (es1052@exeter.ac.uk)
+    """
+    user = request.user
+    user = User.objects.get(id=user.id)
+    pfp_url = user.profile.profile_picture
+    pfp_url = "/media/pfps/" + pfp_url
+
+    userinfo = []
+    userinfo.append({
+        "username": user.username,
+        "pfp_url": pfp_url,
+        "coins": user.profile.number_of_coins
+    })
+    return userinfo
+
+
 def dashboard(request):
     """
     Dashboard on request takes user info to send to dashboard
@@ -48,17 +70,7 @@ def dashboard(request):
 
     #Upon loading the page the dashboard needs its username and pfp along with coins, this function here gives it to the dashboard html file
     if request.method == "GET":
-        user = request.user
-        user = User.objects.get(id=user.id)
-        pfp_url = user.profile.profile_picture
-        pfp_url = "/media/pfps/" + pfp_url
-
-        userinfo = []
-        userinfo.append({
-            "username": user.username,
-            "pfp_url": pfp_url,
-            "coins" : user.profile.number_of_coins
-            })
+        userinfo = getUserInfo(request)
 
         return render(request, "EcoWorld/dashboard.html", {"userinfo":userinfo[0]})
 
@@ -119,17 +131,7 @@ def store(request):
             })
         
         #Function to get the user data and then adds it to the user dictionary
-        user = request.user
-        user = User.objects.get(id=user.id)
-        pfp_url = user.profile.profile_picture
-        pfp_url = "/media/pfps/" + pfp_url
-
-        userinfo = []
-        userinfo.append({
-            "username": user.username,
-            "pfp_url": pfp_url,
-            "coins" : user.profile.number_of_coins
-            })
+        userinfo = getUserInfo(request)
         
         #Sends the info to the page
         return render(request, "ecoWorld/store.html",{ "packs": pack_list, "userinfo": userinfo[0]})
@@ -246,9 +248,12 @@ def admin_page(request):
     Author:
     Ethan Sweeney (es1052@exeter.ac.uk)
     """
+    if request.method == "GET":
+        userinfo = getUserInfo(request)
+
     users = User.objects.exclude(user_permissions__codename="can_view_admin_button")
     missing_rows = range(max(0, 3 - users.count()))
-    return render(request, "EcoWorld/admin_page.html", {"users": users, "missing_rows": missing_rows})
+    return render(request, "EcoWorld/admin_page.html", {"users": users, "missing_rows": missing_rows, "userinfo":userinfo[0]})
 
 @permission_required("Accounts.can_view_admin_button")  # Only admins can promote others
 def grant_admin(request, user_id):
