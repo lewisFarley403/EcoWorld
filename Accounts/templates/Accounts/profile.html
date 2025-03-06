@@ -8,28 +8,6 @@
         <link rel="stylesheet" href="{% static 'Accounts/css/profile.css' %}">
     {% endblock %}
     <style>
-        #modal{
-            display: none; /* Hidden by default */
-            position: fixed; /* Stay in place */
-            z-index: 1; /* Sit on top */
-            left: 0;
-            top: 0;
-            width: 100%; /* Full width */
-            height: 100%; /* Full height */
-            overflow: auto; /* Enable scroll if needed */
-            background-color: rgb(0,0,0); /* Fallback color */
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-            overflow-y: scroll;
-
-        }
-        .modal-cont {
-            background-color: #fefefe;
-            margin: 15% auto; /* 15% from the top and centered */
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%; /* Could be more or less, depending on screen size */
-            overflow-y: scroll;
-        }
         .grid-container {
             display: grid;
             grid-template-columns: repeat({{ size }}, 1fr);
@@ -53,11 +31,9 @@
                 <img src="{% static 'Accounts/pfps/' %}{{ profile.profile_picture }}" alt="Profile Picture" class="profile-picture">
             </div>
             <button type="button" id="selectProfilePictureBtn">Change Profile Picture</button>
-            <div class="bio-section">
-                <p>{{ profile.bio }}</p>
-            </div>
             <form method="POST">
                 {% csrf_token %}
+                <input type="hidden" id="profilePictureInput" name="profile_picture" value="{{ profile.profile_picture }}">
                 <label for="bio">Edit Bio:</label>
                 <textarea name="bio" id="bio" rows="4">{{ profile.bio }}</textarea>
                 <button type="submit">Update Profile</button>
@@ -167,26 +143,10 @@
                 </script>
             </div>
         </div>
-
-        <!-- Popup Modal -->
-        <div id="profilePictureModal" class="modal">
-            <div class="modal-content">
-                <span id="closeModal" class="close">&times;</span>
-                <h2>Select a Profile Picture</h2>
-                <div class="image-gallery">
-                    <img src="{% static 'Accounts/pfps/pfp1.png' %}" alt="Profile 1" class="profile-image" data-image="pfp1.png">
-                    <img src="{% static 'Accounts/pfps/pfp2.png' %}" alt="Profile 2" class="profile-image" data-image="pfp2.png">
-                    <img src="{% static 'Accounts/pfps/pfp3.png' %}" alt="Profile 3" class="profile-image" data-image="pfp3.png">
-                    <img src="{% static 'Accounts/pfps/pfp4.png' %}" alt="Profile 4" class="profile-image" data-image="pfp4.png">
-                    <img src="{% static 'Accounts/pfps/pfp5.png' %}" alt="Profile 5" class="profile-image" data-image="pfp5.png">
-                </div>
-                <input type="hidden" name="profile_picture" id="profilePictureInput" value="{{ profile.profile_picture }}">
-                <button type="button" id="confirmSelectionBtn" onclick="closeModal()">Confirm Selection</button>
-            </div>
-        </div>
     </div>
 
     {% block extra_js %}
         <script src="{% static 'Accounts/js/profile.js' %}"></script>
     {% endblock %}
 {% endblock %}
+
