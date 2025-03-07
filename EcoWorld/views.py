@@ -8,8 +8,8 @@ Author:
 """
 
 from django.conf import settings
-from django.shortcuts import render, redirect
-from .models import drinkEvent,User,waterFountain,pack,ownsCard,challenge,ongoingChallenge, card, cardRarity
+from django.shortcuts import get_object_or_404, render, redirect
+from .models import drinkEvent,User,waterFountain,pack,ownsCard,challenge,ongoingChallenge, card, cardRarity, Merge
 import json
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -414,7 +414,8 @@ def mergecards(request):
     elif request.method == "POST":
         #Gets rarity option chosen if so
         rarity = request.POST.get("rarity")
-        
+        addCard = request.POST.get("addCard")
+        removeCard = request.POST.get("removeCard")
 
         if rarity:
             #Gets the player inventory for the certain rarity
@@ -424,10 +425,103 @@ def mergecards(request):
             for item in playerInventoryStorage:
                 item['card__image'] = "/media/" + item['card__image']
 
-            # Filter items where quantity is greater than 0
-            playerItems = [item for item in playerInventoryStorage if item["quantity"] > 0]
+            
+            playerItems = playerInventoryStorage
+
 
             
 
-            return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems})
-    
+            return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity":rarity},)
+        
+        if addCard:
+            #Get rarity and card id
+            rarityforbutton = request.POST.get("rarityforbutton")
+            cardID = addCard
+
+            #Gets the player inventory for the certain rarity
+            playerInventoryStorage = ownsCard.objects.filter(user=request.user, card__rarity_id=rarityforbutton).select_related('card').values('card__title', 'card__image', 'quantity', 'card__id')
+
+            #Puts the media tag onto the image for it to be used
+            for item in playerInventoryStorage:
+                item['card__image'] = "/media/" + item['card__image']
+
+            # Filter items where quantity is greater than 0
+            playerItems = playerInventoryStorage
+
+            error = None
+            merge, created = Merge.objects.get_or_create(userID=request.user)
+
+            if merge and (merge.cardID1 and merge.cardID2 and merge.cardID3 and merge.cardID4 and merge.cardID5):
+                print("error 1")
+                error = "There are already 5 cards in the merge slots remove one first!"
+                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error" : error})
+
+            cardToAdd = card.objects.get(id=cardID)  # Get the card object by ID
+            cardRarityID = cardToAdd.rarity.id  # Access the rarity of the card
+            ownCard = ownsCard.objects.get(user=request.user, card_id=cardID) #Amount owned of the card to be used with quantity
+
+
+            if merge.cardID1:
+                firstCard = merge.cardID1
+                if firstCard.rarity_id != cardRarityID:
+                    print("error met")
+                    error = "The card you tried to add was not of the same rarity as the first card in the merge."
+                    return render(request, "EcoWorld/mergecards.html", {"userinfo": userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error": error})
+
+
+            if ownCard.quantity <= 0:
+                print("error 3")
+                error = "You need to get more of this card to add it to the merge or take one out of the merge box"
+                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error" : error})
+
+
+            if merge:
+                # Check for available slot to add the card
+                if not merge.cardID1:
+                    merge.cardID1 = cardToAdd
+                elif not merge.cardID2:
+                    merge.cardID2 = cardToAdd
+                elif not merge.cardID3:
+                    merge.cardID3 = cardToAdd
+                elif not merge.cardID4:
+                    merge.cardID4 = cardToAdd
+                elif not merge.cardID5:
+                    merge.cardID5 = cardToAdd
+                merge.save()
+
+            ownCard.quantity -=1
+            ownCard.save()   
+            
+            #Gets the player inventory for the certain rarity
+            playerInventoryStorage = ownsCard.objects.filter(user=request.user, card__rarity_id=rarityforbutton).select_related('card').values('card__title', 'card__image', 'quantity', 'card__id')
+
+            #Puts the media tag onto the image for it to be used
+            for item in playerInventoryStorage:
+                item['card__image'] = "/media/" + item['card__image']
+
+            # Filter items where quantity is greater than 0
+            playerItems = playerInventoryStorage
+
+            return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton})
+
+        if removeCard:
+            #Get rarity and card id
+            rarityforbutton = request.POST.get("rarityforbutton")
+            cardID = addCard
+
+            print(rarityforbutton,cardID)
+            #Gets the player inventory for the certain rarity
+            playerInventoryStorage = ownsCard.objects.filter(user=request.user, card__rarity_id=rarityforbutton).select_related('card').values('card__title', 'card__image', 'quantity', 'card__id')
+
+            #Puts the media tag onto the image for it to be used
+            for item in playerInventoryStorage:
+                item['card__image'] = "/media/" + item['card__image']
+
+            # Filter items where quantity is greater than 0
+            playerItems = [item for item in playerInventoryStorage if item["quantity"] > 0]
+
+
+
+
+
+            return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton})

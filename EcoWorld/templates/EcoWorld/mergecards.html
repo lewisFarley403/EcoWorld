@@ -127,7 +127,7 @@
         .cardMergeBoxContainer {
             height: 150px;
             width: 100%;
-            background-color: blue;
+            
 
         }
 
@@ -225,9 +225,9 @@
         }
 
         .inventory-item {
-            display: flex; /* Align card and buttons side by side */
-            justify-content: space-between; /* Distribute space between card and buttons */
-            align-items: center; /* Center items vertically */
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
             transition: 0.5s ease-in-out;
         }
 
@@ -322,7 +322,7 @@
                 <h3>Merge Your Cards</h3>
                 
                 <div class="cardMergeBoxContainer">
-
+                    
                 </div>
 
                 <div class="mergeOptionBox">
@@ -357,8 +357,17 @@
                                 <img src="{{ item.card__image }}" alt="{{ item.card__title }}">
                                 <span class="quantity-badge">{{ item.quantity }}</span>
                             </div>
-                            <button class="addCardButton">+</button>
-                            <button class="removeCardButton">-</button>
+                            <form action="/ecoworld/mergecards/" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="rarityforbutton" value="{{ rarity }}">
+                                <button name="addCard" type="submit" value="{{item.card__id}}" class="addCardButton">+</button>
+                            </form>
+                            
+                            <form action="/ecoworld/mergecards/" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="rarityforbutton" value="{{ rarity }}">
+                                <button name="removeCard" type="submit" value="{{item.card__id}}" class="removeCardButton">-</button>
+                            </form>
                         </div>
                         {% empty %}
                         <p>You have no cards of this rarity to merge</p>
