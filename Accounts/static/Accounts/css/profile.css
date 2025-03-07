@@ -283,7 +283,6 @@ button:hover {
     background-color: #5a6268;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
     .profile-container {
         flex-direction: column;
@@ -292,5 +291,10 @@ button:hover {
     .profile-sidebar {
         width: 100%;
         margin-bottom: 20px;
+    }
+
+    .modal-cont {
+        width: 90%;  /* Make modal smaller for mobile */
+        max-width: 300px; 
     }
 }
