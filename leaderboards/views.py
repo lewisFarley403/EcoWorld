@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from .models import UserEarntCoins
 from django.contrib.auth.models import User
 from django.http import JsonResponse
+from django.conf import settings
 # Create your views here.
 @login_required
 def leaderboard(request):
@@ -26,13 +27,14 @@ def leaderboard(request):
 #     # return as json
 #     d ={'rankedUsers':users,'userPointMap':coin_map}
 #     return JsonResponse(d)
-
+@login_required
 def get_ranked_users(request):
     """
     Returns the top 3 users in the leaderboard.
     Returns:
         JsonResponse: JSON response with ranked users and their respective scores
     """
+    current_user = request.user
     users = User.objects.all()
     coin_map = {}
 
@@ -53,6 +55,15 @@ def get_ranked_users(request):
             'pfp_url': "/media/pfps/" +user.profile.profile_picture,
             'score': score
         })
-
+    for i,u in enumerate(ranked_users):
+        if u['username'] == current_user.username:
+            current_user_rank = i+1
+            break
+    current_user_data = {
+        'username': current_user.username,
+        'score': coin_map[current_user],
+        'rank': current_user_rank
+    }
     # Return the data as a JSON response
-    return JsonResponse({'rankedUsers': ranked_users})
+    print(settings.MEDIA_URL)
+    return JsonResponse({'rankedUsers': ranked_users,'MEDIA_URL': settings.MEDIA_URL,'current_user_data':current_user_data})

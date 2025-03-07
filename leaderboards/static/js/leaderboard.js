@@ -38,19 +38,30 @@ function onPageLoad() {
             }
         }
 
+
+
         // Optionally, populate the rest of the leaderboard in a table
-        var table = document.getElementById("leaderboard-table");
+        // var table = document.getElementById("leaderboard-table");
+        var table = document.getElementById("leaderboard-body");
         data.rankedUsers.forEach((user, i) => {
             var row = table.insertRow(-1);
             var rank = row.insertCell(0);
             var username = row.insertCell(1);
             var score = row.insertCell(2);
-            rank.innerHTML = user.rank;
+            rank.innerHTML = i + 1;
             username.innerHTML = user.username;
             score.innerHTML = user.score;
         });
+        const logged_in_user_rank = data.current_user_data.rank
+        const logged_in_user_score = data.current_user_data.score
+        const logged_in_user_username = data.current_user_data.username
+        console.log(logged_in_user_score)
+        document.getElementById('current-rank').innerText = logged_in_user_rank;
+        document.getElementById('current-coins').innerText = logged_in_user_score;
+        document.getElementById('current-name').innerText = logged_in_user_username;
     }).catch((error) => {
         console.error('Error fetching leaderboard data:', error);
     });
+
 }
 onPageLoad()

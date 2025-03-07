@@ -1,15 +1,375 @@
-.top3{
-    display:flex;
-    justify-content:space-between;
-    flex-direction: row;
-    
+/* todo:
+add scroll to the table, 
+have the table fill the box and not collapse in
+fix the current logged in user at the bottom of the table */
+
+
+.pfp {
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Ensures height equals width */
+    border-radius: 50%;
+    object-fit: cover; /* Ensures the image fills the space properly */
+    margin-left: 10px;
+    border: 2px solid #00dea5;
+}
+
+#top3 {
+    display: flex;
+    justify-content:space-between;;
+    align-items: flex-end; /* Aligns items at the bottom */
+    gap: 20px; /* Spacing between players */
+    top:50px;
+}
+
+.player-container {
+    text-align: center;
+}
+
+#second-container {
+    position: relative;
+    top: -100px; 
+}
+.under-container{
+    /* display: flex;
+    justify-content: space-between; */
+    gap: 20px;
+    margin-top: 150px;
+}
+.crown{
+    width: 50%;
+    height: auto;
+    position: absolute;
+    top: -70px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.top-3-container {
+    padding-left: 15% !important;
+    padding-right: 15% !important;
+}
+
+#leaderboard{
+    display: flex;
+    justify-content: center; /* Centers horizontally */
+    align-items: center; /* Centers vertically (if needed) */
+    /* width: 100%; */
+    background-color: #003c3d;
+    border-radius: 36px; /* Adjust the value as needed */
+    overflow: hidden; /* Ensures child elements don't break the rounded corners */
+    margin-left: 10%;
+    margin-right: 10%;
+}
+#leaderboard-table {
+
+    margin: auto; /* Centers horizontally */
+    text-align: center;
+    border-collapse: collapse;
+    width: 80%; 
+    border-collapse: separate; /* Allows spacing */
+    /* border-spacing: 0 20px;  */
+    /* border-spacing: 0 min(20px, 5vh) */
+    border-spacing : 0 5vh;
+    /* align-content: center; */
+}
+#leaderboard-table td{
+    /* font-size: 1.2rem;
+    font-weight: 600; */
+    color: white;
+}
+body{
+    height: 100vh;
+    background-color:#00dea5;
+    overflow: hidden;
+}
+
+.title{
+    font-weight: bold;
+    font-size: 18.7px;
 }
 
 
-.profile-pic {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-left: 10px;
-    border: 2px solid #00dea5;
+
+
+
+#leaderboard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #003c3d;
+    border-radius: 36px;
+    overflow: hidden;
+    margin-left: 10%;
+    margin-right: 10%;
+    width: 80%; /* Ensures it fills the box */
+}
+
+#leaderboard-table {
+    width: 100%; /* Make table fill the container */
+    text-align: center;
+    border-collapse: collapse;
+    border-spacing: 0 5vh;
+}
+
+#leaderboard-table thead {
+    background-color: #002a2b;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+#leaderboard-table tbody {
+    display: block;
+    max-height: 50vh; /* Adjust based on design */
+    overflow-y: auto; /* Enables scrolling */
+}
+
+#leaderboard-table tr {
+    display: flex;
+    width: 100%;
+}
+
+#leaderboard-table td, 
+#leaderboard-table th {
+    flex: 1;
+    padding: 10px;
+    color: white;
+}
+
+/* Ensuring the last row (current user) stays at the bottom */
+.current-user-row {
+    position: sticky;
+    bottom: 0;
+    background-color: #004a4b;
+    z-index: 2;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.root {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+#leaderboard {
+    flex: 1; /* Takes up all remaining space */
+    width: 80%;
+    background-color: #003c3d;
+    border-radius: 36px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column; /* Makes table fill the space */
+}
+
+#leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    flex: 1; /* Ensures table takes up full space */
+    display: flex;
+    flex-direction: column;
+}
+
+#leaderboard-table thead {
+    background-color: #002a2b;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+#leaderboard-table tbody {
+    flex: 1;
+    overflow-y: auto;
+    display: block;
+}
+
+#leaderboard-table tfoot {
+    position: sticky;
+    bottom: 0;
+    background-color: #004a4b;
+    z-index: 2;
+}
+
+/* Ensures each row takes the full width */
+#leaderboard-table tr {
+    display: flex;
+    width: 100%;
+}
+
+#leaderboard-table th, 
+#leaderboard-table td {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    color: white;
+}
+
+
+/* v3 */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.root {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+#leaderboard {
+    flex: 1; /* Takes up all available space */
+    width: 80%;
+    background-color: #003c3d;
+    border-radius: 36px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#leaderboard-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0; /* Remove default spacing */
+    flex: 1; /* Ensures table takes up full space */
+    display: flex;
+    flex-direction: column;
+}
+
+#leaderboard-table thead {
+    background-color: #002a2b;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+#leaderboard-table tbody {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Ensures even spacing */
+}
+
+#leaderboard-table tfoot {
+    position: sticky;
+    bottom: 0;
+    background-color: #004a4b;
+    z-index: 2;
+}
+
+/* Ensures rows stretch evenly */
+#leaderboard-table tbody tr {
+    display: flex;
+    width: 100%;
+    flex: 1; /* Makes rows take equal space */
+    align-items: center;
+    justify-content: center;
+}
+
+/* Ensures each column inside a row takes up equal space */
+#leaderboard-table th, 
+#leaderboard-table td {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    color: white;
+}
+
+/* v4 */
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.root {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+#leaderboard {
+    flex: 1;
+    width: 80%;
+    background-color: #003c3d;
+    border-radius: 36px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+#leaderboard-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+#leaderboard-table thead {
+    background-color: #002a2b;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+#leaderboard-table tbody {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+#leaderboard-table tfoot {
+    position: sticky;
+    bottom: 0;
+    background-color: #004a4b;
+    z-index: 2;
+}
+
+/* Minimum height per row to ensure 5 rows fit */
+#leaderboard-table tbody tr {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100% / 5); /* Ensures 5 rows fit */
+}
+
+/* Ensure columns take equal space */
+#leaderboard-table th, 
+#leaderboard-table td {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    color: white;
+}
+
+/* Only show scroll when needed */
+#leaderboard-table tbody::-webkit-scrollbar {
+    width: 8px;
+}
+#leaderboard-table tbody::-webkit-scrollbar-thumb {
+    background: #00dea5;
+    border-radius: 4px;
 }
