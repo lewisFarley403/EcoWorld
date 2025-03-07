@@ -7,8 +7,9 @@ Author:
     -Chris Lynch (cl1037@exeter.ac.uk)
 """
 
+from django.conf import settings
 from django.shortcuts import render, redirect
-from .models import drinkEvent,User,waterFountain,pack,ownsCard,challenge,ongoingChallenge
+from .models import drinkEvent,User,waterFountain,pack,ownsCard,challenge,ongoingChallenge, card, cardRarity
 import json
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -395,18 +396,38 @@ def friends(request):
 
 
 def mergecards(request):
-    if request.method == "GET":
-        user = request.user
-        user = User.objects.get(id=user.id)
-        pfp_url = user.profile.profile_picture
-        pfp_url = "/media/pfps/" + pfp_url
+    user = request.user
+    user = User.objects.get(id=user.id)
+    pfp_url = user.profile.profile_picture
+    pfp_url = "/media/pfps/" + pfp_url
 
-        userinfo = []
-        userinfo.append({
-            "username": user.username,
-            "pfp_url": pfp_url,
-            "coins" : user.profile.number_of_coins
-            })
+    userinfo = []
+    userinfo.append({
+        "username": user.username,
+        "pfp_url": pfp_url,
+        "coins" : user.profile.number_of_coins
+        })
+        
+    if request.method == "GET":
         return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0]})
     
+    elif request.method == "POST":
+        #Gets rarity option chosen if so
+        rarity = request.POST.get("rarity")
+        
+
+        if rarity:
+            #Gets the player inventory for the certain rarity
+            playerInventoryStorage = ownsCard.objects.filter(user=request.user, card__rarity_id=rarity).select_related('card').values('card__title', 'card__image', 'quantity', 'card__id')
+
+            #Puts the media tag onto the image for it to be used
+            for item in playerInventoryStorage:
+                item['card__image'] = "/media/" + item['card__image']
+
+            # Filter items where quantity is greater than 0
+            playerItems = [item for item in playerInventoryStorage if item["quantity"] > 0]
+
+            
+
+            return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems})
     
