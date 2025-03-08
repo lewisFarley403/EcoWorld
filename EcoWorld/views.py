@@ -445,14 +445,13 @@ def mergecards(request):
             for item in playerInventoryStorage:
                 item['card__image'] = "/media/" + item['card__image']
 
-            # Filter items where quantity is greater than 0
+
             playerItems = playerInventoryStorage
 
             error = None
             merge, created = Merge.objects.get_or_create(userID=request.user)
 
             if merge and (merge.cardID1 and merge.cardID2 and merge.cardID3 and merge.cardID4 and merge.cardID5):
-                print("error 1")
                 error = "There are already 5 cards in the merge slots remove one first!"
                 return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error" : error})
 
@@ -464,13 +463,11 @@ def mergecards(request):
             if merge.cardID1:
                 firstCard = merge.cardID1
                 if firstCard.rarity_id != cardRarityID:
-                    print("error met")
                     error = "The card you tried to add was not of the same rarity as the first card in the merge."
                     return render(request, "EcoWorld/mergecards.html", {"userinfo": userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error": error})
 
 
             if ownCard.quantity <= 0:
-                print("error 3")
                 error = "You need to get more of this card to add it to the merge or take one out of the merge box"
                 return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error" : error})
 
@@ -507,9 +504,8 @@ def mergecards(request):
         if removeCard:
             #Get rarity and card id
             rarityforbutton = request.POST.get("rarityforbutton")
-            cardID = addCard
+            cardID = removeCard
 
-            print(rarityforbutton,cardID)
             #Gets the player inventory for the certain rarity
             playerInventoryStorage = ownsCard.objects.filter(user=request.user, card__rarity_id=rarityforbutton).select_related('card').values('card__title', 'card__image', 'quantity', 'card__id')
 
@@ -517,11 +513,60 @@ def mergecards(request):
             for item in playerInventoryStorage:
                 item['card__image'] = "/media/" + item['card__image']
 
-            # Filter items where quantity is greater than 0
-            playerItems = [item for item in playerInventoryStorage if item["quantity"] > 0]
+
+            playerItems = playerInventoryStorage
+
+            error = None
+            merge, created = Merge.objects.get_or_create(userID=request.user)
+            
+            cardToRemove = None
+            if merge.cardID1 and str(merge.cardID1.id) == str(cardID):
+                cardToRemove = merge.cardID1  # The card object in cardID1
+                merge.cardID1 = None  # Remove the card from the merge slot
+            elif merge.cardID2 and str(merge.cardID2.id) == str(cardID):
+                cardToRemove = merge.cardID2  # The card object in cardID2
+                merge.cardID2 = None
+            elif merge.cardID3 and str(merge.cardID3.id) == str(cardID):
+                cardToRemove = merge.cardID3  # The card object in cardID3
+                merge.cardID3 = None
+            elif merge.cardID4 and str(merge.cardID4.id) == str(cardID):
+                cardToRemove = merge.cardID4  # The card object in cardID4
+                merge.cardID4 = None
+            elif merge.cardID5 and str(merge.cardID5.id) == str(cardID):
+                cardToRemove = merge.cardID5  # The card object in cardID5
+                merge.cardID5 = None
+
+            print(cardID)
+            print(cardToRemove)
+            if cardToRemove:
+                # Update the user's inventory by adding 1 back
+                ownCard = ownsCard.objects.get(user=request.user, card_id=cardID)
+                ownCard.quantity += 1
+                ownCard.save()  # Save the updated ownsCard object
+
+                merge.save()  # Save the updated merge object after removing the card
+                #Gets the player inventory for the certain rarity
+                playerInventoryStorage = ownsCard.objects.filter(user=request.user, card__rarity_id=rarityforbutton).select_related('card').values('card__title', 'card__image', 'quantity', 'card__id')
+
+                #Puts the media tag onto the image for it to be used
+                for item in playerInventoryStorage:
+                    item['card__image'] = "/media/" + item['card__image']
+
+
+                playerItems = playerInventoryStorage
+
+
+
+                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton})
+
+            else:
+                
+                error = "This card is not in a merge slot"
+                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error" : error})
 
 
 
 
 
-            return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton})
+
+           
