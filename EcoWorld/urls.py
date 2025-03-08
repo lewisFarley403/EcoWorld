@@ -11,7 +11,7 @@ from django.contrib import admin
 from django.urls import path,include
 from django.conf.urls.static import static
 
-from .views import addDrink, buy_pack, mergecards,store,pack_opening_page, upload_bottle_photo, scan_qr_code, generate_qr_code, friends # Import the view
+from .views import addDrink, merge_opening_page, buy_pack, mergecards,store,pack_opening_page, upload_bottle_photo, scan_qr_code, generate_qr_code, friends # Import the view
 from . import views
 
 app_name = 'EcoWorld'
@@ -28,5 +28,7 @@ urlpatterns = [
     path("challenge/", views.challenge, name='challenge'),  # URL for the challenge page
     path("completeChallenge/", views.completeChallenge, name='completeChallenge'),  # URL for the complete challenge page
     path("friends/", friends, name="friends"), #URL for friend dashboard
-    path("mergecards/", mergecards, name="mergecards")
+    path("mergecards/", mergecards, name="mergecards"), #URL for merging cards page
+    path("mergereveal/", merge_opening_page, name="mergereveal")
+
 ]

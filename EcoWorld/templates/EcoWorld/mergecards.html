@@ -75,7 +75,7 @@
 
         .mergebox {
             width: 700px;
-            height: 500px; 
+            height: 560px; 
             background-color: white;
             border-radius: 10px;
             padding: 20px;
@@ -92,11 +92,12 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            margin-top: 1px;
         }
 
         .inventorySection {
             width: 100%;
-            height: 400px;
+            height: 350px;
             background-color: #f2f2f2;
             border: 2px solid black;
             border-radius: 10px;
@@ -105,6 +106,7 @@
             align-items: center;
             overflow-y: auto;
             justify-content: flex-start; 
+            margin-bottom: 2px;
         }
 
 
@@ -125,8 +127,14 @@
         }
 
         .cardMergeBoxContainer {
-            height: 150px;
+            height: 200px;
             width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 20px;
+            padding-bottom: 10px;
             
 
         }
@@ -139,6 +147,7 @@
             justify-content: space-between; 
             align-items: center; 
             padding: 0 20px;
+            padding-bottom: 15px;
         }
         .mergeOptionButton {
             border-radius: 10px;
@@ -283,6 +292,112 @@
             font-weight: bold;
         }
 
+        .card-boxes {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            width: 90%;
+        }
+
+        .card-box {
+            width: 90px;
+            height: 150px;
+            background-color: lightgrey;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #ddd;
+        }
+
+        .card-box img {
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
+        .merge-button {
+            width: 150px;
+            height: 40px;
+            background-color: #00dea5;
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .merge-button:hover {
+            background-color: #009d7a;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 1px;
+        }
+
+        .wonCard {
+            z-index: 100;
+            height: 300px;
+            width: 180px;
+            opacity: 0; /* Initially hidden */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%); /* Center the box */
+            background-color: white;
+            border-radius: 15px;
+            border: 5px solid gold; /* Gold outline */
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        /* The background dimmer with 0.5 opacity */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 50;
+        }
+
+        /* The image inside the pop-up, large size */
+        .wonCard img {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Close button styling */
+        .close-btn {
+            background-color: #00dea5;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .close-btn:hover {
+            background-color: #009d7a;
+        }
 
 
 
@@ -319,11 +434,32 @@
 
         <div class="mergebox">
             <div class="mergeSection">
-                <h3>Merge Your Cards</h3>
+                <h3 style="margin-bottom: 1px;">Merge Your Cards</h3>
+                {% if error %}
+                    <p class="error-message">{{ error }}</p>
+                {% endif %}
                 
                 <div class="cardMergeBoxContainer">
+                    <div class="card-boxes">
+                        {% for card in merge %}
+                            <div class="card-box">
+                                {% if card.image %}
+                                <img src="{{ card.image }}">
+                                {% else %}
+
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                    <form action="/ecoworld/mergecards/" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="merge-button" name="mergebutton" value="{{ rarity }}">Merge Cards</button>
+                    </form>
+                    
                     
                 </div>
+                
 
                 <div class="mergeOptionBox">
                     <form action="/ecoworld/mergecards/" method="POST">
@@ -390,5 +526,11 @@
         </div>
         
     </div>
+
+
+
+
+    
+    
 </body>
 </html>
