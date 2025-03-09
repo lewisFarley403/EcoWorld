@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Glass Disposal</title>
+    <link rel="stylesheet" href="{% static 'EcoWorld/css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h2>Submit Glass Disposal</h2>
+        <form method="POST" enctype="multipart/form-data" class="form-container">
+            {% csrf_token %}
+
+            <label for="id_location">What3Words Location:</label>
+            {{ form.location }}
+
+            <label for="id_image">Upload Photo Proof:</label>
+            {{ form.image }}
+
+            <label for="id_description">How many bottles are you handing in?</label>
+            {{ form.bottle_count }}
+
+            <button type="submit" class="btn">Submit</button>
+        </form>
+    </div>
+</body>
+</html>
