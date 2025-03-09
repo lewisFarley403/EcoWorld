@@ -1,0 +1,85 @@
+/* static/SustainabilityGame/css/game.css */
+.game-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 8px 8px 0 rgba(0, 222, 165, 0.5);
+    position: relative;
+}
+
+.game-stats {
+    display: flex;
+    justify-content: space-between;
+    margin: 20px 0;
+    background: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.stat {
+    font-weight: bold;
+    color: #003c3c;
+}
+
+canvas {
+    border: 2px solid #00dea5;
+    border-radius: 5px;
+    background: #e8f8f5;
+    margin: 10px 0;
+}
+
+.game-instructions {
+    margin-top: 15px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #00dea5;
+}
+
+.coin-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background-color: #ffd700;
+    color: #333;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    animation: fade-in 0.5s;
+    z-index: 1000;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+}
+
+.coin-notification img {
+    width: 24px;
+    height: 24px;
+}
+
+.fade-out {
+    animation: fade-out 1s forwards;
+}
+
+@keyframes fade-in {
+    from {opacity: 0; transform: translateY(-20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+@keyframes fade-out {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}
