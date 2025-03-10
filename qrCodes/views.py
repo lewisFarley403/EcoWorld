@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+
+from .forms import WaterFountainForm
 from .models import waterFountain,drinkEvent
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils import timezone
@@ -35,4 +37,16 @@ def scan_code(request):
     user.profile.save()
     
     return render(request, 'drink_registered.html')
+
+@permission_required("Accounts.can_view_admin_button")
+def add_water_fountain(request):
+    if request.method == "POST":
+        form = WaterFountainForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("EcoWorld:admin_page")
+    else:
+        form = WaterFountainForm()
+
+    return render(request, 'add_water_fountain.html', {'form': form})
         

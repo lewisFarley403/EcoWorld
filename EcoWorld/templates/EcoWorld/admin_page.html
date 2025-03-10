@@ -60,10 +60,8 @@
 </table>
 <div class="admin-page-button-container">
     <a href="{% url 'EcoWorld:add_challenge' %}"><button class="button">Add New Challenge</button></a>
-</div>
-<div class="admin-page-button-container">
-    <a href="{% url 'qrCodes:generate_qr' %}"><button class="button"> Access QR code admin</button></a>
-</div>
+    <a href="{% url 'qrCodes:add_water_fountain' %}"><button class="button"> Add New Water Fountain</button></a>
+    <a href="{% url 'qrCodes:generate_qr' %}"><button class="button"> Generate QR Codes</button></a>
 </div>
 </body>
 </html>
