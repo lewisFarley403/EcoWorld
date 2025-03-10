@@ -2,6 +2,8 @@ from django.contrib import admin
 from django.urls import path,include
 from .views import generate_qr_code, scan_code, scan_code_page
 
+app_name = 'qrCodes'
+
 urlpatterns = [
     path('generate_qr_code/', generate_qr_code, name='generate_qr'),
     path('scan_code/', scan_code, name='scan_qr'),
