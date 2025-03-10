@@ -34,9 +34,49 @@ class Profile(models.Model):
     first_name = models.TextField(blank=True)
     last_name = models.TextField(blank=True)
     defaultpfp = "/pfp1.png"
-    profile_picture = models.CharField(max_length=255, default=defaultpfp)  # Store the image file name
+    profile_picture = models.CharField(max_length=255, default=defaultpfp)
     number_of_coins = models.IntegerField(default=0)
     def __str__(self):
         return self.user.username
 
 
+class Friends(models.Model):
+    """
+    Model for storing friends
+    Attributes:
+        userID1 = The user ID of one of the people in the relationship of friends
+        userID2 = The user ID of the other person who is friends with User ID1
+    Methods:
+        __str__  : Returns that User x is friends with User Y
+    Author:
+        Chris Lynch (cl1037@exeter.ac.uk)
+    """
+    userID1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="FriendOne")
+    userID2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="FriendTwo")
+
+    class Meta:
+        unique_together = ("userID1", "userID2")
+    
+    def __str__(self):
+        return f"{self.userID1.username} is friends with {self.userID2.username}"
+
+
+class FriendRequests(models.Model):
+    """
+    Model for storing friend requests
+    Attributes:
+        senderID = The person who sent the friend request with their ID
+        receiverID = The person who is receiving the friend request for use in the requests box
+    Methods:
+        __str__  : Returns that User x sent a request to User Y
+    Author:
+        Chris Lynch (cl1037@exeter.ac.uk)
+    """
+    senderID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="sent_requests")
+    receiverID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_requests")
+
+    class Meta:
+        unique_together = ("senderID", "receiverID") 
+
+    def __str__(self):
+        return f"{self.senderID.username} sent a request to {self.receiverID.username}"

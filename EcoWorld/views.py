@@ -14,8 +14,10 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
 from .utils import getUsersChallenges
 from datetime import datetime
+from Accounts.models import Friends, FriendRequests
 # from qr_code.qrcode.utils import QRCodeOptions
 from .forms import WaterBottleFillForm
+from django.db.models import Q
 
 # Create your views here.
 def addDrink(request):
@@ -138,7 +140,6 @@ def store(request):
 
 
 @login_required
-
 def buy_pack(request):
     """
     Function to handle purchasing a pack and making sure the user can
@@ -237,3 +238,157 @@ def completeChallenge(request):
         return HttpResponse("Challenge completed")
     return HttpResponse("Invalid request type")
 
+
+
+
+@login_required
+def friends(request):
+    """
+    Web portal for friends in the ecoworld system. This page has 3 main parts: A current friends list, a search bar to add friends
+    and a requests box. 
+    It uses the models created in accounts for friends and friend requests
+    Depending on the action made it has returns for adding a friend in the search, accepting or declining a friend request and 
+    removing a friend from the friends list
+
+    Author:
+    Chris Lynch (cl1037@exeter.ac.uk)
+    """
+    if request.method == "GET":
+        user = request.user
+        user = User.objects.get(id=user.id)
+        pfp_url = user.profile.profile_picture
+        pfp_url = "/media/pfps/" + pfp_url
+
+        userinfo = []
+        userinfo.append({
+            "username": user.username,
+            "pfp_url": pfp_url,
+            "coins" : user.profile.number_of_coins
+            })
+        
+        #Gets pending requests
+        friendreqs = FriendRequests.objects.filter(receiverID=user)
+
+        userFriends = Friends.objects.filter(Q(userID1=user) | Q(userID2=user))
+
+        
+
+        return render(request, "EcoWorld/friends.html", {"userinfo" : userinfo[0], "friendreqs": friendreqs, "friends" : userFriends})
+    
+    elif request.method == "POST":
+
+        #Gets user data for the navbar
+        user = request.user
+        user = User.objects.get(id=user.id)
+        userID = request.user.id
+
+
+        pfp_url = user.profile.profile_picture
+        pfp_url = "/media/pfps/" + pfp_url
+
+        userinfo = []
+        userinfo.append({
+            "username": user.username,
+            "pfp_url": pfp_url,
+            "coins" : user.profile.number_of_coins
+            })
+        
+        #Gets pending requests
+        friendreqs = FriendRequests.objects.filter(receiverID=user)
+
+        #Gets user friends
+        userFriends = Friends.objects.filter(Q(userID1=user) | Q(userID2=user))
+        
+        #Get the username sent in the form for adding friend
+        username = request.POST.get("friendUsername")
+
+        #Get friend request if sent and username 
+        friendAccOrRej = request.POST.get("friendar")
+        friendAction = request.POST.get("friendaction")
+
+
+        #Get removed friend if sent
+        removeUser = request.POST.get("remove")
+
+
+        #If the user is adding a friend
+        if username:
+            error = None
+            #Gets the requested user for the friend request
+            requestedUser = User.objects.filter(username=username).first()
+            
+
+
+            #Check for user existing
+            if not requestedUser:
+                error = "User Not Found!"
+                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends})
+            
+            #Check if user tried to add themselves
+            if username == user.username:
+                error = "You cant request yourself"
+                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends}) 
+            
+            requestedUserID = requestedUser.id
+            existing_request = FriendRequests.objects.filter(senderID=userID, receiverID=requestedUserID).exists() or FriendRequests.objects.filter(senderID=requestedUserID, receiverID=userID).exists()
+            
+            #Checks if pending request already made
+            if existing_request:
+                error = "Friend request already pending"
+                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends})
+            
+
+            #Check if they are already friends
+            existing_Friends = Friends.objects.filter(userID1=requestedUserID, userID2= userID).exists() or Friends.objects.filter(userID1=userID, userID2=requestedUserID).exists()
+            if existing_Friends:
+                error = "You are already friends with this user!"
+                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends})
+
+
+            #Add request to database
+            FriendRequests.objects.create(senderID=request.user, receiverID=requestedUser)
+            AddMessage = "Friend request sent!"
+            return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs, "addmessage": AddMessage,"friends" : userFriends})
+
+        #If the user is accepting or rejecting a friend request
+        elif friendAccOrRej:
+            #Gets requested user for DB
+            requestedUser = User.objects.filter(username=friendAccOrRej).first()
+
+            #If accepted friend request
+            if friendAction == "accept":
+                #Creates row in friends table and removes from requests
+                Friends.objects.create(userID1=user, userID2=requestedUser)
+                FriendRequests.objects.filter(senderID=requestedUser, receiverID=user).delete()
+
+                #Gets active requests and friends again to return
+                friendreqs = FriendRequests.objects.filter(receiverID=user)
+                userFriends = Friends.objects.filter(Q(userID1=user) | Q(userID2=user))
+
+                return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs,"friends" : userFriends})
+            
+            else:
+                #Deletes friend request info as its a reject
+                FriendRequests.objects.filter(senderID=requestedUser, receiverID=user).delete()
+
+                #Updates data on friend requests
+                friendreqs = FriendRequests.objects.filter(receiverID=user)
+
+                return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs,"friends" : userFriends})
+            
+
+            
+
+            
+        #If removing a friend
+        else:
+            removeUser = User.objects.filter(username=removeUser).first()
+            removeUserID = removeUser.id
+            Friends.objects.filter(Q(userID1=user, userID2=removeUserID) | Q(userID1=removeUserID, userID2=user)).delete()
+            
+            #Updates data on friend requests
+            friendreqs = FriendRequests.objects.filter(receiverID=user)
+
+
+
+            return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs,"friends" : userFriends})
