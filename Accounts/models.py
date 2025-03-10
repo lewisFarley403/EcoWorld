@@ -39,6 +39,11 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+    class Meta:
+        permissions = [
+            ("can_view_admin_button", "Can grant admin rights"),
+        ]
+
 
 class Friends(models.Model):
     """

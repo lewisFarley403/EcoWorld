@@ -6,19 +6,19 @@ Author:
     -Lewis Farley (lf507@exeter.ac.uk)
     -Chris Lynch (cl1037@exeter.ac.uk)
 """
-
+from django.contrib.auth.models import Permission
 import random
 from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
 from .models import drinkEvent,User,waterFountain,pack,ownsCard,challenge,ongoingChallenge, card, cardRarity, Merge
 import json
 from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from .utils import getUsersChallenges
 from datetime import datetime
 from Accounts.models import Friends, FriendRequests
 # from qr_code.qrcode.utils import QRCodeOptions
-from .forms import WaterBottleFillForm
+from .forms import WaterBottleFillForm, ChallengeForm
 from django.db.models import Q
 
 # Create your views here.
@@ -41,6 +41,28 @@ def addDrink(request):
     return HttpResponse("Invalid request type 2")
 
 
+def getUserInfo(request):
+    """
+    This function gets the user info for the navbar
+    Returns: user info to be displayed on the navbar
+
+    Author:
+    Ethan Sweeney (es1052@exeter.ac.uk)
+    """
+    user = request.user
+    user = User.objects.get(id=user.id)
+    pfp_url = user.profile.profile_picture
+    pfp_url = "/media/pfps/" + pfp_url
+
+    userinfo = []
+    userinfo.append({
+        "username": user.username,
+        "pfp_url": pfp_url,
+        "coins": user.profile.number_of_coins
+    })
+    return userinfo
+
+
 def dashboard(request):
     """
     Dashboard on request takes user info to send to dashboard
@@ -52,17 +74,7 @@ def dashboard(request):
 
     #Upon loading the page the dashboard needs its username and pfp along with coins, this function here gives it to the dashboard html file
     if request.method == "GET":
-        user = request.user
-        user = User.objects.get(id=user.id)
-        pfp_url = user.profile.profile_picture
-        pfp_url = "/media/pfps/" + pfp_url
-
-        userinfo = []
-        userinfo.append({
-            "username": user.username,
-            "pfp_url": pfp_url,
-            "coins" : user.profile.number_of_coins
-            })
+        userinfo = getUserInfo(request)
 
         return render(request, "EcoWorld/dashboard.html", {"userinfo":userinfo[0]})
 
@@ -123,17 +135,7 @@ def store(request):
             })
         
         #Function to get the user data and then adds it to the user dictionary
-        user = request.user
-        user = User.objects.get(id=user.id)
-        pfp_url = user.profile.profile_picture
-        pfp_url = "/media/pfps/" + pfp_url
-
-        userinfo = []
-        userinfo.append({
-            "username": user.username,
-            "pfp_url": pfp_url,
-            "coins" : user.profile.number_of_coins
-            })
+        userinfo = getUserInfo(request)
         
         #Sends the info to the page
         return render(request, "ecoWorld/store.html",{ "packs": pack_list, "userinfo": userinfo[0]})
@@ -239,6 +241,61 @@ def completeChallenge(request):
         chal.save()
         return HttpResponse("Challenge completed")
     return HttpResponse("Invalid request type")
+
+
+@permission_required("Accounts.can_view_admin_button")  # Only existing admins can access
+def admin_page(request):
+    """
+    This view renders the admin page, which allows admins to do things a regular user cannot.
+    Returns: render request and a list of users who are not admins
+
+    Author:
+    Ethan Sweeney (es1052@exeter.ac.uk)
+    """
+    if request.method == "GET":
+        userinfo = getUserInfo(request)
+
+    users = User.objects.exclude(user_permissions__codename="can_view_admin_button")
+    missing_rows = range(max(0, 3 - users.count()))
+    return render(request, "EcoWorld/admin_page.html", {"users": users, "missing_rows": missing_rows, "userinfo":userinfo[0]})
+
+@permission_required("Accounts.can_view_admin_button")  # Only admins can promote others
+def grant_admin(request, user_id):
+    """
+    This view grants the can_view_admin_button permission to a user, effectively promoting them to an admin.
+
+    Returns: Reloading of the admin page with the updated list of users.
+
+    Author:
+    Ethan Sweeney (es1052@exeter.ac.uk)
+    """
+    if not request.user.has_perm("Accounts.can_view_admin_button"):
+        return HttpResponse("You do not have permission to do this.", status=403)
+
+    user = get_object_or_404(User, id=user_id)
+    permission = Permission.objects.get(codename="can_view_admin_button")
+
+    user.user_permissions.add(permission)
+
+    # Clear the permission cache for the modified user
+    if hasattr(user, '_perm_cache'):
+        del user._perm_cache
+
+    return redirect("EcoWorld:admin_page")
+
+
+
+@permission_required("Accounts.can_view_admin_button")  # Only allowed admins can add challenges
+def add_challenge(request):
+    if request.method == 'POST':
+        form = ChallengeForm(request.POST)
+        if form.is_valid():
+            # Save the form with the current user as the creator
+            form.save(created_by=request.user)
+            return redirect("EcoWorld:admin_page")  # Redirect back to the admin page after saving
+    else:
+        form = ChallengeForm()
+    return render(request, "EcoWorld/add_challenge.html", {"form": form})
 
 
 
