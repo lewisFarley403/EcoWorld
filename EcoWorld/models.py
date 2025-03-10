@@ -204,4 +204,33 @@ class pack(models.Model):
         cards = card.objects.filter(rarity=rarity)
         cardToReturn = random.choice(cards)
         return cardToReturn
+
+
+
+class Merge(models.Model):
+    """
+    Class to create a merge table in the database for merge actions within the mergecards view
     
+    Attributes:
+        userID = Foreign key, is used to tie the user to the merge being made
+        cardID1 = Foreign key, is used to tie the card for slot 1 to a card
+        cardID2 = Foreign key, is used to tie the card for slot 2 to a card
+        cardID3 = Foreign key, is used to tie the card for slot 3 to a card
+        cardID4 = Foreign key, is used to tie the card for slot 4 to a card
+        cardID5 = Foreign key, is used to tie the card for slot 5 to a card
+    
+    Method:
+        __str__: Returns merge operation for the username
+    Author:
+    Chris Lynch (cl1037@exeter.ac.uk)
+    
+    """
+    userID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="UserID")
+    cardID1 = models.ForeignKey(card, null=True, blank=True, on_delete=models.CASCADE, related_name="CardID1")
+    cardID2 = models.ForeignKey(card, null=True, blank=True, on_delete=models.CASCADE, related_name="CardID2")
+    cardID3 = models.ForeignKey(card, null=True, blank=True, on_delete=models.CASCADE, related_name="CardID3")
+    cardID4 = models.ForeignKey(card, null=True, blank=True, on_delete=models.CASCADE, related_name="CardID4")
+    cardID5 = models.ForeignKey(card, null=True, blank=True, on_delete=models.CASCADE, related_name="CardID5")
+
+    def __str__(self):
+        return f"Merge operation for {self.userID.username}"

@@ -7,8 +7,10 @@ Author:
     -Chris Lynch (cl1037@exeter.ac.uk)
 """
 
-from django.shortcuts import render, redirect
-from .models import drinkEvent,User,waterFountain,pack,ownsCard,challenge,ongoingChallenge
+import random
+from django.conf import settings
+from django.shortcuts import get_object_or_404, render, redirect
+from .models import drinkEvent,User,waterFountain,pack,ownsCard,challenge,ongoingChallenge, card, cardRarity, Merge
 import json
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -392,3 +394,336 @@ def friends(request):
 
 
             return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs,"friends" : userFriends})
+
+
+def mergecards(request):
+    user = request.user
+    user = User.objects.get(id=user.id)
+    pfp_url = user.profile.profile_picture
+    pfp_url = "/media/pfps/" + pfp_url
+
+    userinfo = []
+    userinfo.append({
+        "username": user.username,
+        "pfp_url": pfp_url,
+        "coins" : user.profile.number_of_coins
+        })
+        
+    if request.method == "GET":
+
+        merge, created = Merge.objects.get_or_create(userID=request.user)
+
+        cardImages = []
+
+        #Go through the merge DB and get the mergeCardID and the image for the template
+        for i in range(1, 6):
+            cardField = getattr(merge, f'cardID{i}', None)
+            if cardField:
+                cardImages.append({'id': f'cardID{i}', 'image': cardField.image.url})
+            else:
+                cardImages.append({'id': None, 'image' : None})
+
+
+
+        return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "merge":cardImages})
+    
+    elif request.method == "POST":
+        #Gets rarity option chosen if so
+        rarity = request.POST.get("rarity")
+        addCard = request.POST.get("addCard")
+        removeCard = request.POST.get("removeCard")
+
+        mergeCardsFunc = request.POST.get("mergebutton")
+
+
+
+        if rarity:
+            #Gets the player inventory for the certain rarity
+            playerInventoryStorage = ownsCard.objects.filter(user=request.user, card__rarity_id=rarity).select_related('card').values('card__title', 'card__image', 'quantity', 'card__id')
+
+            #Puts the media tag onto the image for it to be used
+            for item in playerInventoryStorage:
+                item['card__image'] = "/media/" + item['card__image']
+
+            
+            playerItems = playerInventoryStorage
+
+            merge, created = Merge.objects.get_or_create(userID=request.user)
+
+            cardImages = []
+
+            #Go through the merge DB and get the mergeCardID and the image for the template
+            for i in range(1, 6):
+                cardField = getattr(merge, f'cardID{i}', None)
+                if cardField:
+                    cardImages.append({'id': f'cardID{i}', 'image': cardField.image.url})
+                else:
+                    cardImages.append({'id': None, 'image' : None})
+            
+
+            return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity":rarity,"merge":cardImages},)
+        
+        if addCard:
+            #Get rarity and card id
+            rarityforbutton = request.POST.get("rarityforbutton")
+            cardID = addCard
+
+            merge, created = Merge.objects.get_or_create(userID=request.user)
+
+            cardImages = []
+
+            #Go through the merge DB and get the mergeCardID and the image for the template
+            for i in range(1, 6):
+                cardField = getattr(merge, f'cardID{i}', None)
+                if cardField:
+                    cardImages.append({'id': f'cardID{i}', 'image': cardField.image.url})
+                else:
+                    cardImages.append({'id': None, 'image' : None})
+
+            #Gets the player inventory for the certain rarity
+            playerInventoryStorage = ownsCard.objects.filter(user=request.user, card__rarity_id=rarityforbutton).select_related('card').values('card__title', 'card__image', 'quantity', 'card__id')
+
+            #Puts the media tag onto the image for it to be used
+            for item in playerInventoryStorage:
+                item['card__image'] = "/media/" + item['card__image']
+
+
+            playerItems = playerInventoryStorage
+
+            error = None
+            merge, created = Merge.objects.get_or_create(userID=request.user)
+
+            if merge and (merge.cardID1 and merge.cardID2 and merge.cardID3 and merge.cardID4 and merge.cardID5):
+                error = "There are already 5 cards in the merge slots remove one first!"
+                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error" : error,"merge":cardImages})
+
+            cardToAdd = card.objects.get(id=cardID)  # Get the card object by ID
+            cardRarityID = cardToAdd.rarity.id  # Access the rarity of the card
+            ownCard = ownsCard.objects.get(user=request.user, card_id=cardID) #Amount owned of the card to be used with quantity
+
+
+            if merge.cardID1:
+                firstCard = merge.cardID1
+                if firstCard.rarity_id != cardRarityID:
+                    error = "The card you tried to add was not of the same rarity as the first card in the merge."
+                    return render(request, "EcoWorld/mergecards.html", {"userinfo": userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error": error,"merge":cardImages})
+
+
+            if ownCard.quantity <= 0:
+                error = "You need to get more of this card to add it to the merge or take one out of the merge box"
+                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error" : error,"merge":cardImages})
+
+
+            if merge:
+                # Check for available slot to add the card
+                if not merge.cardID1:
+                    merge.cardID1 = cardToAdd
+                elif not merge.cardID2:
+                    merge.cardID2 = cardToAdd
+                elif not merge.cardID3:
+                    merge.cardID3 = cardToAdd
+                elif not merge.cardID4:
+                    merge.cardID4 = cardToAdd
+                elif not merge.cardID5:
+                    merge.cardID5 = cardToAdd
+                merge.save()
+
+            ownCard.quantity -=1
+            ownCard.save()   
+            
+            #Gets the player inventory for the certain rarity
+            playerInventoryStorage = ownsCard.objects.filter(user=request.user, card__rarity_id=rarityforbutton).select_related('card').values('card__title', 'card__image', 'quantity', 'card__id')
+
+            #Puts the media tag onto the image for it to be used
+            for item in playerInventoryStorage:
+                item['card__image'] = "/media/" + item['card__image']
+
+            # Filter items where quantity is greater than 0
+            playerItems = playerInventoryStorage
+
+            merge, created = Merge.objects.get_or_create(userID=request.user)
+
+            cardImages = []
+
+            #Go through the merge DB and get the mergeCardID and the image for the template
+            for i in range(1, 6):
+                cardField = getattr(merge, f'cardID{i}', None)
+                if cardField:
+                    cardImages.append({'id': f'cardID{i}', 'image': cardField.image.url})
+                else:
+                    cardImages.append({'id': None, 'image' : None})
+
+            return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton,"merge":cardImages})
+
+        if removeCard:
+            #Get rarity and card id
+            rarityforbutton = request.POST.get("rarityforbutton")
+            cardID = removeCard
+
+            #Gets the player inventory for the certain rarity
+            playerInventoryStorage = ownsCard.objects.filter(user=request.user, card__rarity_id=rarityforbutton).select_related('card').values('card__title', 'card__image', 'quantity', 'card__id')
+
+            #Puts the media tag onto the image for it to be used
+            for item in playerInventoryStorage:
+                item['card__image'] = "/media/" + item['card__image']
+
+
+            playerItems = playerInventoryStorage
+
+            error = None
+            merge, created = Merge.objects.get_or_create(userID=request.user)
+
+            cardToRemove = None
+            if merge.cardID1 and str(merge.cardID1.id) == str(cardID):
+                cardToRemove = merge.cardID1  
+                merge.cardID1 = None 
+            elif merge.cardID2 and str(merge.cardID2.id) == str(cardID):
+                cardToRemove = merge.cardID2
+                merge.cardID2 = None
+            elif merge.cardID3 and str(merge.cardID3.id) == str(cardID):
+                cardToRemove = merge.cardID3
+                merge.cardID3 = None
+            elif merge.cardID4 and str(merge.cardID4.id) == str(cardID):
+                cardToRemove = merge.cardID4 
+                merge.cardID4 = None
+            elif merge.cardID5 and str(merge.cardID5.id) == str(cardID):
+                cardToRemove = merge.cardID5
+                merge.cardID5 = None
+
+            print(cardID)
+            print(cardToRemove)
+            if cardToRemove:
+                # Update the user's inventory by adding 1 back
+                ownCard = ownsCard.objects.get(user=request.user, card_id=cardID)
+                ownCard.quantity += 1
+                
+                #Save merge db and ownsCard db for user
+                ownCard.save() 
+                merge.save() 
+
+
+                #Gets the player inventory for the certain rarity
+                playerInventoryStorage = ownsCard.objects.filter(user=request.user, card__rarity_id=rarityforbutton).select_related('card').values('card__title', 'card__image', 'quantity', 'card__id')
+
+                #Puts the media tag onto the image for it to be used
+                for item in playerInventoryStorage:
+                    item['card__image'] = "/media/" + item['card__image']
+
+
+                playerItems = playerInventoryStorage
+
+                merge, created = Merge.objects.get_or_create(userID=request.user)
+
+                cardImages = []
+
+                #Go through the merge DB and get the mergeCardID and the image for the template
+                for i in range(1, 6):
+                    cardField = getattr(merge, f'cardID{i}', None)
+                    if cardField:
+                        cardImages.append({'id': f'cardID{i}', 'image': cardField.image.url})
+                    else:
+                        cardImages.append({'id': None, 'image' : None})
+
+
+                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton,"merge":cardImages})
+
+            else:
+                merge, created = Merge.objects.get_or_create(userID=request.user)
+
+                cardImages = []
+
+                #Go through the merge DB and get the mergeCardID and the image for the template
+                for i in range(1, 6):
+                    cardField = getattr(merge, f'cardID{i}', None)
+                    if cardField:
+                        cardImages.append({'id': f'cardID{i}', 'image': cardField.image.url})
+                    else:
+                        cardImages.append({'id': None, 'image' : None})
+                error = "This card is not in a merge slot"
+                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error" : error,"merge":cardImages})
+
+
+
+        if mergeCardsFunc:
+            #Gets the player inventory for the certain rarity
+            playerInventoryStorage = ownsCard.objects.filter(user=request.user, card__rarity_id=rarity).select_related('card').values('card__title', 'card__image', 'quantity', 'card__id')
+
+            #Puts the media tag onto the image for it to be used
+            for item in playerInventoryStorage:
+                item['card__image'] = "/media/" + item['card__image']
+
+            
+            playerItems = playerInventoryStorage
+
+            merge, created = Merge.objects.get_or_create(userID=request.user)
+
+            rarity = mergeCardsFunc
+
+            cardImages = []
+
+            #Go through the merge DB and get the mergeCardID and the image for the template
+            for i in range(1, 6):
+                cardField = getattr(merge, f'cardID{i}', None)
+                if cardField:
+                    cardImages.append({'id': f'cardID{i}', 'image': cardField.image.url})
+                else:
+                    cardImages.append({'id': None, 'image' : None})
+            
+
+            if mergeCardsFunc == 5:
+                error = "This card rarity cannot be merged!"
+                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity":rarity,"merge":cardImages, "error":error},)
+                
+
+            if merge.cardID1 and merge.cardID2 and merge.cardID3 and merge.cardID4 and merge.cardID5:
+                merge.cardID1 = None
+                merge.cardID2 = None
+                merge.cardID3 = None
+                merge.cardID4 = None
+                merge.cardID5 = None
+
+                
+                
+                mergeCardsFunc = int(mergeCardsFunc)
+                mergeCardsFunc += 1
+
+                cards = card.objects.filter(rarity=mergeCardsFunc)
+                cardToReturn = random.choice(cards)
+
+                cardImage = cardToReturn.image.url
+
+                userCard, created = ownsCard.objects.get_or_create(user=request.user, card=cardToReturn)
+
+                # If the card already exists in the user's inventory, increment the quantity
+                if not created:
+                    userCard.quantity += 1
+                    userCard.save()
+                else:
+                    # If the card is newly added to the inventory, set quantity to 1
+                    userCard.quantity = 1
+                    userCard.save()
+                merge.save()
+
+                merge, created = Merge.objects.get_or_create(userID=request.user)
+
+            
+
+                cardImages = []
+
+                #Go through the merge DB and get the mergeCardID and the image for the template
+                for i in range(1, 6):
+                    cardField = getattr(merge, f'cardID{i}', None)
+                    if cardField:
+                        cardImages.append({'id': f'cardID{i}', 'image': cardField.image.url})
+                    else:
+                        cardImages.append({'id': f'cardID{i}', 'image' : None})
+
+           
+                return render(request, "EcoWorld/merge_opening_page.html", {"image": cardToReturn.image.url})
+
+
+        return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0]})
+           
+
+def merge_opening_page(request):
+    return render(request, "EcoWorld/merge_opening_page.html")
