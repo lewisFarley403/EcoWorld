@@ -8,17 +8,15 @@ Author:
 """
 from django.contrib.auth.models import Permission
 import random
-from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import drinkEvent,User,waterFountain,pack,ownsCard,challenge,ongoingChallenge, card, cardRarity, Merge
+from .models import User, pack, ownsCard, challenge, ongoingChallenge, card, Merge
 import json
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required, permission_required
 from .utils import getUsersChallenges
 from datetime import datetime
 from Accounts.models import Friends, FriendRequests
-# from qr_code.qrcode.utils import QRCodeOptions
-from .forms import WaterBottleFillForm, ChallengeForm
+from .forms import ChallengeForm
 from django.db.models import Q
 
 # Create your views here.
@@ -269,6 +267,7 @@ def friends(request):
     Chris Lynch (cl1037@exeter.ac.uk)
     """
     if request.method == "GET":
+        user=request.user
         userinfo = getUserInfo(request)
         
         #Gets pending requests
@@ -283,7 +282,7 @@ def friends(request):
     elif request.method == "POST":
         userinfo = getUserInfo(request)
         user = request.user
-        
+        userID     = user.id
         #Gets pending requests
         friendreqs = FriendRequests.objects.filter(receiverID=user)
 

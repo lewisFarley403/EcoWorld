@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from EcoWorld.models import waterFountain,drinkEvent
+from .models import waterFountain,drinkEvent
 from django.contrib.auth.decorators import login_required, permission_required
 from django.utils import timezone
 from django.conf import settings
