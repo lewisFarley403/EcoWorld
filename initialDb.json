@@ -279,7 +279,7 @@
         }
     },
     {
-        "model":"EcoWorld.waterFountain",
+        "model":"qrCodes.waterFountain",
         "pk": 1,
         "fields": {
             "name": "Forum Library",
@@ -287,7 +287,7 @@
         }
     },
     {
-        "model":"EcoWorld.waterFountain",
+        "model":"qrCodes.waterFountain",
         "pk": 2,
         "fields": {
             "name": "Innovation Cafe",
@@ -295,7 +295,7 @@
         }
     },
     {
-        "model":"EcoWorld.waterFountain",
+        "model":"qrCodes.waterFountain",
         "pk": 3,
         "fields": {
             "name": "The Student Union",

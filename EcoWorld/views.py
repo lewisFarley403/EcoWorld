@@ -8,39 +8,18 @@ Author:
 """
 from django.contrib.auth.models import Permission
 import random
-from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
-from .models import drinkEvent,User,waterFountain,pack,ownsCard,challenge,ongoingChallenge, card, cardRarity, Merge
+from .models import User, pack, ownsCard, challenge, ongoingChallenge, card, Merge
 import json
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required, permission_required
 from .utils import getUsersChallenges
 from datetime import datetime
 from Accounts.models import Friends, FriendRequests
-# from qr_code.qrcode.utils import QRCodeOptions
-from .forms import WaterBottleFillForm, ChallengeForm
+from .forms import ChallengeForm
 from django.db.models import Q
 
 # Create your views here.
-def addDrink(request):
-    print("add drink post req")
-    if request.method == "POST":
-        data = json.loads(request.body)
-        user = data["user"]
-        fountain = data["fountain"]
-        drank_on = data["drank_on"]
-        print(f'request with body {data}')
-        user = User.objects.get(id=user)
-        fountain = waterFountain.objects.get(id=fountain)
-        if user is None or fountain is None:
-            return HttpResponse("Invalid user or fountain")
-        
-        drinkEvent.objects.create(user=user,fountain=fountain,drank_on=drank_on)
-
-        return HttpResponse("Added drink event")
-    return HttpResponse("Invalid request type 2")
-
-
 def getUserInfo(request):
     """
     This function gets the user info for the navbar
@@ -63,6 +42,7 @@ def getUserInfo(request):
     return userinfo
 
 
+@login_required
 def dashboard(request):
     """
     Dashboard on request takes user info to send to dashboard
@@ -77,30 +57,6 @@ def dashboard(request):
         userinfo = getUserInfo(request)
 
         return render(request, "EcoWorld/dashboard.html", {"userinfo":userinfo[0]})
-
-def generate_qr_code(request):
-    """
-    This Generates a QR code and renders it on a template (For functionality)
-    """
-    qr_options = QRCodeOptions(size='M' , border=6, error_correction='L')
-    qr_data = "https://EcoWorld.com/scan/" #Change this to website name I have no idea
-    return render(request, 'EcoWorld/qr_code.html', {'qr_data': qr_data, 'qr_options': qr_options})
-
-def scan_qr_code(request):
-    return render(request, 'EcoWorld/scan_qr_code.html')
-
-def upload_bottle_photo(request):
-    if request.method == 'POST':
-        form = WaterBottleFillForm(request.POST, request.FILES)
-        if form.is_valid():
-            water_fill = form.save(commit=False)
-            water_fill.user = request.user
-            water_fill.save()
-            return redirect('success_page') #Create a success page
-    else:
-        form = WaterBottleFillForm()
-
-    return render(request, 'EcoWorld/upload_photo.html', {'form': form})
 
 @login_required
 def store(request):
@@ -213,9 +169,6 @@ def pack_opening_page(request):
     image_url = card_received.image.url
     return render(request, "EcoWorld/pack_opening_page.html", {"image": image_url})
 
-
-
-
 @login_required
 def challenge(request):
     challenges = getUsersChallenges(request.user)
@@ -223,6 +176,7 @@ def challenge(request):
     print(type(user.username)) 
     print(user.profile.number_of_coins)   
     return render(request, "EcoWorld/challengePage.html", {"challenges":challenges,'username':user.username,'coins':user.profile.number_of_coins})
+
 @login_required
 def completeChallenge(request):
     if request.method == "POST":
@@ -313,17 +267,8 @@ def friends(request):
     Chris Lynch (cl1037@exeter.ac.uk)
     """
     if request.method == "GET":
-        user = request.user
-        user = User.objects.get(id=user.id)
-        pfp_url = user.profile.profile_picture
-        pfp_url = "/media/pfps/" + pfp_url
-
-        userinfo = []
-        userinfo.append({
-            "username": user.username,
-            "pfp_url": pfp_url,
-            "coins" : user.profile.number_of_coins
-            })
+        user=request.user
+        userinfo = getUserInfo(request)
         
         #Gets pending requests
         friendreqs = FriendRequests.objects.filter(receiverID=user)
@@ -335,23 +280,9 @@ def friends(request):
         return render(request, "EcoWorld/friends.html", {"userinfo" : userinfo[0], "friendreqs": friendreqs, "friends" : userFriends})
     
     elif request.method == "POST":
-
-        #Gets user data for the navbar
+        userinfo = getUserInfo(request)
         user = request.user
-        user = User.objects.get(id=user.id)
-        userID = request.user.id
-
-
-        pfp_url = user.profile.profile_picture
-        pfp_url = "/media/pfps/" + pfp_url
-
-        userinfo = []
-        userinfo.append({
-            "username": user.username,
-            "pfp_url": pfp_url,
-            "coins" : user.profile.number_of_coins
-            })
-        
+        userID     = user.id
         #Gets pending requests
         friendreqs = FriendRequests.objects.filter(receiverID=user)
 
@@ -455,16 +386,7 @@ def friends(request):
 
 def mergecards(request):
     user = request.user
-    user = User.objects.get(id=user.id)
-    pfp_url = user.profile.profile_picture
-    pfp_url = "/media/pfps/" + pfp_url
-
-    userinfo = []
-    userinfo.append({
-        "username": user.username,
-        "pfp_url": pfp_url,
-        "coins" : user.profile.number_of_coins
-        })
+    userinfo = getUserInfo(request)
         
     if request.method == "GET":
 
