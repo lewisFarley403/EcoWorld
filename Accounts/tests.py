@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.test import TestCase
 from django.contrib.auth.models import User
-from .models import Profile
+from .models import Profile, FriendRequests, Friends
 from .forms import SignUpForm,ProfileUpdateForm
 from django.urls import reverse
 from Garden.models import garden,gardenSquare
@@ -242,4 +242,52 @@ class ProfileViewTest(TestCase):
         self.assertEqual(self.profile.bio, 'Updated bio without picture')
         self.assertIsNone(self.profile.profile_picture)  # Should remain None if not updated
 
-# Create your tests here.
+#Test class to test the functionality of creating friends in the DB
+class FriendsTest(TestCase):
+    def setUp(self):
+        #Set up 2 users for the tests
+        self.user1 = User.objects.create_user(username="user1", password="testpass")
+        self.user2 = User.objects.create_user(username="user2", password="testpass")
+
+    #Testing when friendship is created
+    def testCreateFriendship(self):
+        #Creating a friendship between the two users
+        friendship = Friends.objects.create(userID1=self.user1, userID2=self.user2)
+        self.assertEqual(friendship.userID1, self.user1)
+        self.assertEqual(friendship.userID2, self.user2)
+
+    #Testing that a duplicate friendship is not allowed
+    def testDuplicateFriendship(self):
+        Friends.objects.create(userID1=self.user1, userID2=self.user2)
+        with self.assertRaises(Exception):
+            Friends.objects.create(userID1=self.user1, userID2=self.user2)
+
+    #Testing the Str method works properly
+    def testStr(self):
+        friendship = Friends.objects.create(userID1=self.user1, userID2=self.user2)
+        self.assertEqual(str(friendship), "user1 is friends with user2")
+
+
+#Test class for friend request table in the DB
+class FriendRequestsTest(TestCase):
+    #Set up the two users needed for the requests to work
+    def setUp(self):
+        self.user1 = User.objects.create_user(username="user1", password="testpass")
+        self.user2 = User.objects.create_user(username="user2", password="testpass")
+
+    #Create a request and make sure it works
+    def testCreateFriendRequest(self):
+        request = FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
+        self.assertEqual(request.senderID, self.user1)
+        self.assertEqual(request.receiverID, self.user2)
+
+    #Make sure that no duplicate friend requests are allowed
+    def testDuplicateFriendRequest(self):
+        FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
+        with self.assertRaises(Exception):
+            FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
+
+    #Test to make sure the STR method works properly
+    def testStr(self):
+        request = FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
+        self.assertEqual(str(request), "user1 sent a request to user2")
