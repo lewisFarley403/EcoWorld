@@ -87,6 +87,7 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = "ECM2434.wsgi.application"
 
 

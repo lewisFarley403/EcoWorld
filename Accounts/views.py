@@ -22,7 +22,6 @@ from django.conf import settings
 from django.http import JsonResponse
 
 
-
 def privacy_policy(request):
 
     """
@@ -144,3 +143,4 @@ def delete_account(request):
     user.delete()  # Delete the user from the database
     messages.success(request, 'Your account has been deleted successfully.')
     return redirect('/')  # Redirect to login page
+
