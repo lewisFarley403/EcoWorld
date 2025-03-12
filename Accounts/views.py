@@ -127,7 +127,7 @@ def user_info(request):
     }
     return JsonResponse(user_info)
 
-<<<<<<< HEAD
+
 def read_only_profile(request):
     """
     This view allows the user to view the profile of another user.
@@ -143,11 +143,13 @@ def read_only_profile(request):
 
     user = User.objects.get(username=username)
     profile = Profile.objects.get(user=user)
+    print(dir(profile))
+    print()
     g = garden.objects.get(userID=user)
     squares = g.gardensquare_set.all()
     processedSquares = [[squares[i * g.size + j] for j in range(g.size)] for i in range(g.size)]
-    return render(request, 'Accounts/read_only_profile.html', {'profile': profile, 'squares': processedSquares, 'MEDIA_URL': settings.MEDIA_URL, 'size': g.size})
-=======
+    return render(request, 'Accounts/profile.html', {'profile': profile, 'squares': processedSquares, 'MEDIA_URL': settings.MEDIA_URL, 'size': g.size,'is_read_only': True,'username':username})
+
 
 
 @login_required
@@ -166,4 +168,4 @@ def delete_account(request):
     user.delete()  # Delete the user from the database
     messages.success(request, 'Your account has been deleted successfully.')
     return redirect('/')  # Redirect to login page
->>>>>>> origin/main
+

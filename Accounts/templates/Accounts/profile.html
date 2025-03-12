@@ -51,6 +51,7 @@
             <div class="profile-picture-container">
                 <img src="{% static 'Accounts/pfps/' %}{{ profile.profile_picture }}" alt="Profile Picture" class="profile-picture">
             </div>
+            {% if not is_read_only %}
             <button type="button" id="selectProfilePictureBtn">Change Profile Picture</button>
             <form method="POST">
                 {% csrf_token %}
@@ -59,10 +60,17 @@
                 <textarea name="bio" id="bio" rows="4">{{ profile.bio }}</textarea>
                 <button type="submit">Update Profile</button>
             </form>
+            {% endif %}
+            {%if is_read_only%}
+            <p>{{ profile.bio }}</p>
+            {% endif %}
+
+            {% if not is_read_only %}
             <form action="{% url 'delete_account' %}" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-danger">Delete Account</button>
             </form>
+            {% endif %}
         </div>
 
         <!-- Right Main Content -->
@@ -83,8 +91,13 @@
                 </div>
                 {%csrf_token%}
                 <div>
+                    {% if not is_read_only %}
                     <h1>Your Garden:</h1>
                     <p>Click it to visit the garden!</p>
+                    {% endif %}
+                    {% if is_read_only %}
+                    <h1>{{ username }}'s Garden:</h1>
+                    {% endif %}
                     <div class="grid-container">
                         {% for row in squares %}
                             {% for square in row %}
@@ -109,46 +122,47 @@
                         </div>
                     </div>
                 </div>
+                {%if not is_read_only%}
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // Get the popup
+                            const gardenPopup = document.getElementById('garden-popup');
 
-                <script>
-                    document.addEventListener('DOMContentLoaded', function() {
-                        // Get the popup
-                        const gardenPopup = document.getElementById('garden-popup');
+                            // Add click event to all grid items
+                            const gridItems = document.querySelectorAll('.grid-container img');
+                            gridItems.forEach(item => {
+                                item.onclick = function() {
+                                    gardenPopup.style.display = 'block';
+                                }
+                            });
 
-                        // Add click event to all grid items
-                        const gridItems = document.querySelectorAll('.grid-container img');
-                        gridItems.forEach(item => {
-                            item.onclick = function() {
-                                gardenPopup.style.display = 'block';
-                            }
-                        });
+                            // Add click event to garden card for mobile
+                            document.querySelector('.garden-card').addEventListener('click', function(e) {
+                                // Only show popup if the direct target is the garden card
+                                if (e.target === this) {
+                                    gardenPopup.style.display = 'block';
+                                }
+                            });
 
-                        // Add click event to garden card for mobile
-                        document.querySelector('.garden-card').addEventListener('click', function(e) {
-                            // Only show popup if the direct target is the garden card
-                            if (e.target === this) {
-                                gardenPopup.style.display = 'block';
-                            }
-                        });
+                            // Go to garden button - Fixed URL reference
+                            document.getElementById('go-to-garden-btn').onclick = function() {
+                                window.location.href = '{% url "home" %}';
+                            };
 
-                        // Go to garden button - Fixed URL reference
-                        document.getElementById('go-to-garden-btn').onclick = function() {
-                            window.location.href = '{% url "home" %}';
-                        };
-
-                        // Cancel button
-                        document.getElementById('cancel-garden-btn').onclick = function() {
-                            gardenPopup.style.display = 'none';
-                        };
-
-                        // Close popup when clicking outside
-                        window.onclick = function(event) {
-                            if (event.target === gardenPopup) {
+                            // Cancel button
+                            document.getElementById('cancel-garden-btn').onclick = function() {
                                 gardenPopup.style.display = 'none';
-                            }
-                        };
-                    });
-                </script>
+                            };
+
+                            // Close popup when clicking outside
+                            window.onclick = function(event) {
+                                if (event.target === gardenPopup) {
+                                    gardenPopup.style.display = 'none';
+                                }
+                            };
+                        });
+                    </script>
+                {% endif %}
             </div>
         </div>
     </div>

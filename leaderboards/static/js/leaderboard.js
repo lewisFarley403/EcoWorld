@@ -54,7 +54,13 @@ function onPageLoad() {
             console.log("USER")
             console.log(user);
             var row = table.insertRow(-1);
-            row.href = `/read_profile/?username=${user.username}`;
+            // row.href = `/read_profile/?username=${user.username}`;
+            var link = document.createElement("a");
+            link.href = `/read_profile/?username=${user.username}`;  // Set the URL
+            link.style.display = "block";  // Make the link fill the entire row
+        
+            // Add the link to the row
+            row.appendChild(link);
             row.addEventListener("mouseenter", async (event) => {
                 let username = row.cells[1].innerText;
                 try {
