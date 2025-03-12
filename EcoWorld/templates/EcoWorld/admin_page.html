@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Management</title>
+    <link rel ="stylesheet" href="{% static 'EcoWorld/css/admin_page.css' %}">
+</head>
+<body>
+<header class="header">
+    <nav class="navbar">
+        <div class="left-links">
+            <a href="/ecoworld/dashboard">Home</a>
+            <a href="/ecoworld/challenge">Challenges</a>
+            <a href="/guides">Guides</a>
+            <a href="/garden">Garden</a>
+            <a href="/ecoworld/store">Store</a>
+            {% if perms.Accounts.can_view_admin_button %}
+                <a href="/ecoworld/admin">Admin Page</a>
+            {% endif %}
+        </div>
+        <div class="logo">Eco World</div>
+        <div class="right-links">
+            <span>{{ userinfo.username }}</span>
+            <a href = "/profile">
+                <img src="{{ userinfo.pfp_url }}" alt="Username" class="profile-pic">
+            </a>
+            <span style="padding-left: 20px;">Coins: {{ userinfo.coins }}</span>
+        </div>
+    </nav>
+</header>
+<div class="admin-page">
+<h2>Admin Management</h2>
+<table>
+    <tr>
+        <th>Non Admin User</th>
+        <th>Email</th>
+        <th>Grant Admin</th>
+    </tr>
+    {% for user in users %}
+        <tr>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>
+                <form action="{% url 'EcoWorld:grant_admin' user.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Grant Admin</button>
+                </form>
+            </td>
+        </tr>
+    {% endfor %}
+    {% for _ in missing_rows %}
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+    {% endfor %}
+</table>
+<div class="admin-page-button-container">
+    <a href="{% url 'EcoWorld:add_challenge' %}"><button class="button">Add New Challenge</button></a>
+    <a href="{% url 'qrCodes:add_water_fountain' %}"><button class="button"> Add New Water Fountain</button></a>
+    <a href="{% url 'qrCodes:generate_qr' %}"><button class="button"> Generate QR Codes</button></a>
+</div>
+</body>
+</html>

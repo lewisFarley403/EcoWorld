@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoWorld - MergeCards</title>
+    <link rel="stylesheet" href="{% static 'EcoWorld/css/mergecards.css' %}">
+</head>
+<header class="header">
+    <nav class="navbar">
+        <div class="left-links">
+            <a href="/ecoworld/dashboard">Home</a>
+            <a href="/ecoworld/challenge">Challenges</a>
+            <a href="/guides">Guides</a>
+            <a href="/garden">Garden</a>
+            <a href="/ecoworld/store">Store</a>
+        </div>
+        <div class="logo">Eco World - Merge Cards</div>
+        <div class="right-links">
+            <span>{{ userinfo.username }}</span>
+            {% load static %}
+            <img src="{{ userinfo.pfp_url }}" alt="Username" class="profile-pic">
+            <span style="padding-left: 20px;">Coins: {{ userinfo.coins }}</span>
+            <a href = "/ecoworld/friends">
+                <img src="/media/misc/friend.png" class="profile-pic">
+            </a>
+        </div>
+    </nav>
+</header>
+<body>
+    <div class="mainContainer">
+        <div class="mergebox">
+            <div class="mergeSection">
+                <h3 style="margin-bottom: 1px;">Merge Your Cards</h3>
+                {% if error %}
+                    <p class="error-message">{{ error }}</p>
+                {% endif %}
+                
+                <div class="cardMergeBoxContainer">
+                    <div class="card-boxes">
+                        {% for card in merge %}
+                            <div class="card-box">
+                                {% if card.image %}
+                                <img src="{{ card.image }}">
+                                {% else %}
+
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                    </div>
+                    <form action="/ecoworld/mergecards/" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="merge-button" name="mergebutton" value="{{ rarity }}">Merge Cards</button>
+                    </form>
+                </div>
+                
+
+                <div class="mergeOptionBox">
+                    <form action="/ecoworld/mergecards/" method="POST">
+                        {% csrf_token %}
+                        <button class="mergeRaritybuttonCommon" value="1" name="rarity" type="submit">Common</button>
+                    </form>
+                    <form action="/ecoworld/mergecards/" method="POST">
+                        {% csrf_token %}
+                        <button class="mergeRaritybuttonRare" value="2" name="rarity" type="submit">Rare</button>
+                    </form>
+                    <form action="/ecoworld/mergecards/" method="POST">
+                        {% csrf_token %}
+                        <button class="mergeRaritybuttonEpic" value="3" name="rarity" type="submit">Epic</button>
+                    </form>
+                    <form action="/ecoworld/mergecards/" method="POST">
+                        {% csrf_token %}
+                        <button class="mergeRaritybuttonLegendary" value="4" name="rarity" type="submit">Legendary</button>
+                    </form>
+                    
+                </div>
+            </div>
+
+            <div class="inventorySection">
+                {% if playerItems %}
+
+                    <h3>Your inventory of selected rarity</h3>
+                    <div class="inventory-items">
+                        {% for item in playerItems %}
+                        <div class="inventory-item">
+                            <div class="card-container">
+                                <img src="{{ item.card__image }}" alt="{{ item.card__title }}">
+                                <span class="quantity-badge">{{ item.quantity }}</span>
+                            </div>
+                            <form action="/ecoworld/mergecards/" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="rarityforbutton" value="{{ rarity }}">
+                                <button name="addCard" type="submit" value="{{item.card__id}}" class="addCardButton">+</button>
+                            </form>
+                            
+                            <form action="/ecoworld/mergecards/" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="rarityforbutton" value="{{ rarity }}">
+                                <button name="removeCard" type="submit" value="{{item.card__id}}" class="removeCardButton">-</button>
+                            </form>
+                        </div>
+                        {% empty %}
+                        <p>You have no cards of this rarity to merge</p>
+                        {% endfor %}
+                    </div>
+                    
+                {% else %}
+                <p>Select a rarity option to merge</p>
+                {% endif %}
+            </div>
+
+        </div>
+
+        <div class="infoContainer">
+            <h3>What is merging cards?</h3>
+            <p>This page is used to upgrade your cards.</p>
+            <p>It works by adding 5 cards of the same rarity to upgrade into 1 card of the superior rarity.</p>
+            <p>For example, doing 5 common bushes will gift you 1 random rare card.</p>
+            <p>Merging 5 legendary cards will gift you a mythical card not available in the store!</p>
+        </div>
+        
+    </div>
+</body>
+</html>

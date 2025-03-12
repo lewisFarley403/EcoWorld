@@ -20,7 +20,6 @@
             background-color: rgb(0,0,0); /* Fallback color */
             background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
             overflow-y: scroll;
-
         }
         .modal-cont {
             background-color: #fefefe;
@@ -53,14 +52,16 @@
                 <img src="{% static 'Accounts/pfps/' %}{{ profile.profile_picture }}" alt="Profile Picture" class="profile-picture">
             </div>
             <button type="button" id="selectProfilePictureBtn">Change Profile Picture</button>
-            <div class="bio-section">
-                <p>{{ profile.bio }}</p>
-            </div>
             <form method="POST">
                 {% csrf_token %}
+                <input type="hidden" id="profilePictureInput" name="profile_picture" value="{{ profile.profile_picture }}">
                 <label for="bio">Edit Bio:</label>
                 <textarea name="bio" id="bio" rows="4">{{ profile.bio }}</textarea>
                 <button type="submit">Update Profile</button>
+            </form>
+            <form action="{% url 'delete_account' %}" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Delete Account</button>
             </form>
         </div>
 
@@ -82,8 +83,8 @@
                 </div>
                 {%csrf_token%}
                 <div>
-                    <h1>Garden</h1>
-                    <p>Here is a list of all the plants in the garden:</p>
+                    <h1>Your Garden:</h1>
+                    <p>Click it to visit the garden!</p>
                     <div class="grid-container">
                         {% for row in squares %}
                             {% for square in row %}
@@ -97,87 +98,57 @@
                     </div>
                 </div>
 
-                <script>
-                    function handleCardClick(row, col, event) {
-                        console.log(event.target);
-
-                        // const csrfToken = document.getElementById("csrf_token").value;  // Get CSRF token
-                        const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
-                        console.log(row, col)
-                        // console.log(csrfToken)
-                        fetch('/garden/removeCard/', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': csrfToken // Add CSRF token in the headers
-                            },
-                            body: JSON.stringify({ row: row, col: col })
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    alert("Card removed successfully!");
-                                    // event.src="{{ MEDIA_URL }}cards/dirt.jpeg";
-                                    location.reload(); // Refresh the page
-                                } else {
-                                    alert("Error: " + data.message);
-                                }
-                            })
-                            .catch(error => console.error('Error:', error));
-
-                    }
-
-                    function openModal(row, col){
-                        squareClicked = [row,col]
-                        console.log(row, col);
-                        document.getElementById('modal').style.display = 'block';
-                    }
-                    function closeModal(){
-                        document.getElementById('modal').style.display = 'none';
-                        squareClicked=null;
-                    }
-
-                    function handleAddToGarden(cardID){
-                        console.log(cardID);
-                        const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
-                        fetch('/garden/addCard/', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRFToken': csrfToken
-                            },
-                            body: JSON.stringify({ row: squareClicked[0], col: squareClicked[1], cardID: cardID })
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    alert("Card added successfully!");
-                                    location.reload();
-                                } else {
-                                    alert("Error: " + data.message);
-                                }
-                            })
-                            .catch(error => console.error('Error:', error));
-
-                    }
-                </script>
-            </div>
-        </div>
-
-        <!-- Popup Modal -->
-        <div id="profilePictureModal" class="modal">
-            <div class="modal-content">
-                <span id="closeModal" class="close">&times;</span>
-                <h2>Select a Profile Picture</h2>
-                <div class="image-gallery">
-                    <img src="{% static 'Accounts/pfps/pfp1.png' %}" alt="Profile 1" class="profile-image" data-image="pfp1.png">
-                    <img src="{% static 'Accounts/pfps/pfp2.png' %}" alt="Profile 2" class="profile-image" data-image="pfp2.png">
-                    <img src="{% static 'Accounts/pfps/pfp3.png' %}" alt="Profile 3" class="profile-image" data-image="pfp3.png">
-                    <img src="{% static 'Accounts/pfps/pfp4.png' %}" alt="Profile 4" class="profile-image" data-image="pfp4.png">
-                    <img src="{% static 'Accounts/pfps/pfp5.png' %}" alt="Profile 5" class="profile-image" data-image="pfp5.png">
+                <!-- Garden Popup -->
+                <div id="garden-popup" class="garden-popup">
+                    <div class="garden-popup-content">
+                        <h3>Visit Garden</h3>
+                        <p>Would you like to go to the garden page to manage your plants?</p>
+                        <div class="garden-popup-buttons">
+                            <button id="go-to-garden-btn">Yes</button>
+                            <button id="cancel-garden-btn" class="cancel-btn">Cancel</button>
+                        </div>
+                    </div>
                 </div>
-                <input type="hidden" name="profile_picture" id="profilePictureInput" value="{{ profile.profile_picture }}">
-                <button type="button" id="confirmSelectionBtn" onclick="closeModal()">Confirm Selection</button>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Get the popup
+                        const gardenPopup = document.getElementById('garden-popup');
+
+                        // Add click event to all grid items
+                        const gridItems = document.querySelectorAll('.grid-container img');
+                        gridItems.forEach(item => {
+                            item.onclick = function() {
+                                gardenPopup.style.display = 'block';
+                            }
+                        });
+
+                        // Add click event to garden card for mobile
+                        document.querySelector('.garden-card').addEventListener('click', function(e) {
+                            // Only show popup if the direct target is the garden card
+                            if (e.target === this) {
+                                gardenPopup.style.display = 'block';
+                            }
+                        });
+
+                        // Go to garden button - Fixed URL reference
+                        document.getElementById('go-to-garden-btn').onclick = function() {
+                            window.location.href = '{% url "home" %}';
+                        };
+
+                        // Cancel button
+                        document.getElementById('cancel-garden-btn').onclick = function() {
+                            gardenPopup.style.display = 'none';
+                        };
+
+                        // Close popup when clicking outside
+                        window.onclick = function(event) {
+                            if (event.target === gardenPopup) {
+                                gardenPopup.style.display = 'none';
+                            }
+                        };
+                    });
+                </script>
             </div>
         </div>
     </div>
@@ -186,3 +157,4 @@
         <script src="{% static 'Accounts/js/profile.js' %}"></script>
     {% endblock %}
 {% endblock %}
+

@@ -5,13 +5,13 @@ module defines views for the Accounts app:
 author:
     - Ethan Sweeney (es1052@exeter.ac.uk) 
 """
-
+from django.contrib import messages
 # views.py
 
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
-from .forms import SignUpForm, ProfileUpdateForm
+from .forms import SignUpForm
 from .models import Profile
 from .utils import createGarden, createOwnsDb
 from Garden.models import garden
@@ -127,6 +127,7 @@ def user_info(request):
     }
     return JsonResponse(user_info)
 
+<<<<<<< HEAD
 def read_only_profile(request):
     """
     This view allows the user to view the profile of another user.
@@ -146,3 +147,23 @@ def read_only_profile(request):
     squares = g.gardensquare_set.all()
     processedSquares = [[squares[i * g.size + j] for j in range(g.size)] for i in range(g.size)]
     return render(request, 'Accounts/read_only_profile.html', {'profile': profile, 'squares': processedSquares, 'MEDIA_URL': settings.MEDIA_URL, 'size': g.size})
+=======
+
+
+@login_required
+def delete_account(request):
+    """
+    This view allows the user to delete their account.
+    Attributes:
+        request : HttpRequest : The HTTP request object
+    Returns:
+        redirect : HttpResponse : The HTTP page at the base URL
+    Author:
+        - Ethan Sweeney (es1052@exeter.ac.uk)
+    """
+    user = request.user
+    logout(request)  # Log out the user before deleting
+    user.delete()  # Delete the user from the database
+    messages.success(request, 'Your account has been deleted successfully.')
+    return redirect('/')  # Redirect to login page
+>>>>>>> origin/main

@@ -27,12 +27,29 @@ awareness and actionable steps towards environmental sustainability.
 - sqlite3
 
 ### Installation and Setup
-- install the dependancies ```pip install -r requirements.txt```
-- ```python manage.py makemigrations```
-- ```python manage.py migrate```
-- ```python manage.py loaddata initialDb.json```
 
-- run django server ```python manage.py runserver```
+1. Install the dependencies:
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+2. Set up the database by running the appropriate script for your system:
+   - Windows: Run `setup.bat`
+   - macOS/Linux: Run `./setup.sh`
+
+   Or manually run the following commands:
+   ```sh
+   python manage.py makemigrations
+   python manage.py migrate
+   python manage.py loaddata initialDb.json
+   ```
+   
+3. Next, create a superuser account to access the admin panel:
+   ```sh
+   python manage.py createsuperuser
+   ```
+
+4. Run the django server ```python manage.py runserver```
 
 
 ### 

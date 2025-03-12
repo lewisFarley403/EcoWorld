@@ -16,6 +16,9 @@
             <a href="/guides">Guides</a>
             <a href="/garden">Garden</a>
             <a href="/ecoworld/store">Store</a>
+            {% if perms.Accounts.can_view_admin_button %}
+                <a href="/ecoworld/admin">Admin Page</a>
+            {% endif %}
         </div>
         <div class="logo">Eco World</div>
         <div class="right-links">
@@ -25,6 +28,9 @@
                 <img src="{{ userinfo.pfp_url }}" alt="Username" class="profile-pic">
             </a>
             <span style="padding-left: 20px;">Coins: {{ userinfo.coins }}</span>
+            <a href = "/ecoworld/friends">
+                <img src="/media/misc/friend.png" class="profile-pic">
+            </a>
         </div>
     </nav>
 </header>

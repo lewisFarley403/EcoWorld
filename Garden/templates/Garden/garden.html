@@ -116,56 +116,84 @@
             text-align: center;
         }
         .inventory-items {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 15px; 
-    padding: 10px;
-}
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 15px; 
+            padding: 10px;
+        }
 
-.inventory-item {
-    display: flex;
-    justify-content: center;
-    transition: 0.5s ease-in-out;
+        .inventory-item {
+            display: flex;
+            justify-content: center;
+            transition: 0.5s ease-in-out;
 
-    
-}
-.inventory-item:hover {
-    scale: (1.1);
-    
-    
-}
-
-
-.card-container {
-    position: relative;
-    width: 90px; 
-    height: 150px;
-}
+            
+        }
+        .inventory-item:hover {
+            scale: (1.1);
+            
+            
+        }
 
 
-.card-container img {
-    width: 100%;
-    height: 100%;
-    border-radius: 5px;
-    object-fit: cover;
-}
+        .card-container {
+            position: relative;
+            width: 90px; 
+            height: 150px;
+        }
 
-.quantity-badge {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    background-color: black;
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
+
+        .card-container img {
+            width: 100%;
+            height: 100%;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
+        .quantity-badge {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            background-color: black;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .mergearea {
+            padding-top: 30px;
+            height: 200px;
+            width: 100%;
+            align-items: center;
+            justify-content: center;
+            display: flex;
+        }
+
+        .mergebutton {
+            background-color: #00dea5;
+            color: black;
+            transition: transform 0.5s ease-in-out, background-color 0.5s ease-in-out;
+            width: 400px;
+            height: 150px;
+            border-radius: 10px;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            font-size: 36px;
+            font-weight: bold;
+
+        }
+        .mergebutton:hover {
+            scale: (1.2);
+            transition: 0.5s ease-in-out;
+            color: white;
+            background-color: #003c3c;
+        }
 
     </style>
 </head>
@@ -184,6 +212,9 @@
             {% load static %}
             <img src="{{ userinfo.pfp_url }}" alt="Username" class="profile-pic">
             <span style="padding-left: 20px;">Coins: {{ userinfo.coins }}</span>
+            <a href = "/ecoworld/friends">
+                <img src="/media/misc/friend.png" class="profile-pic">
+            </a>
         </div>
     </nav>
 </header>
@@ -417,9 +448,16 @@ document.addEventListener("DOMContentLoaded", function() {
                             <span class="quantity-badge">{{ item.quantity }}</span>
                         </div>
                     </div>
+                    
                 {% empty %}
                     <p>No items in inventory.</p>
                 {% endfor %}
+                
+            </div>
+            <div class="mergearea">
+                <a href="/ecoworld/mergecards">
+                    <button type="submit" class="mergebutton">Merge your cards for an Upgrade!</button>
+                </a>
             </div>
         </div>
         
