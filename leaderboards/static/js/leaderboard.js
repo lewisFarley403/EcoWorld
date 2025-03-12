@@ -10,19 +10,19 @@ function onPageLoad() {
 
         // First place goes in the middle
         if (top3.length >= 1) {
-            document.getElementById('firstPfp').src = top3[0].pfp_url || '/path/to/default-profile-pic.png';  // Default profile pic if not available
+            document.getElementById('firstPfp').src = top3[0].pfp_url; 
             document.getElementById('firstName').innerText = top3[0].username;
         }
 
         // Second place goes in the left container
         if (top3.length >= 2) {
-            document.getElementById('secondPfp').src = top3[1].pfp_url || '/path/to/default-profile-pic.png';
+            document.getElementById('secondPfp').src = top3[1].pfp_url;
             document.getElementById('secondName').innerText = top3[1].username;
         }
 
         // Third place goes in the right container
         if (top3.length >= 3) {
-            document.getElementById('thirdPfp').src = top3[2].pfp_url || '/path/to/default-profile-pic.png';
+            document.getElementById('thirdPfp').src = top3[2].pfp_url;
             document.getElementById('thirdName').innerText = top3[2].username;
         }
 
@@ -38,13 +38,44 @@ function onPageLoad() {
             }
         }
 
-
-
-        // Optionally, populate the rest of the leaderboard in a table
-        // var table = document.getElementById("leaderboard-table");
         var table = document.getElementById("leaderboard-body");
+        var tooltip = document.getElementById("tooltip");
+        tooltip.style.position = "absolute";
+        tooltip.style.background = "rgba(0, 0, 0, 0.8)";
+        tooltip.style.background = "transparent";
+        tooltip.style.color = "white";
+        tooltip.style.padding = "5px 10px";
+        tooltip.style.borderRadius = "5px";
+        tooltip.style.fontSize = "12px";
+        tooltip.style.display = "none";
+        tooltip.style.pointerEvents = "none";
+        tooltip.style.zIndex = "1000";
         data.rankedUsers.forEach((user, i) => {
+            console.log("USER")
+            console.log(user);
             var row = table.insertRow(-1);
+            row.href = `/read_profile/?username=${user.username}`;
+            row.addEventListener("mouseenter", async (event) => {
+                let username = row.cells[1].innerText;
+                try {
+                    let response = await fetch(`get-tooltip-template/?username=${username}`);
+                    let html = await response.text();
+                    tooltip.innerHTML = html;
+                    tooltip.style.display = "block";
+                } catch (error) {
+                    console.error("Error fetching tooltip template:", error);
+                }
+            });
+    
+            row.addEventListener("mousemove", (event) => {
+                tooltip.style.top = `${event.clientY -350}px`;
+                tooltip.style.left = `${event.clientX + 10}px`;
+            });
+    
+            row.addEventListener("mouseleave", () => {
+                tooltip.style.display = "none";
+            });
+
             var rank = row.insertCell(0);
             var username = row.insertCell(1);
             var score = row.insertCell(2);
@@ -64,4 +95,6 @@ function onPageLoad() {
     });
 
 }
-onPageLoad()
+onPageLoad();
+
+

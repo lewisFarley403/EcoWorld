@@ -4,6 +4,7 @@ from .models import UserEarntCoins
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.conf import settings
+from Garden.models import garden
 # Create your views here.
 @login_required
 def leaderboard(request):
@@ -67,3 +68,21 @@ def get_ranked_users(request):
     # Return the data as a JSON response
     print(settings.MEDIA_URL)
     return JsonResponse({'rankedUsers': ranked_users,'MEDIA_URL': settings.MEDIA_URL,'current_user_data':current_user_data})
+
+
+def get_tooltip_template(request):
+    username = request.GET.get("username", None)  # Default if no username is provided
+    g = garden.objects.get(userID__username=username)
+    squares = g.gardensquare_set.all()
+    processedSquares = [[squares[i * g.size + j] for j in range(g.size)] for i in range(g.size)]
+
+    user = request.user
+    user = User.objects.get(id=user.id)
+    # return render(request, 'Garden/garden.html', {'squares': processedSquares,
+    #                                               'MEDIA_URL': settings.MEDIA_URL,
+    #                                               'size': g.size,
+    #                                               "userinfo": userinfo,
+    #                                               "playerInventory": playerItems})
+    return render(request, "leaderboard/garden_tool_tip.html", {"username": username,
+                                                      "squares": processedSquares,
+                                                      "MEDIA_URL": settings.MEDIA_URL,})

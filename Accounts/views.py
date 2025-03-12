@@ -20,6 +20,7 @@ import json
 from django.core import serializers
 from django.conf import settings
 from django.http import JsonResponse
+from django.contrib.auth.models import User
 
 
 
@@ -125,3 +126,23 @@ def user_info(request):
         'coins': request.user.profile.number_of_coins,
     }
     return JsonResponse(user_info)
+
+def read_only_profile(request):
+    """
+    This view allows the user to view the profile of another user.
+    Attributes:
+        request : HttpRequest : The HTTP request object
+        username : str : The username of the user whose profile is being viewed
+    Returns:
+        render : HttpResponse : The rendered HTML page
+    Author:
+        - Lewis Farley (lf507@exeter.ac.uk)
+    """
+    username = request.GET.get("username", None)  # Default if no username is provided
+
+    user = User.objects.get(username=username)
+    profile = Profile.objects.get(user=user)
+    g = garden.objects.get(userID=user)
+    squares = g.gardensquare_set.all()
+    processedSquares = [[squares[i * g.size + j] for j in range(g.size)] for i in range(g.size)]
+    return render(request, 'Accounts/read_only_profile.html', {'profile': profile, 'squares': processedSquares, 'MEDIA_URL': settings.MEDIA_URL, 'size': g.size})
