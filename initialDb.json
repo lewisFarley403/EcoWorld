@@ -20,7 +20,7 @@
         "fields": {
             "name": "Fridge Check",
             "description": "Find one food item in your fridge or cupboard that needs to be eaten soon and plan a meal around it to prevent waste.",
-            "created_by": 1,
+            "created_by": null,
             "created_on": "2025-02-16"
         }
     },
@@ -30,7 +30,7 @@
         "fields": {
             "name": "Inbox Detox",
             "description": "Delete at least 50 unnecessary emails or files to reduce digital storage emissions.",
-            "created_by": 1,
+            "created_by": null,
             "created_on": "2025-02-16"
         }
     },
@@ -40,7 +40,7 @@
         "fields": {
             "name": "Light Patrol",
             "description": "Take 5 minutes to check for any unnecessary lights on in the house/area you are in.",
-            "created_by": 1,
+            "created_by": null,
             "created_on": "2025-02-16"
         }
     },
