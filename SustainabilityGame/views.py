@@ -1,7 +1,9 @@
+
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 import json
+import math
 
 @login_required
 def play_game(request):
@@ -12,10 +14,9 @@ def save_score(request):
     if request.method == 'POST':
         data = json.loads(request.body)
         score = data.get('score')
-        trash_collected = data.get('trashCollected')
 
         # Calculate coins earned
-        coins_earned = round(trash_collected * (score / 20))
+        coins_earned = calculate_coins(score)
 
         # Get player profile and update number_of_coins
         profile = request.user.profile
@@ -27,3 +28,10 @@ def save_score(request):
             'coins_earned': coins_earned
         })
     return JsonResponse({'status': 'error'})
+
+def calculate_coins(score):
+    if score < 150:
+        return 0
+    a = 4
+    b = 0.005
+    return round(a * math.exp(b * (score - 150)))

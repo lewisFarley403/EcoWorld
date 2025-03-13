@@ -242,7 +242,7 @@ class Game {
 
             const data = await response.json();
             if (data.status === 'success') {
-                data.coins_earned = Math.floor(this.state.trashCollected * (this.state.score/20));
+                data.coins_earned = this.calculateCoins(this.state.score);
                 this.showGameOverPopup(data.coins_earned);
             }
         } catch (error) {
@@ -250,6 +250,13 @@ class Game {
             // Show popup even if save fails
             this.showGameOverPopup(0);
         }
+    }
+
+    calculateCoins(score) {
+        if (score < 150) return 0;
+        let a = 4;
+        let b = 0.005;
+        return Math.floor(a * Math.exp(b * (score - 150)));
     }
 }
 
