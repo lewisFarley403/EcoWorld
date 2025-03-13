@@ -23,7 +23,6 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 
 
-
 def privacy_policy(request):
 
     """
