@@ -1,0 +1,190 @@
+/* General Page Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    max-height: 100vh;
+    overflow: hidden;
+}
+
+/* Header & Navbar */
+.header {
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 10px 20px;
+}
+
+.navbar {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar .left-links a,
+.navbar .right-links span {
+    margin-right: 20px;
+    font-size: 16px;
+    text-decoration: none;
+    color: #003c3c;
+}
+
+.navbar .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #003c3c;
+}
+
+.navbar .right-links {
+    display: flex;
+    align-items: center;
+}
+
+.profile-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-left: 10px;
+    border: 2px solid #00dea5;
+}
+
+/* Main Content Layout */
+.main-content {
+    flex: 1;
+    display: flex;
+    background-color: #0e4d46;
+}
+
+.left-panel, .right-panel {
+    width: 15%;
+    overflow: hidden;
+}
+
+.left-panel img, .right-panel img {
+    width: 200%;
+    height: auto;
+}
+
+.right-panel img {
+    transform: scaleX(-1);
+}
+
+.center-content {
+    width: 70%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #00dea5;
+}
+
+.tile {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    margin-bottom: 20px;
+}
+
+/* Challenges Section */
+.challenge-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.challenge-card:hover, .objective-card:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 15px rgba(0, 255, 0, 0.4);
+    transition: all 0.3s ease-in-out;
+}
+
+.challenge-card.completed {
+    background: #8BC34A; /* Softer green */
+    color: white;
+    transition: background 0.3s ease-in-out;
+}
+
+.complete-btn {
+    background: #00C774;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: auto; /* Aligns button properly */
+}
+
+/* Daily Objectives */
+.objective-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.progress-btn {
+    background: #00C774;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Progress Tracker */
+.progress-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+progress {
+    width: 80%;
+    height: 15px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+progress::-webkit-progress-bar {
+    background: #eee;
+    border-radius: 10px;
+}
+
+progress::-webkit-progress-value {
+    background: #00C774;
+    border-radius: 10px;
+}
+
+/* Responsive Fixes */
+@media (max-width: 1024px) {
+    .left-panel, .right-panel {
+        display: none;
+    }
+    .center-content {
+        width: 90%;
+    }
+}
