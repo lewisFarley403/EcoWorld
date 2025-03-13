@@ -1,62 +1,7 @@
-console.log('javascript loaded')
 document.addEventListener("DOMContentLoaded", function() {
     let currentQuestion = 0;
-    const questions = [
-        {
-            question: "Which of the following actions can help reduce energy consumption at home? (Select all that apply)",
-            answers: [
-                { text: "Using incandescent lightbulbs", value: "A", correct: false },
-                { text: "Unplugging devices when not in use", value: "B", correct: true },
-                { text: "Using a programmable thermostat", value: "C", correct: true },
-                { text: "Keeping lights on during the day", value: "D", correct: false }
-            ]
-        },
-        {
-            question: "What are some ways to minimize water waste? (Select all that apply)",
-            answers: [
-                { text: "Fixing leaky faucets", value: "A", correct: true },
-                { text: "Running half-loads of laundry", value: "B", correct: false },
-                { text: "Installing low-flow showerheads", value: "C", correct: true },
-                { text: "Collecting rainwater for gardening", value: "D", correct: true }
-            ]
-        },
-        {
-            question: "Which of the following are part of the '3 Rs' of sustainability? (Select all that apply)",
-            answers: [
-                { text: "Reduce", value: "A", correct: true },
-                { text: "Reuse", value: "B", correct: true },
-                { text: "Recycle", value: "C", correct: true },
-                { text: "Replace", value: "D", correct: false }
-            ]
-        },
-        {
-            question: "Which of the following transportation methods has the lowest environmental impact? (Select all that apply)",
-            answers: [
-                { text: "Driving alone in a gas-powered car", value: "A", correct: false },
-                { text: "Taking a train", value: "B", correct: true },
-                { text: "Flying short distances", value: "C", correct: false },
-                { text: "Biking or walking", value: "D", correct: true }
-            ]
-        },
-        {
-            question: "What are some sustainable shopping practices? (Select all that apply)",
-            answers: [
-                { text: "Buying locally produced goods", value: "A", correct: true },
-                { text: "Choosing products with minimal packaging", value: "B", correct: true },
-                { text: "Purchasing second-hand items", value: "C", correct: true },
-                { text: "Always buying new products", value: "D", correct: false }
-            ]
-        },
-        {
-            question: "How can your diet help reduce your environmental footprint? (Select all that apply)",
-            answers: [
-                { text: "Eating more plant-based meals", value: "A", correct: true },
-                { text: "Choosing sustainably sourced seafood", value: "B", correct: true },
-                { text: "Reducing meat and dairy consumption", value: "C", correct: true },
-                { text: "Wasting more food", value: "D", correct: false }
-            ]
-        }
-    ];
+    const questions = quizQuestions;
+    console.log("Quiz Questions:", quizQuestions);
 
     // Shuffle the questions array
     questions.sort(() => Math.random() - 0.5);
@@ -191,7 +136,7 @@ document.addEventListener("DOMContentLoaded", function() {
         alert("Your score: " + score + "/" + totalQuestions);
 
         const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
-        fetch('/guides/registerScore/', {
+        fetch(`/guides/registerScore/${pair_id}/`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
