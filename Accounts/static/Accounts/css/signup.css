@@ -151,3 +151,50 @@ h1 {
     position: relative;
     align-items: center;
 }
+
+/* Media query for mobile responsiveness */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+
+    .left-side {
+        display: none; /* Hide the left section with arch image */
+    }
+
+    .right-side {
+        width: 100%; /* Make form section take full width */
+    }
+
+    .login-container {
+        width: 90%;
+        max-width: 400px;
+        padding: 15px;
+        box-shadow: none;
+    }
+
+    .name-group {
+        flex-direction: column; /* Stack name fields vertically */
+    }
+
+    .name-group .input-group {
+        width: 100%; /* Full width for name inputs */
+    }
+
+    /* Fix password tooltip for mobile */
+    .password-tooltip {
+        position: static;
+        margin-bottom: 8px;
+        width: 100%;
+        left: 0;
+        transform: none;
+    }
+
+    .input-group input {
+        width: calc(100% - 22px);
+    }
+
+    .login-button {
+        width: 100%;
+    }
+}

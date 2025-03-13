@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco World - Friends</title>
+    <link rel="stylesheet" href="{% static 'EcoWorld/css/friends.css' %}">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="left-links">
+                <a href="/ecoworld/dashboard">Home</a>
+                <a href="/ecoworld/challenge">Challenges</a>
+                <a href="/guides">Guides</a>
+                <a href="/garden">Garden</a>
+                <a href="/ecoworld/store">Store</a>
+            </div>
+            <div class="logo">Eco World</div>
+            <div class="right-links">
+                <span>{{ userinfo.username }}</span>
+                {% load static %}
+                <a href = "/accounts/profile">
+                    <img src="{{ userinfo.pfp_url }}" alt="Username" class="profile-pic">
+                </a>
+                <span style="padding-left: 20px;">Coins: {{ userinfo.coins }}</span>
+                <a href = "/ecoworld/friends">
+                    <img src="/media/misc/friend.png" class="profile-pic">
+                </a>
+            </div>
+        </nav>
+    </header>
+    <div class="frienditemsContainer">
+        <div class="userFriendsbox">
+            <h1>Your Friends List</h1>
+            {% if friends %}
+                <ul>
+                    {% for friend in friends %}
+                    <div class="friendContainer">
+                        {% if friend.userID1 == request.user %}
+                            <p class="username">{{ friend.userID2.username }}</p>
+                            <button class="gardenViewButton">View Friends Garden</button>
+                            <form method="POST" action="/ecoworld/friends/">
+                                {% csrf_token %}
+                                <button type="submit" class="removeButton" name="remove" value="{{ friend.userID2 }}">Remove Friend</button>
+                            </form>
+                        {% else %}
+                        <p class="username">{{ friend.userID1.username }}</p>
+                        <button class="gardenViewButton">View Friends Garden</button>
+                        <form method="POST" action="/ecoworld/friends/">
+                            {% csrf_token %}
+                            <button type="submit" class="removeButton" name="remove" value="{{ friend.userID1}}">Remove Friend</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                        
+  
+                    {% endfor %}
+                </ul>
+            {% else %}
+            <p>You currently have no friends!</p>
+            {% endif %}
+
+
+        </div>
+
+
+        <div class="userAddFriendbox">
+            <h3>Add a Friend!</h3>
+            <form method="POST" action="/ecoworld/friends/">
+                {% csrf_token %}
+                <input class="addFriendtextbox" type="text" placeholder="Enter your friends username" name="friendUsername">
+                <button type="submit" class="addFriendButton">Add your friend!</button>
+            </form>
+            {% if error %}
+            <p style="color: red;">{{ error }}</p>
+            {% endif %}
+            {% if addmessage %}
+            <p style="color: #00dea5;">{{ addmessage }}</p>
+            {% endif %}
+        </div>
+
+        <div class="userRequestBox">
+            <h3 style="padding-top: 20px;">Your Friend Requests</h3>
+            {% if friendreqs %}
+                <ul>
+                    {% for request in friendreqs %}
+                    <div class="requestContainer">
+                        <p class="username">{{ request.senderID.username }}</p>
+
+                        <form action="/ecoworld/friends/" method="POST">
+                            {% csrf_token %}
+                            <input type="hidden" value="{{ request.senderID.username}}", name="friendar">
+                            <div class="buttonContainer">
+                                <button name="friendaction" type="submit" value="accept" class="addbutton">✔</button>
+                                <button name="friendaction" type="submit" value="reject" class="rejectbutton">X</button>
+                            </div>
+                            
+                        </form>
+                    </div>
+                    
+                    {% endfor %}
+                </ul>
+            {% else %}
+            <p>No friend requests pending</p>
+            {% endif %}
+                
+        </div>
+    </div>
+    
+</body>
+
+</html>
