@@ -1,11 +1,25 @@
+from idlelib.rpc import request_queue
+
 from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+
+from .forms import GuidesForm
 from .models import ContentQuizPair, UserQuizResult, User
 import json
 from django.core.serializers.json import DjangoJSONEncoder
 
+@permission_required("Accounts.can_view_admin_button")
+def add_guide(request):
+    if request.method == 'POST':
+        form = GuidesForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("EcoWorld:admin_page")
 
+    else:
+        form = GuidesForm()
+    return render(request, "guides/add_guide.html", {'form':form})
 
 @login_required
 def menu_view(request):
