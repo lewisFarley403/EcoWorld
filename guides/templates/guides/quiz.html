@@ -1,0 +1,61 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ pair.title }} Quiz</title>
+    <link rel="stylesheet" href="{% static 'guides/css/style.css' %}">
+</head>
+<body>
+    <header class="header">
+        <nav class="navbar">
+            <div class="left-links">
+                <a href="/ecoworld/dashboard">Home</a>
+                <a href="/ecoworld/challenge">Challenges</a>
+                <a href="/guides">Guides</a>
+                <a href="/garden">Garden</a>
+                <a href="/ecoworld/store">Store</a>
+            </div>
+            <div class="logo">Eco World</div>
+            <div class="right-links">
+                <span>{{ userinfo.username }}</span>
+                {% load static %}
+                <a href = "/accounts/profile">
+                    <img src="{{ userinfo.pfp_url }}" alt="Username" class="profile-pic">
+                </a>
+                <span style="padding-left: 20px;">Coins: {{ userinfo.coins }}</span>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-5">
+        <div class="card shadow p-4">
+            <h1 class="text-center text-success">{{ pair.title }} Quiz</h1>
+
+            <div id="progress-bar-container">
+                <div id="progress-bar"></div>
+            </div>
+
+            <form id="quiz-form">
+                {% csrf_token %}
+                <div id="questions-container"></div>
+
+                <!-- Navigation Buttons -->
+                <button type="button" id="back-button" style="display:none;">Back</button>
+                <button type="button" id="next-button">Next</button>
+                <button type="button" id="submit-button" style="display:none;">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script>
+        const quizQuestions = JSON.parse('{{ quiz_questions_json|escapejs }}') || [];
+        const pair_id = JSON.parse('{{ pair.id|escapejs }}');
+    </script>
+    <script src="{% static 'guides/js/quiz.js' %}"></script>
+    <script src="{% static 'guides/js/fallingLeaves.js' %}"></script>
+</body>
+</html>
