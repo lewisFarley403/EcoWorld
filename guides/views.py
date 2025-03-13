@@ -1,61 +1,156 @@
-from django.shortcuts import render,redirect
-from django.contrib.auth.decorators import login_required
-from .models import quiz_results,User
+from idlelib.rpc import request_queue
+
 from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required, permission_required
+
+from .forms import GuidesForm
+from .models import ContentQuizPair, UserQuizResult, User
 import json
+from django.core.serializers.json import DjangoJSONEncoder
 
-# need to add complete paragraphs but added start of each paragraph to make it work
-paragraphs = [
-    "One of the easiest ways to be more sustainable is to reduce energy consumption at home. Switch to energy-efficient appliances and LED lightbulbs, which use up to 75% less energy than traditional incandescent bulbs. Unplug devices when they are not in use, as many electronics consume energy even when turned off. Additionally, consider using a programmable thermostat to optimize heating and cooling, and take advantage of natural light during the day to reduce the need for artificial lighting.",
-    "Water is a precious resource, and conserving it is essential for sustainability. Fix leaky faucets and pipes promptly, as a single drip can waste gallons of water over time. Install low-flow showerheads and faucets to reduce water usage without sacrificing performance. When doing laundry or dishes, always run full loads to maximize efficiency. Outside the home, consider collecting rainwater for gardening and landscaping, and opt for drought-resistant plants to reduce the need for irrigation.",
-    "The '3 Rs' of sustainability: Reduce, Reuse, Recycle—are a cornerstone of eco-friendly living. Start by reducing your consumption of single-use items like plastic bags, bottles, and packaging. Reuse whenever possible, such as repurposing glass jars for storage or using cloth bags for shopping. Recycle materials like paper, glass, and metal, but be sure to follow local recycling guidelines to avoid contamination. Composting organic waste is another great way to reduce landfill waste and create soil for gardening.",
-    "Transportation is a major contributor to greenhouse gas emissions. To reduce your carbon footprint, opt for walking, biking, or using public transportation whenever possible. If you need to drive, consider carpooling or switching to an electric or hybrid vehicle. For longer trips, choose trains over planes, as trains generally have a lower environmental impact. Additionally, maintaining your vehicle by keeping tires properly inflated and performing regular tune-ups can improve fuel efficiency and reduce emissions.",
-    "Making sustainable choices while shopping can significantly reduce your environmental impact. Buy locally produced goods to support local economies and reduce the carbon footprint associated with transportation. Choose products with minimal packaging, or packaging made from recycled materials. When shopping for food, opt for organic and seasonal produce, which often requires fewer pesticides and less energy to grow. Finally, consider buying second-hand items or repairing broken ones instead of purchasing new products.",
-    "Your diet plays a significant role in your environmental footprint. Reducing meat and dairy consumption, particularly beef and lamb, can lower greenhouse gas emissions, as livestock farming is a major contributor to climate change. Incorporate more plant-based meals into your diet, such as fruits, vegetables, legumes, and grains. When buying seafood, choose sustainably sourced options to help protect ocean ecosystems. Additionally, avoid food waste by planning meals, storing food properly, and using leftovers creatively."
-]
+@permission_required("Accounts.can_view_admin_button")
+def add_guide(request):
+    if request.method == 'POST':
+        form = GuidesForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("EcoWorld:admin_page")
 
-score = 0
-best = 0
-previous = 0
-
-def update_results(score_new,best_new,previous_new):
-    global score,best,previous
-    score = score_new
-    best = best_new
-    previous = previous_new
-
+    else:
+        form = GuidesForm()
+    return render(request, "guides/add_guide.html", {'form':form})
 
 @login_required
-def registerScore_view(request):
+def menu_view(request):
+    pairs = ContentQuizPair.objects.all()
+    completed_pairs = UserQuizResult.objects.filter(user=request.user, is_completed=True).values_list(
+        'content_quiz_pair_id', flat=True)
+
+    user = request.user
+    user = User.objects.get(id=user.id)
+    pfp_url = user.profile.profile_picture
+    pfp_url = "/media/pfps/" + pfp_url
+
+    userinfo = []
+    userinfo.append({
+        "username": user.username,
+        "pfp_url": pfp_url,
+        "coins": user.profile.number_of_coins
+    })
+
+    pairs_with_status = []
+    for pair in pairs:
+        is_completed = pair.id in completed_pairs
+        pairs_with_status.append({
+            'pair': pair,
+            'is_completed': is_completed
+        })
+
+    return render(request, 'guides/menu.html', {
+        'pairs_with_status': pairs_with_status,
+        'userinfo':userinfo[0]
+    })
+
+@login_required
+def content_view(request, pair_id):
+    pair = get_object_or_404(ContentQuizPair, id=pair_id)
+    user = request.user
+    user = User.objects.get(id=user.id)
+    pfp_url = user.profile.profile_picture
+    pfp_url = "/media/pfps/" + pfp_url
+
+    userinfo = []
+    userinfo.append({
+        "username": user.username,
+        "pfp_url": pfp_url,
+        "coins": user.profile.number_of_coins
+    })
+    return render(request, 'guides/content.html', {
+        'pair': pair,
+        'userinfo':userinfo[0]
+    })
+
+@login_required
+def quiz_view(request, pair_id):
+    pair = get_object_or_404(ContentQuizPair, id=pair_id)
+
+    user = request.user
+    user = User.objects.get(id=user.id)
+    pfp_url = user.profile.profile_picture
+    pfp_url = "/media/pfps/" + pfp_url
+
+    userinfo = []
+    userinfo.append({
+        "username": user.username,
+        "pfp_url": pfp_url,
+        "coins": user.profile.number_of_coins
+    })
+    if pair.quiz_questions:
+        try:
+            quiz_questions_json = json.dumps(pair.quiz_questions, cls=DjangoJSONEncoder)
+        except TypeError:
+            quiz_questions_json = "[]"
+    else:
+        quiz_questions_json = "[]"
+
+    return render(request, 'guides/quiz.html', {
+        'pair': pair,
+        'quiz_questions_json': quiz_questions_json,
+        'userinfo': userinfo[0]
+    })
+
+@login_required
+def registerScore_view(request, pair_id):
     data = json.loads(request.body)
     score = int(data['score'])
-    user = User.objects.get(id=request.user.id)
+    user = request.user
+    pair = get_object_or_404(ContentQuizPair, id=pair_id)
+    coins_reward = pair.reward
+
     try:
-        results = quiz_results.objects.get(user=user,id=1)
-    except quiz_results.DoesNotExist:
-        results = quiz_results(user=user, best_result=0, previous_best=0, new_result=0)
-        results.save()
-    results.previous_best = results.best_result
-    results.new_result = score
-    if score > results.previous_best:
-        results.best_result = score
-    update_results(score,results.best_result,results.previous_best)
-    print('updated results')
+        result = UserQuizResult.objects.get(user=user, content_quiz_pair=pair)
+    except UserQuizResult.DoesNotExist:
+        result = UserQuizResult(user=user, content_quiz_pair=pair, best_result=0, previous_best=0, score=0)
+
+    result.previous_best = result.best_result
+    result.score = score
+    if score > result.best_result:
+        result.best_result = score
+    print(pair.quiz_max_marks)
+    print(result.previous_best)
     print(score)
-    results.save()
-    return JsonResponse({'status': 'success', 'redirect_url': '/guides/results/'})
+    if result.previous_best < pair.quiz_max_marks and score == pair.quiz_max_marks:
+        user = User.objects.get(id=user.id)
+        user.profile.number_of_coins += coins_reward
+        user.save()
+
+    result.save()
+
+    return JsonResponse({'status': 'success', 'redirect_url': f'/guides/results/{pair_id}/'})
 
 @login_required
-def results_view(request):
-    print('results rendering')
-    print(score)
-    return render(request, 'guides/results.html', {'score':score, 'best':best, 'previous':previous})
+def results_view(request, pair_id):
+    pair = get_object_or_404(ContentQuizPair, id=pair_id)
+    result = UserQuizResult.objects.filter(user=request.user, content_quiz_pair=pair).first()
 
-@login_required
-def content_view(request):
-    return render(request, 'guides/content.html', {'paragraphs': paragraphs})
+    user = request.user
+    user = User.objects.get(id=user.id)
+    pfp_url = user.profile.profile_picture
+    pfp_url = "/media/pfps/" + pfp_url
 
-@login_required
-def quiz_view(request):
-    return render(request, 'guides/quiz.html')
+    userinfo = []
+    userinfo.append({
+        "username": user.username,
+        "pfp_url": pfp_url,
+        "coins": user.profile.number_of_coins
+    })
 
+    return render(request, 'guides/results.html', {
+        'score': result.score,
+        'previous': result.previous_best,
+        'best': result.best_result,
+        'max':pair.quiz_max_marks,
+        'userinfo': userinfo[0],
+        'pair': pair
+    })
