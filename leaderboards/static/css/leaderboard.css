@@ -133,6 +133,7 @@ body {
 .under-container {
     gap: 20px;
     margin-top: 150px;
+    padding-bottom:50px;
 }
 
 /* Crown styling */

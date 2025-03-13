@@ -10,14 +10,14 @@ function onPageLoad() {
 
         // First place goes in the middle
         if (top3.length >= 1) {
-            document.getElementById('firstPfp').src = top3[0].pfp_url; 
-            document.getElementById('firstName').innerText = top3[0].username;
+            document.getElementById('firstPfp').src = top3[1].pfp_url; 
+            document.getElementById('firstName').innerText = top3[1].username;
         }
 
         // Second place goes in the left container
         if (top3.length >= 2) {
-            document.getElementById('secondPfp').src = top3[1].pfp_url;
-            document.getElementById('secondName').innerText = top3[1].username;
+            document.getElementById('secondPfp').src = top3[0].pfp_url;
+            document.getElementById('secondName').innerText = top3[0].username;
         }
 
         // Third place goes in the right container
@@ -55,12 +55,11 @@ function onPageLoad() {
             console.log(user);
             var row = table.insertRow(-1);
             // row.href = `/read_profile/?username=${user.username}`;
-            var link = document.createElement("a");
-            link.href = `/read_profile/?username=${user.username}`;  // Set the URL
-            link.style.display = "block";  // Make the link fill the entire row
+            row.addEventListener("click", () => {
+                window.location.href = `/read_profile/?username=${user.username}`;
+            });
         
             // Add the link to the row
-            row.appendChild(link);
             row.addEventListener("mouseenter", async (event) => {
                 let username = row.cells[1].innerText;
                 try {
