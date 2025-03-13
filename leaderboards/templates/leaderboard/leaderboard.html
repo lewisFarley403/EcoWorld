@@ -8,32 +8,63 @@
     <link rel="stylesheet" href="{% static 'css/leaderboard.css' %}">
 </head>
 <body>
+    <div id="tooltip"></div>
     <script src="{% static 'js/leaderboard.js' %}"></script>
     <div id="nav">
         {% include "partials/navbar.html" %}
     </div>
+    <div class = 'root' >
+    <div class='top-3-container'>
+        <div id = 'top3'>
+            <div class = 'player-container under-container'>
+                <img id = 'firstPfp' class = 'pfp'/>
+                <p id = 'firstName'>Player 1</p>
+            </div>
 
-    <div id = 'top3'>
-        <div class = 'player-container'>
-            <img id = 'firstPfp' class = 'pfp'/>
-            <p id = 'firstName'>Player 1</p>
-        </div>
+            <div id = 'second-container' class = 'player-container'>
+                <img src="/media/pfps/crown.png" class="crown">
+                <img id = 'secondPfp' class = 'pfp'/>
+                <p id = 'secondName'>Player 1</p>
+            </div>
 
-        <div class = 'player-container'>
-            <img id = 'secondPfp'/>
-            <p id = 'secondName'>Player 1</p>
-        </div>
-
-        <div class = 'player-container'>
-            <img id = 'thirdPfp'/>
-            <p id = 'thirdName'>Player 1</p>
+            <div class = 'player-container under-container'>
+                <img id = 'thirdPfp' class = 'pfp'/>
+                <p id = 'thirdName'>Player 1</p>
+            </div>
         </div>
     </div>
 
     <div id = 'leaderboard'>
-
+        <!-- <table id = 'leaderboard-table'>
+            <tbody>
+                <tr>
+                    <td class="title">Rank</td>
+                    <td class="title">Name</td>
+                    <td class="title">Coins Earnt</td>
+                </tr>
+            </tbody>
+        </table> -->
+        <table id="leaderboard-table">
+            <thead>
+                <tr>
+                    <th class="title">Rank</th>
+                    <th class="title">Name</th>
+                    <th class="title">Coins Earnt</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard-body">
+                <!-- Dynamic rows here -->
+            </tbody>
+            <tfoot>
+                <tr class="current-user-row">
+                    <td id ='current-rank'></td>
+                    <td id = 'current-name'></td>
+                    <td id="current-coins"></td>
+                </tr>
+            </tfoot>
+        </table>
     </div>
-    
+</div>
 </body>
 </html>
 
