@@ -1,7 +1,7 @@
 from django.urls import path
-from . import views
+from .views import submit_disposal, thankyou
 
 urlpatterns = [
-    path('submit/', views.submit_disposal, name='submit_disposal'), #URL for submitting glass disposal
-    path('thankyou/', views.thankyou, name='thankyou')
+    path('submit/', submit_disposal, name='submit_disposal'),
+    path('thankyou/<int:coins_earned>/', thankyou, name='thankyou'),
 ]

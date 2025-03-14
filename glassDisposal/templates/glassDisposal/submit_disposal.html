@@ -6,24 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Submit Glass Disposal</title>
     <link rel="stylesheet" href="{% static 'EcoWorld/css/style.css' %}">
+    <script src="{% static 'js/location.js' %}" defer></script>
 </head>
 <body>
-    <div class="container">
-        <h2>Submit Glass Disposal</h2>
-        <form method="POST" enctype="multipart/form-data" class="form-container">
-            {% csrf_token %}
+    <div class="form-wrapper"> <!-- New wrapper for centering -->
+        <div class="form-container">
+            <h2>Submit Glass Disposal</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
 
-            <label for="id_location">What3Words Location:</label>
-            {{ form.location }}
+                <div class="form-group">
+                    <label for="id_location">What3Words Location:</label>
+                    <button type="button" onclick="getLocation()" class="btn-location">Use My Location</button>
+                    <input type="hidden" id="id_location" name="location">
+                </div>
 
-            <label for="id_image">Upload Photo Proof:</label>
-            {{ form.image }}
+                <div class="form-group">
+                    <label for="id_image">Upload Photo Proof:</label>
+                    {{ form.image }}
+                </div>
 
-            <label for="id_description">How many bottles are you handing in?</label>
-            {{ form.bottle_count }}
+                <div class="form-group">
+                    <label for="id_bottle_count">How many bottles are you handing in?</label>
+                    {{ form.bottle_count }}
+                </div>
 
-            <button type="submit" class="btn">Submit</button>
-        </form>
+                <button type="submit" class="btn-submit">Submit</button>
+            </form>
+        </div>
     </div>
 </body>
 </html>
