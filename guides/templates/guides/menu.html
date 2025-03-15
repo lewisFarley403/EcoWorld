@@ -1,0 +1,52 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu</title>
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link rel="stylesheet" href="{% static 'guides/css/style.css' %}">
+</head>
+<body>
+{% include "partials/navbar.html" %}
+    <div class="container">
+        <div class="card">
+            <h1 class="text-center">Content Menu</h1>
+            <ul style="list-style-type: none; padding: 0;">
+                {% for pair in pairs_with_status %}
+                    <li style="margin-bottom: 10px;">
+                        <button type="button" 
+                            class="menu-button" 
+                            data-url="{% url 'content' pair.pair.id %}" 
+                            {% if pair.is_completed %}disabled{% endif %}>
+                            <span>{{ pair.pair.title }}</span>
+                            <span class="completion-indicator">
+                                {% if pair.is_completed %}
+                                    ☑ Completed
+                                {% else %}
+                                    ☐ To be Completed
+                                {% endif %}
+                            </span>
+                        </button>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const buttons = document.querySelectorAll(".menu-button:not(:disabled)");
+            buttons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const url = button.getAttribute("data-url");
+                    window.location.href = url;
+                });
+            });
+        });
+    </script>
+    <script src="{% static 'guides/js/fallingLeaves.js' %}"></script>
+</body>
+</html>
