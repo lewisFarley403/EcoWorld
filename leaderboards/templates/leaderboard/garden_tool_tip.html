@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/garden_tool_tip.css' %}">
+    
+</head>
+<body id = 'body'>
+    {%csrf_token%}
+    <div class="main-container">
+        <div class="grid-wrapper">
+            <div class="grid-container">
+                {% for row in squares %}
+                    {% for square in row %}
+                        <div class="grid-square" 
+                             ondragover="allowDrop(event)" 
+                             ondrop="drop(event, '{{ forloop.parentloop.counter }}', '{{ forloop.counter }}')"
+                             data-row="{{ forloop.parentloop.counter }}" 
+                             data-col="{{ forloop.counter }}">
+                            {% if square.cardID %}
+                                <img src="{{ square.cardID.image.url }}" alt="{{ square.cardID.title }}">
+                            {% else %}
+                                <img src="{{ MEDIA_URL }}cards/dirt.jpeg" alt="Empty Square">
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+            
+        </div>
+    
+        
+        
+    </div>
+</body>
+</html>

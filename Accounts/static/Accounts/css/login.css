@@ -107,3 +107,54 @@ h1 {
     text-decoration: underline;
     color: #00dea5;
 }
+
+.forgot-password-button {
+    display: inline-block;
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 5px;
+    margin-top: 10px;
+    text-decoration: none;
+}
+
+.forgot-password-button:hover {
+    text-decoration: underline;
+    color: #00dea5;
+}
+
+/* Media query for mobile responsiveness */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+
+    .left-side {
+        display: none; /* Hide the left section with arch image */
+    }
+
+    .right-side {
+        width: 100%; /* Make form section take full width */
+    }
+
+    .login-container {
+        width: 90%;
+        max-width: 300px;
+        padding: 15px;
+        box-shadow: none;
+    }
+
+    .input-group input {
+        width: calc(100% - 22px);
+    }
+
+    .login-button {
+        width: 100%;
+    }
+
+    .forgot-password-button {
+        width: 100%;
+    }
+}

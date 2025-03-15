@@ -6,14 +6,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Menu</title>
-    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+
     <link rel="stylesheet" href="{% static 'guides/css/style.css' %}">
 </head>
 <body>
-{% include "partials/navbar.html" %}
-    <div class="container">
-        <div class="card">
-            <h1 class="text-center">Content Menu</h1>
+    <header class="header">
+        <nav class="navbar">
+            <div class="left-links">
+                <a href="/ecoworld/dashboard">Home</a>
+                <a href="/ecoworld/challenge">Challenges</a>
+                <a href="/guides">Guides</a>
+                <a href="/garden">Garden</a>
+                <a href="/ecoworld/store">Store</a>
+            </div>
+            <div class="logo">Eco World</div>
+            <div class="right-links">
+                <span>{{ userinfo.username }}</span>
+                {% load static %}
+                <a href = "/accounts/profile">
+                    <img src="{{ userinfo.pfp_url }}" alt="Username" class="profile-pic" style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #00dea5;">
+                </a>
+                <span style="padding-left: 20px;">Coins: {{ userinfo.coins }}</span>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-5">
+        <div class="card shadow p-4">
+            <h1 class="text-center text-success">Content Menu</h1>
             <ul style="list-style-type: none; padding: 0;">
                 {% for pair in pairs_with_status %}
                     <li style="margin-bottom: 10px;">
@@ -36,17 +56,23 @@
         </div>
     </div>
 
+
+    <!-- JavaScript to handle button clicks -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Add event listeners to all buttons with the class "menu-button"
             const buttons = document.querySelectorAll(".menu-button:not(:disabled)");
             buttons.forEach(button => {
                 button.addEventListener("click", function () {
+                    // Redirect to the URL stored in the data-url attribute
+
                     const url = button.getAttribute("data-url");
                     window.location.href = url;
                 });
             });
         });
     </script>
+
     <script src="{% static 'guides/js/fallingLeaves.js' %}"></script>
 </body>
 </html>

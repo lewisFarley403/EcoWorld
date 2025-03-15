@@ -277,6 +277,32 @@
             "epicProb": 0.25,
             "legendaryProb": 0.25
         }
+
+    },
+    {
+        "model":"qrCodes.waterFountain",
+        "pk": 1,
+        "fields": {
+            "name": "Forum Library",
+            "location": "The first floor of the library."
+        }
+    },
+    {
+        "model":"qrCodes.waterFountain",
+        "pk": 2,
+        "fields": {
+            "name": "Innovation Cafe",
+            "location": "The kitchen area in innovation cafe"
+        }
+    },
+    {
+        "model":"qrCodes.waterFountain",
+        "pk": 3,
+        "fields": {
+            "name": "The Student Union",
+            "location": "The Kitchen area in the SU"
+        }
+
     }
 
 

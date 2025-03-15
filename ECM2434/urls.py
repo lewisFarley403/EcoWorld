@@ -28,6 +28,8 @@ urlpatterns = [
     path("guides/", include("guides.urls")),
     path("leaderboards/", include("leaderboards.urls")),
     path("forum/", include("forum.urls")),
+    path('game/', include('SustainabilityGame.urls')),
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 print(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
 print(urlpatterns[1])
