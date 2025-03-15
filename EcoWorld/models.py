@@ -57,7 +57,8 @@ class ongoingChallenge(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     submission = models.TextField(null=True)
     submitted_on = models.DateField(null=True)
-    created_on = models.DateTimeField( auto_now_add=True) #sets this to the current date when the object is created
+    created_on = models.DateTimeField(auto_now_add=True) #sets this to the current date when the object is created
+    completion_count = models.IntegerField(default=0)
     def __str__(self):
         return self.challenge.name + " by " + self.user.username
 

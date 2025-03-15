@@ -59,14 +59,21 @@
             <a href="/garden">Garden</a>
             <a href="/ecoworld/store">Store</a>
             <a href="/leaderboards">Leaderboard</a>
+            <a href="/game/play/">Minigame</a>
+            {% if perms.Accounts.can_view_admin_button %}
+                <a href="/ecoworld/admin">Admin Page</a>
+            {% endif %}
         </div>
         <div class="logo">Eco World</div>
         <div class="right-links">
-            <span id="username">Loading...</span> <!-- Placeholder for username -->
+            <span id="username">Loading...</span>
             <a href="/accounts/profile">
-                <img id="pfp" src="" alt="Username" class="profile-pic"> <!-- Placeholder for profile picture -->
+                <img id="pfp" src="" alt="Username" class="profile-pic">
             </a>
-            <span style="padding-left: 20px;" id="coins">Loading...</span> <!-- Placeholder for coins -->
+            <span style="padding-left: 20px;" id="coins">Loading...</span>
+            <a href="/ecoworld/friends">
+                <img src="/media/misc/friend.png" class="profile-pic">
+            </a>
         </div>
     </nav>
 </header>
