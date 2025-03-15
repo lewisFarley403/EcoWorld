@@ -13,7 +13,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import drinkEvent, User, waterFountain, pack, ownsCard, challenge, ongoingChallenge, card, cardRarity, \
+from .models import User, pack, ownsCard, challenge, ongoingChallenge, card, cardRarity, \
     Merge, dailyObjective
 
 
