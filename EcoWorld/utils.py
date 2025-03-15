@@ -1,4 +1,3 @@
-
 from django.db.models import Case, When, Value, BooleanField
 import random
 from django.conf import settings
@@ -71,11 +70,15 @@ def createChallenges(user):
     """
     expiration_time = now() - CHALLENGE_RESET_INTERVAL
 
-    # Delete old challenges if they have expired
-    ongoingChallenge.objects.filter(user=user, created_on__lt=expiration_time).delete()
+    # Delete only expired uncompleted challenges
+    ongoingChallenge.objects.filter(
+        user=user,
+        created_on__lt=expiration_time,
+        submitted_on__isnull=True  # Only delete challenges that haven't been completed
+    ).delete()
 
     # Assign fresh challenges if none exist
-    if not ongoingChallenge.objects.filter(user=user).exists():
+    if not ongoingChallenge.objects.filter(user=user, submitted_on__isnull=True).exists():
         challenges = list(challenge.objects.all())
         try:
             for _ in range(settings.NUM_CHALLENGES):

@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "qrCodes",
     'guides',
     'leaderboards',
+    'forum',
 ]
 
 MIDDLEWARE = [

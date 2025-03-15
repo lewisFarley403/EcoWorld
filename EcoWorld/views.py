@@ -270,9 +270,10 @@ def completeChallenge(request):
         #Update completion tracking
         chal.submitted_on = now()
         chal.completion_count += 1
+        chal.submission = data.get("submission", "")  # Get submission text from request
         chal.save()
 
-        worth = chal.Challenge.worth
+        worth = chal.challenge.worth
         user.profile.number_of_coins += worth
         user.profile.save()
         return JsonResponse({"success": True})

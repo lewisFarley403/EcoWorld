@@ -12,13 +12,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
 // Function to mark a challenge as completed
 function completeChallenge(challengeId, button) {
+    // Prompt for submission text
+    const submission = prompt("Please describe how you completed this challenge:");
+    if (submission === null) return; // User cancelled
+
     fetch("/ecoworld/complete_challenge/", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "X-CSRFToken": getCSRFToken(),
         },
-        body: JSON.stringify({ id: challengeId })
+        body: JSON.stringify({ 
+            id: challengeId,
+            submission: submission 
+        })
     })
     .then(response => response.json())
     .then(data => {
