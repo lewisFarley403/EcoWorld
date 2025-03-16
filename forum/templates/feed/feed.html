@@ -34,6 +34,8 @@
             display: flex;
             align-items: center;
             margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .post-title {
@@ -69,6 +71,19 @@
             font-size: 12px;
             margin-right: 10px;
             font-weight: bold;
+        }
+
+        .streak-badge {
+            background-color: #ff6b6b;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            margin-right: 10px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
 
         .loading {
@@ -118,6 +133,91 @@
             background-color: #003c3c;
             color: #00dea5;
         }
+
+        .challenge-link {
+            display: inline-block;
+            background-color: #00dea5;
+            color: #003c3c;
+            padding: 5px 15px;
+            border-radius: 15px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .challenge-link:hover {
+            background-color: #003c3c;
+            color: #00dea5;
+        }
+
+        .interaction-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .interaction-button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: none;
+            border: none;
+            color: #787C7E;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 5px 10px;
+            border-radius: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .interaction-button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .interaction-button.active {
+            color: #003c3c;
+            background-color: #e0e0e0;
+        }
+
+        .interaction-button.like.active {
+            color: #4CAF50;
+        }
+
+        .interaction-button.dislike.active {
+            color: #f44336;
+        }
+
+        .interaction-count {
+            font-weight: bold;
+        }
+
+        .post-type-filter {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .post-type-button {
+            background-color: #00dea5;
+            color: #003c3c;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .post-type-button:hover {
+            background-color: #00c090;
+        }
+
+        .post-type-button.active {
+            background-color: #003c3c;
+            color: #00dea5;
+        }
     </style>
 </head>
 <body>
@@ -125,9 +225,15 @@
     
     <div class="container">
         <div class="filter-container">
-            <button class="filter-button active" data-filter="my">My Challenges</button>
+            <button class="filter-button active" data-filter="my">My Posts</button>
             <button class="filter-button" data-filter="friends">Friends</button>
             <button class="filter-button" data-filter="university">University</button>
+        </div>
+        <div class="post-type-filter">
+            <button class="post-type-button active" data-type="all">All</button>
+            <button class="post-type-button" data-type="challenge">Challenges</button>
+            <button class="post-type-button" data-type="objective">Objectives</button>
+            <button class="post-type-button" data-type="card">Cards</button>
         </div>
         <div id="posts-container">
             <div class="loading">Loading posts...</div>
@@ -163,6 +269,7 @@
 
         let currentFilter = 'my';
         let lastData = null;
+        let currentPostType = 'all';
 
         // Add click handlers for filter buttons
         document.querySelectorAll('.filter-button').forEach(button => {
@@ -178,9 +285,21 @@
             });
         });
 
+        // Add post type filter functionality
+        document.querySelectorAll('.post-type-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.post-type-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentPostType = button.dataset.type;
+                filterPosts();
+            });
+        });
+
         function createPostElement(data, type) {
             const post = document.createElement('div');
             post.className = 'post';
+            post.dataset.postId = data.id;
+            post.dataset.postType = type.toLowerCase();
 
             const header = document.createElement('div');
             header.className = 'post-header';
@@ -195,6 +314,17 @@
             username.textContent = data.username === '{{ request.user.username }}' ? 'You' : data.username;
             header.appendChild(username);
 
+            // Add streak information
+            if (data.current_streak > 0) {
+                const streakSpan = document.createElement('span');
+                streakSpan.className = 'streak-badge';
+                streakSpan.innerHTML = `🔥 ${data.current_streak} day streak`;
+                if (data.current_streak === data.highest_streak) {
+                    streakSpan.innerHTML += ' (Personal Best!)';
+                }
+                header.appendChild(streakSpan);
+            }
+
             const title = document.createElement('h2');
             title.className = 'post-title';
             title.textContent = data.name;
@@ -202,7 +332,7 @@
 
             const meta = document.createElement('span');
             meta.className = 'post-meta';
-            meta.textContent = formatDate(type === 'Challenge' ? data.submitted_on : data.date_created);
+            meta.textContent = formatDate(type === 'Challenge' ? data.submitted_on : data.created_at);
             header.appendChild(meta);
 
             post.appendChild(header);
@@ -213,6 +343,13 @@
                 content.innerHTML = `
                     <p>${data.description}</p>
                     ${data.submission ? `<p><strong>Submission:</strong> ${data.submission}</p>` : ''}
+                    ${data.redirect_url && data.redirect_url !== 'null' ? `<p><a href="${data.redirect_url}" class="challenge-link">Go to Challenge</a></p>` : ''}
+                `;
+            } else if (type === 'Card') {
+                content.innerHTML = `
+                    <p>Unlocked new card: ${data.name}</p>
+                    <p>${data.description}</p>
+                    <img src="${data.image}" alt="${data.name}" style="max-width: 200px;">
                 `;
             } else {
                 content.innerHTML = `
@@ -224,14 +361,118 @@
 
             const footer = document.createElement('div');
             footer.className = 'post-footer';
+            
+            const stats = document.createElement('div');
             if (type === 'Challenge') {
-                footer.textContent = `Completed ${data.completion_count} time(s)`;
+                stats.textContent = `Completed ${data.completion_count} time(s)`;
+            } else if (type === 'Card') {
+                stats.textContent = `Rarity: ${data.rarity}`;
             } else {
-                footer.textContent = `Earned ${data.coins_earned} coins`;
+                stats.textContent = `Earned ${data.coins_earned} coins`;
             }
+            footer.appendChild(stats);
+
+            const interactionButtons = document.createElement('div');
+            interactionButtons.className = 'interaction-buttons';
+            
+            const likeButton = document.createElement('button');
+            likeButton.className = 'interaction-button like';
+            likeButton.innerHTML = `
+                <span class="material-icons">thumb_up</span>
+                <span class="interaction-count">0</span>
+            `;
+            
+            const dislikeButton = document.createElement('button');
+            dislikeButton.className = 'interaction-button dislike';
+            dislikeButton.innerHTML = `
+                <span class="material-icons">thumb_down</span>
+                <span class="interaction-count">0</span>
+            `;
+
+            interactionButtons.appendChild(likeButton);
+            interactionButtons.appendChild(dislikeButton);
+            footer.appendChild(interactionButtons);
+            
             post.appendChild(footer);
 
+            // Load initial interaction counts
+            loadInteractions(data.id, likeButton, dislikeButton);
+
+            // Add event listeners for interactions
+            likeButton.addEventListener('click', () => handleInteraction(data.id, 'like', likeButton, dislikeButton));
+            dislikeButton.addEventListener('click', () => handleInteraction(data.id, 'dislike', likeButton, dislikeButton));
+
             return post;
+        }
+
+        async function loadInteractions(postId, likeButton, dislikeButton) {
+            if (!postId) {
+                // If there's no post ID, hide the interaction buttons
+                likeButton.style.display = 'none';
+                dislikeButton.style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/forum/interactions/${postId}/`);
+                if (!response.ok) throw new Error('Failed to load interactions');
+                
+                const data = await response.json();
+                updateInteractionButtons(likeButton, dislikeButton, data);
+            } catch (error) {
+                console.error('Error loading interactions:', error);
+                // Hide buttons on error
+                likeButton.style.display = 'none';
+                dislikeButton.style.display = 'none';
+            }
+        }
+
+        async function handleInteraction(postId, type, likeButton, dislikeButton) {
+            try {
+                const response = await fetch('/forum/interact/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        post_id: postId,
+                        type: type
+                    })
+                });
+
+                if (!response.ok) throw new Error('Failed to update interaction');
+                
+                const data = await response.json();
+                updateInteractionButtons(likeButton, dislikeButton, {
+                    likes: data.likes,
+                    dislikes: data.dislikes,
+                    user_interaction: data.action === 'removed' ? null : type
+                });
+            } catch (error) {
+                console.error('Error updating interaction:', error);
+            }
+        }
+
+        function updateInteractionButtons(likeButton, dislikeButton, data) {
+            // Update counts
+            likeButton.querySelector('.interaction-count').textContent = data.likes;
+            dislikeButton.querySelector('.interaction-count').textContent = data.dislikes;
+
+            // Update active states
+            likeButton.classList.toggle('active', data.user_interaction === 'like');
+            dislikeButton.classList.toggle('active', data.user_interaction === 'dislike');
+        }
+
+        function filterPosts() {
+            const posts = document.querySelectorAll('.post');
+            posts.forEach(post => {
+                if (currentPostType === 'all' || post.dataset.postType === currentPostType) {
+                    post.style.display = '';
+                } else {
+                    post.style.display = 'none';
+                }
+            });
         }
 
         function compareData(newData, oldData) {
@@ -239,7 +480,8 @@
             
             // Compare lengths
             if (newData.ongoing_challenges.length !== oldData.ongoing_challenges.length ||
-                newData.daily_objectives.length !== oldData.daily_objectives.length) {
+                newData.daily_objectives.length !== oldData.daily_objectives.length ||
+                (newData.card_achievements?.length || 0) !== (oldData.card_achievements?.length || 0)) {
                 return true;
             }
 
@@ -262,6 +504,18 @@
                     newObjective.coins_earned !== oldObjective.coins_earned ||
                     newObjective.username !== oldObjective.username) {
                     return true;
+                }
+            }
+
+            // Compare card achievements
+            if (newData.card_achievements && oldData.card_achievements) {
+                for (let i = 0; i < newData.card_achievements.length; i++) {
+                    const newCard = newData.card_achievements[i];
+                    const oldCard = oldData.card_achievements[i];
+                    if (newCard.created_at !== oldCard.created_at ||
+                        newCard.username !== oldCard.username) {
+                        return true;
+                    }
                 }
             }
 
@@ -309,8 +563,17 @@
                         container.appendChild(createPostElement(objective, 'Daily'));
                     });
 
-                    if (data.ongoing_challenges.length === 0 && data.daily_objectives.length === 0) {
-                        container.innerHTML = '<div class="post">No completed challenges or objectives found.</div>';
+                    // Add card achievements
+                    if (data.card_achievements) {
+                        data.card_achievements.forEach(card => {
+                            container.appendChild(createPostElement(card, 'Card'));
+                        });
+                    }
+
+                    if (data.ongoing_challenges.length === 0 && 
+                        data.daily_objectives.length === 0 && 
+                        (!data.card_achievements || data.card_achievements.length === 0)) {
+                        container.innerHTML = '<div class="post">No posts found.</div>';
                     }
 
                     // Update the stored data

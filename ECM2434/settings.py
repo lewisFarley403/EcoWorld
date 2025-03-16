@@ -169,3 +169,7 @@ QR_CODE_WIDTH=128
 QR_CODE_HEIGHT=128
 DRINKING_COOLDOWN = timedelta(seconds=20)  # The time in minutes before a user can drink again
 DRINK_VALUE = 10  # The number of coins a drink is worth
+
+# Streak Settings
+STREAK_RESET_INTERVAL = 24 * 60 * 60  # 24 hours in seconds
+STREAK_GRACE_PERIOD = 24 * 60 * 60  # 24 hours grace period before streak is lost

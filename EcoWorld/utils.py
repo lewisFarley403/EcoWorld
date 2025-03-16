@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.utils.timezone import now
 
 from EcoWorld.models import ongoingChallenge, dailyObjective, challenge, cardRarity, card, pack
+from forum.models import Post
 
 
 def getUsersChallenges(user):
@@ -31,12 +32,13 @@ def getUsersChallenges(user):
 
     return challenges
 
-# Set how often daily objectives should reset (change this value as needed)
-DAILY_OBJECTIVE_RESET_INTERVAL = timedelta(seconds=10)
+# Set how often daily objectives should reset
+DAILY_OBJECTIVE_RESET_INTERVAL = timedelta(seconds=settings.STREAK_RESET_INTERVAL)
 
 def getUsersDailyObjectives(user):
     """
     Retrieves the user's daily objectives and resets them after a defined interval.
+    Also updates the user's streak if objectives are not completed within the grace period.
     """
     # Get the last reset time
     last_reset_time = dailyObjective.objects.filter(user=user).order_by("-last_reset").first()
@@ -44,6 +46,12 @@ def getUsersDailyObjectives(user):
 
     # If the last reset is outdated, refresh objectives
     if not last_reset_time or last_reset_time.last_reset < expiration_time:
+        # Check if previous objectives were completed before resetting
+        if last_reset_time:
+            all_objectives = dailyObjective.objects.filter(user=user)
+            all_completed = all(obj.progress >= obj.goal for obj in all_objectives)
+            user.profile.update_streak(completed_all_daily=all_completed)
+
         # Delete old objectives
         dailyObjective.objects.filter(user=user).delete()
 
@@ -177,6 +185,37 @@ def createPacksInDb():
                 "packimage": data["packimage"]
             }
         )
+
+def create_forum_post_for_challenge(ongoing_challenge):
+    """
+    Creates a forum post for a completed challenge.
+    Args:
+        ongoing_challenge (ongoingChallenge): The completed challenge to create a post for
+    Returns:
+        Post: The created forum post
+    """
+    return Post.objects.create(
+        user=ongoing_challenge.user,
+        post_type='challenge',
+        visibility='university',  # Make it visible to everyone
+        challenge=ongoing_challenge,
+    )
+
+def create_forum_post_for_card(user, card_achievement):
+    """
+    Creates a forum post for a card achievement.
+    Args:
+        user (User): The user who achieved the card
+        card_achievement (card): The card that was achieved
+    Returns:
+        Post: The created forum post
+    """
+    return Post.objects.create(
+        user=user,
+        post_type='card',
+        visibility='university',  # Make it visible to everyone
+        card_achievement=card_achievement,
+    )
 
 
 

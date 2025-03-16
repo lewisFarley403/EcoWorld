@@ -58,11 +58,14 @@
         }
 
         
-        .back-to-store-btn {
+        .button-container {
+            display: flex;
+            gap: 15px;
+        }
+
+        .back-to-store-btn, .view-post-btn {
             display: none; 
             padding: 10px 20px;
-            background-color: #000000; 
-            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
@@ -70,76 +73,130 @@
             margin-top: 20px; 
             font-weight: bold;
             font-family: Arial, Helvetica, sans-serif;
+            transition: all 0.3s ease;
         }
 
-    
+        .back-to-store-btn {
+            background-color: #000000;
+            color: white;
+        }
+
+        .view-post-btn {
+            background-color: #00dea5;
+            color: #003c3c;
+        }
+
         .back-to-store-btn:hover {
             background-color: #004979;
         }
 
+        .view-post-btn:hover {
+            background-color: #00c090;
+        }
 
+        .card-info {
+            color: white;
+            font-family: Arial, sans-serif;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .card-info h2 {
+            color: #00dea5;
+            margin: 0;
+        }
+
+        .card-info p {
+            margin: 5px 0;
+            color: #ccc;
+        }
+
+        .rarity {
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .common { color: #b0b0b0; }
+        .rare { color: #4CAF50; }
+        .epic { color: #9C27B0; }
+        .legendary { color: #FFD700; }
     </style>
 </head>
 <body>
-
-
     <div class="video-container" id="videoContainer">
         <video id="packOpeningVideo" muted playsinline></video>  
     </div>
-
-
+    <p id = "post_id" style="display: none;">{{ post_id }}</p>
     <div class="card-container" id="cardContainer">
         <img id="cardImage" src="{{ image }}" alt="Card Image">
-        <button id="backToStoreBtn" class="back-to-store-btn" onclick="window.location.href='/ecoworld/store/'">Go Back to Store</button>
+        <div class="card-info" id="cardInfo">
+            <h2>{{ card.title }}</h2>
+            <p>{{ card.description }}</p>
+            <p class="rarity {{ card.rarity.title|lower }}">{{ card.rarity.title }}</p>
+            <p>From {{ pack.title }}</p>
+        </div>
+        <div class="button-container">
+            <button id="backToStoreBtn" class="back-to-store-btn" onclick="window.location.href='/ecoworld/store/'">Back to Store</button>
+            <button id="viewPostBtn" class="view-post-btn" onclick="viewPost()">View in Forum</button>
+        </div>
     </div>
-
-    
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-        const videoContainer = document.getElementById("videoContainer");
-        const video = document.getElementById("packOpeningVideo");
-        const cardContainer = document.getElementById("cardContainer");
-        const backToStoreBtn = document.getElementById("backToStoreBtn");
+            const videoContainer = document.getElementById("videoContainer");
+            const video = document.getElementById("packOpeningVideo");
+            const cardContainer = document.getElementById("cardContainer");
+            const cardInfo = document.getElementById("cardInfo");
+            const backToStoreBtn = document.getElementById("backToStoreBtn");
+            const viewPostBtn = document.getElementById("viewPostBtn");
 
-        console.log("DOM fully loaded"); 
+            console.log("DOM fully loaded"); 
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const packId = urlParams.get("pack_id");
+            const urlParams = new URLSearchParams(window.location.search);
+            const packId = urlParams.get("pack_id");
 
+            let videoSrc;
+            if (packId === "1") {
+                videoSrc = "/media/animations/BasicPackVid.mp4"; 
+            } else if (packId === "2") {
+                videoSrc = "/media/animations/FinalRare.mp4";
+            } else if (packId === "3") {
+                videoSrc = "/media/animations/Iconpack.mp4";
+            } else {
+                videoSrc = "none"
+            }
 
-        let videoSrc;
-        if (packId === "1") {
-            videoSrc = "/media/animations/BasicPackVid.mp4"; 
-        } else if (packId === "2") {
-            videoSrc = "/media/animations/FinalRare.mp4";
-        } else if (packId === "3") {
-            videoSrc = "/media/animations/Iconpack.mp4";
-        } else {
-            videoSrc = "none"
+            video.innerHTML = `<source src="${videoSrc}" type="video/mp4">`;
+            video.load();
+
+            setTimeout(() => {
+                videoContainer.style.opacity = "1"; 
+                setTimeout(() => {
+                    video.play().catch(error => {
+                        console.error("Autoplay blocked:", error);
+                    });
+                }, 2000);
+            }, 1000); 
+
+            video.onended = function() {
+                cardContainer.style.opacity = "1";
+                cardInfo.style.opacity = "1";
+                setTimeout(() => {
+                    backToStoreBtn.style.display = "block";
+                    viewPostBtn.style.display = "block";
+                }, 2000);
+            };
+        });
+        function getPostId() {
+            const postId = document.getElementById("post_id").textContent;
+            return postId;
         }
-
-
-        video.innerHTML = `<source src="${videoSrc}" type="video/mp4">`;
-        video.load();
-
-        setTimeout(() => {
-            videoContainer.style.opacity = "1"; 
-            setTimeout(() => {
-                video.play().catch(error => {
-                    console.error("Autoplay blocked:", error);
-                });
-            }, 2000);
-        }, 1000); 
-        video.onended = function() {
-            cardContainer.style.opacity = "1"; 
-            setTimeout(() => {
-                backToStoreBtn.style.display = "block"; 
-            }, 2000);
-        };
-    });
-
+        function viewPost() {
+            const postId = getPostId();
+            alert(postId);
+            window.location.href = `/forum/?highlight=${postId}`;
+        }
     </script>
-
 </body>
 </html>
