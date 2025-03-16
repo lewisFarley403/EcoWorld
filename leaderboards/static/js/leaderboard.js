@@ -1,3 +1,7 @@
+function isMobileDevice() {
+    return window.matchMedia("(max-width: 768px)").matches;
+}
+
 function onPageLoad() {
     console.log("Document loaded");
 
@@ -60,26 +64,28 @@ function onPageLoad() {
             });
         
             // Add the link to the row
-            row.addEventListener("mouseenter", async (event) => {
-                let username = row.cells[1].innerText;
-                try {
-                    let response = await fetch(`get-tooltip-template/?username=${username}`);
-                    let html = await response.text();
-                    tooltip.innerHTML = html;
-                    tooltip.style.display = "block";
-                } catch (error) {
-                    console.error("Error fetching tooltip template:", error);
-                }
-            });
-    
-            row.addEventListener("mousemove", (event) => {
-                tooltip.style.top = `${event.clientY -350}px`;
-                tooltip.style.left = `${event.clientX + 10}px`;
-            });
-    
-            row.addEventListener("mouseleave", () => {
-                tooltip.style.display = "none";
-            });
+            if (!isMobileDevice()) {
+                row.addEventListener("mouseenter", async (event) => {
+                    let username = row.cells[1].innerText;
+                    try {
+                        let response = await fetch(`get-tooltip-template/?username=${username}`);
+                        let html = await response.text();
+                        tooltip.innerHTML = html;
+                        tooltip.style.display = "block";
+                    } catch (error) {
+                        console.error("Error fetching tooltip template:", error);
+                    }
+                });
+        
+                row.addEventListener("mousemove", (event) => {
+                    tooltip.style.top = `${event.clientY -350}px`;
+                    tooltip.style.left = `${event.clientX + 10}px`;
+                });
+        
+                row.addEventListener("mouseleave", () => {
+                    tooltip.style.display = "none";
+                });
+            }
 
             var rank = row.insertCell(0);
             var username = row.insertCell(1);
@@ -98,8 +104,8 @@ function onPageLoad() {
     }).catch((error) => {
         console.error('Error fetching leaderboard data:', error);
     });
-
 }
+
 onPageLoad();
 
 
