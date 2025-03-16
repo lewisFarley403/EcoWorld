@@ -166,4 +166,6 @@ DRINKING_COOLDOWN = timedelta(seconds=20)  # The time in minutes before a user c
 DRINK_VALUE = 10  # The number of coins a drink is worth
 DAILY_OBJECTIVE_RESET_INTERVAL = timedelta(seconds=30)
 
-CHALLENGE_RESET_INTERVAL = timedelta(seconds=30)
+CHALLENGE_RESET_INTERVAL = timedelta(minutes=1)
+
+VALUE_OF_DRINK = 100

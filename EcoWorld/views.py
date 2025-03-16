@@ -230,6 +230,16 @@ def challenge(request):
     getUsersDailyObjectives(user)
     daily_objectives = getUsersDailyObjectives(user)
 
+    # Get the user's last drink event
+    last_drink = drinkEvent.objects.filter(user=user).order_by('-drank_on').first()
+    last_drink_time = last_drink.drank_on if last_drink else None
+    
+    # Check if the drink is on cooldown
+    is_drink_available = True
+    if last_drink_time:
+        time_difference = now() - last_drink_time
+        is_drink_available = time_difference >= settings.DRINKING_COOLDOWN
+
     today = date.today()
     total_challenges = len(challenges)
     completed_challenges = sum(1 for c in challenges if c.is_completed)
@@ -246,7 +256,12 @@ def challenge(request):
         "total_challenges": total_challenges,
         "completed_challenges": completed_challenges,
         "total_objectives": total_objective_worth,
-        "completed_objectives": completed_objective_worth
+        "completed_objectives": completed_objective_worth,
+        "last_drink_time": last_drink_time,
+        "is_drink_available": is_drink_available,
+        "settings": {
+            "DRINKING_COOLDOWN": settings.DRINKING_COOLDOWN
+        }
     })
 
 

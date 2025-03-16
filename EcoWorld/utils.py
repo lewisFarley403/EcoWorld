@@ -8,9 +8,8 @@ from django.utils.timezone import now
 
 from EcoWorld.models import ongoingChallenge, dailyObjective, challenge, cardRarity, card, pack
 
-DAILY_OBJECTIVE_RESET_INTERVAL = timedelta(seconds=30)
+from django.conf import settings
 
-CHALLENGE_RESET_INTERVAL = timedelta(seconds=30)
 def getUsersChallenges(user):
     """
     This function returns all challenges for a user.
@@ -43,7 +42,7 @@ def getUsersDailyObjectives(user):
     """
     # Get the last reset time
     last_reset_time = dailyObjective.objects.filter(user=user).order_by("-last_reset").first()
-    expiration_time = now() - DAILY_OBJECTIVE_RESET_INTERVAL
+    expiration_time = now() - settings.DAILY_OBJECTIVE_RESET_INTERVAL
 
     # If the last reset is outdated, refresh objectives
     if not last_reset_time or last_reset_time.last_reset < expiration_time:
@@ -60,7 +59,7 @@ def getUsersDailyObjectives(user):
 
     return dailyObjective.objects.filter(user=user)
         
-
+from django.conf import settings
 def createChallenges(user):
     """
     This function creates all challenges for a user.
@@ -71,7 +70,7 @@ def createChallenges(user):
     Author:
         - Lewis Farley (lf507@exeter.ac.uk)
     """
-    expiration_time = now() - CHALLENGE_RESET_INTERVAL
+    expiration_time = now() - settings.CHALLENGE_RESET_INTERVAL
 
     # Delete old challenges if they have expired
     ongoingChallenge.objects.filter(user=user, created_on__lt=expiration_time).delete()

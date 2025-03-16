@@ -6,6 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eco World - Challenges</title>
     <link rel="stylesheet" href="{% static 'EcoWorld/css/challenges.css' %}">
+    <style>
+        .countdown {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #666;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .clock-emoji {
+            font-size: 1.4em;
+            display: inline-block;
+            transform-origin: center;
+            transition: transform 0.1s ease-in-out;
+        }
+    </style>
 </head>
 <body>
 <header class="header">
@@ -44,16 +60,14 @@
         <div class="tile challenges-section">
             <h2>Challenges</h2>
             <div id="challenges-container">
-                {% for challenge in challenges %}
-                    <div class="challenge-card {% if challenge.is_completed %}completed{% endif %}" id="challenge-{{ challenge.id }}">
-                        <span class="challenge-title">{{ challenge.challenge.name }}</span>
-                        {% if challenge.challenge.redirect_url %}
-                            <button class="complete-btn" onclick="window.location.href='{{ challenge.challenge.redirect_url }}'">✔</button>
-                        {% else %}
-                            <button class="complete-btn" onclick="completeChallenge('{{ challenge.id }}')">✔</button>
-                        {% endif %}
-                    </div>
-                {% endfor %}
+                <div class="challenge-card {% if not is_drink_available %}completed{% endif %}" id="challenge-{{ challenges.0.id }}">
+                    <span class="challenge-title">Take a drink</span>
+                    {% if is_drink_available %}
+                        <button class="complete-btn" onclick="window.location.href='/qrcode/scanner'">✔</button>
+                    {% else %}
+                        <span class="countdown" id="drink-countdown"></span><span class="clock-emoji" id="clock-animation">🕐</span>
+                    {% endif %}
+                </div>
             </div>
         </div>
 
@@ -91,5 +105,41 @@
 </main>
 
 <script src="{% static '/EcoWorld/js/challenges.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const lastDrinkTime = new Date('{{ last_drink_time|date:"c" }}').getTime();
+    const cooldownSeconds = {{ settings.DRINKING_COOLDOWN.total_seconds }};
+    let clockTick = true;
+    
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const timeSinceLastDrink = (now - lastDrinkTime) / 1000; // Convert to seconds
+        const timeLeft = cooldownSeconds - timeSinceLastDrink;
+        
+        const countdownElement = document.getElementById('drink-countdown');
+        const clockElement = document.getElementById('clock-animation');
+        
+        if (countdownElement && timeLeft > 0) {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = Math.floor(timeLeft % 60);
+            countdownElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Animate clock with more distinct states
+            if (clockElement) {
+                clockElement.textContent = clockTick ? '🕒' : '🕐';
+                clockElement.style.transform = clockTick ? 'scale(1.1)' : 'scale(1)';
+                clockTick = !clockTick;
+            }
+        } else if (timeLeft <= 0) {
+            window.location.reload();
+        }
+    }
+
+    if (!{{ is_drink_available|yesno:"true,false" }}) {
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    }
+});
+</script>
 </body>
 </html>
