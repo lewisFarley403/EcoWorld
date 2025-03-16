@@ -2,8 +2,32 @@ function isMobileDevice() {
     return window.matchMedia("(max-width: 768px)").matches;
 }
 
+function disableTooltipOnMobile() {
+    if (isMobileDevice()) {
+        const tooltip = document.getElementById("tooltip");
+        if (tooltip) {
+            tooltip.style.display = "none";
+            tooltip.style.visibility = "hidden";
+        }
+    }
+}
+
 function onPageLoad() {
     console.log("Document loaded");
+
+    // Handle back button and page restore
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            disableTooltipOnMobile();
+        }
+    });
+
+    // Handle visibility changes
+    document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+            disableTooltipOnMobile();
+        }
+    });
 
     // Fetch leaderboard data from the server
     fetch('getleaderboarddata').then(response => response.json()).then(data => {
@@ -44,20 +68,30 @@ function onPageLoad() {
 
         var table = document.getElementById("leaderboard-body");
         var tooltip = document.getElementById("tooltip");
-        tooltip.style.position = "absolute";
-        tooltip.style.background = "rgba(0, 0, 0, 0.8)";
-        tooltip.style.background = "transparent";
-        tooltip.style.color = "white";
-        tooltip.style.padding = "5px 10px";
-        tooltip.style.borderRadius = "5px";
-        tooltip.style.fontSize = "12px";
-        tooltip.style.display = "none";
-        tooltip.style.pointerEvents = "none";
-        tooltip.style.zIndex = "1000";
+        
+        // Only setup tooltip if not on mobile
+        if (!isMobileDevice()) {
+            tooltip.style.position = "absolute";
+            tooltip.style.background = "rgba(0, 0, 0, 0.8)";
+            tooltip.style.background = "transparent";
+            tooltip.style.color = "white";
+            tooltip.style.padding = "5px 10px";
+            tooltip.style.borderRadius = "5px";
+            tooltip.style.fontSize = "12px";
+            tooltip.style.display = "none";
+            tooltip.style.pointerEvents = "none";
+            tooltip.style.zIndex = "1000";
+        } else {
+            // Hide tooltip element completely on mobile
+            tooltip.style.display = "none";
+            tooltip.style.visibility = "hidden";
+        }
+
         data.rankedUsers.forEach((user, i) => {
             console.log("USER")
             console.log(user);
             var row = table.insertRow(-1);
+            
             // row.href = `/read_profile/?username=${user.username}`;
             row.addEventListener("click", () => {
                 window.location.href = `/read_profile/?username=${user.username}`;
@@ -66,6 +100,7 @@ function onPageLoad() {
             // Add the link to the row
             if (!isMobileDevice()) {
                 row.addEventListener("mouseenter", async (event) => {
+                    if (isMobileDevice()) return; // Double-check for mobile
                     let username = row.cells[1].innerText;
                     try {
                         let response = await fetch(`get-tooltip-template/?username=${username}`);
@@ -78,6 +113,7 @@ function onPageLoad() {
                 });
         
                 row.addEventListener("mousemove", (event) => {
+                    if (isMobileDevice()) return; // Double-check for mobile
                     tooltip.style.top = `${event.clientY -350}px`;
                     tooltip.style.left = `${event.clientX + 10}px`;
                 });
