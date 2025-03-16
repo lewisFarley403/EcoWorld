@@ -9,6 +9,48 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 
+// Function to calculate total progress
+function calculateTotalProgress() {
+    // Calculate challenge progress
+    const challengeCards = document.querySelectorAll('.challenge-card');
+    const completedChallenges = document.querySelectorAll('.challenge-card.completed').length;
+    
+    // Calculate objective progress
+    const allObjectiveCards = document.querySelectorAll('.objective-card');
+    let totalTasks = 0;
+    let completedTasks = 0;
+    
+    allObjectiveCards.forEach(card => {
+        const progressText = card.querySelector('.progress-count').textContent;
+        console.log("Progress text for card:", progressText);
+        const [current, max] = progressText.split('/').map(num => parseInt(num.trim()));
+        totalTasks += max;
+        completedTasks += current;
+    });
+
+    console.log(`Total progress - Completed: ${completedTasks}, Total: ${totalTasks}`);
+    return {
+        challenges: { completed: completedChallenges, total: challengeCards.length },
+        objectives: { completed: completedTasks, total: totalTasks }
+    };
+}
+
+// Function to update all progress bars
+function updateAllProgress() {
+    const progress = calculateTotalProgress();
+    
+    // Update challenges progress
+    const challengeProgressElement = document.querySelector(".progress-tracker-section progress:first-of-type");
+    const challengeProgressCount = challengeProgressElement.nextElementSibling;
+    updateProgressBar(challengeProgressElement, progress.challenges.completed, progress.challenges.total);
+    challengeProgressCount.textContent = `${progress.challenges.completed}/${progress.challenges.total}`;
+    
+    // Update objectives progress
+    const objectiveProgressElement = document.querySelector(".progress-tracker-section .progress-item:nth-of-type(2) progress");
+    const objectiveProgressCount = objectiveProgressElement.nextElementSibling;
+    updateProgressBar(objectiveProgressElement, progress.objectives.completed, progress.objectives.total);
+    objectiveProgressCount.textContent = `${progress.objectives.completed}/${progress.objectives.total}`;
+}
 
 // Function to mark a challenge as completed
 function completeChallenge(challengeId, button) {
@@ -23,23 +65,19 @@ function completeChallenge(challengeId, button) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            const challengeCard = button.closest(".challenge-card");
-            challengeCard.classList.add("fade-out");
-            setTimeout(() => {
-                challengeCard.remove();
-                fetchNewChallenge();
-            }, 500);
-
-            // Update Progress Tracker dynamically
-            const progressElement = document.querySelector(".progress-tracker-section progress:first-of-type");
-            const progressCount = progressElement.nextElementSibling;
-
-            let currentValue = parseInt(progressElement.value);
-            let maxValue = parseInt(progressElement.max);
-            let newValue = currentValue + 1;
-
-            updateProgressBar(progressElement, newValue, maxValue);
-            progressCount.textContent = `${newValue}/${maxValue}`;
+            const challengeCard = document.getElementById(`challenge-${challengeId}`);
+            
+            // Add completion class for styling
+            challengeCard.classList.add("completed");
+            
+            // Disable the button
+            const completeButton = challengeCard.querySelector(".complete-btn");
+            completeButton.disabled = true;
+            completeButton.textContent = "✓";
+            completeButton.classList.add("completed-btn");
+            
+            // Update all progress bars
+            updateAllProgress();
         } else {
             alert("Error: " + data.error);
         }
@@ -71,6 +109,7 @@ function fetchNewChallenge() {
 }
 
 function incrementObjective(objectiveId, button) {
+    console.log("Incrementing objective:", objectiveId);    
     fetch("/ecoworld/increment_objective/", {
         method: "POST",
         headers: {
@@ -81,25 +120,39 @@ function incrementObjective(objectiveId, button) {
     })
     .then(response => response.json())
     .then(data => {
+        console.log("Server response:", data);
         if (data.success) {
-            let progressSpan = button.nextElementSibling;
+            // Find the objective card and its progress elements
+            const objectiveCard = button.closest('.objective-card');
+            const progressSpan = objectiveCard.querySelector('.progress-count');
+            
+            if (!progressSpan) {
+                console.error("Progress span not found in:", objectiveCard);
+                return;
+            }
+
             let parts = progressSpan.textContent.split("/");
             let total = parseInt(parts[1]);
             let newProgress = data.progress;
+            console.log(`Updating progress: ${newProgress}/${total}`);
 
-            progressSpan.textContent = `${newProgress}/${total}`;
-
-            const progressElement = document.querySelector(".progress-tracker-section .progress-item:nth-of-type(2) progress");
-            const progressCount = progressElement.nextElementSibling;
-
-            let currentValue = parseInt(progressElement.value);
-            let maxValue = parseInt(progressElement.max);
-            let newValue = data.completed_objectives;  // Now correctly fetched from backend
-
-            updateProgressBar(progressElement, newValue, maxValue);
-            progressCount.textContent = `${newValue}/${maxValue}`;
+            // Animate the progress text change
+            progressSpan.style.transition = 'opacity 0.3s';
+            progressSpan.style.opacity = '0';
+            
+            setTimeout(() => {
+                progressSpan.textContent = `${newProgress}/${total}`;
+                progressSpan.style.opacity = '1';
+                
+                // Update all progress bars after the text has been updated
+                updateAllProgress();
+            }, 300);
 
             if (newProgress === total) {
+                console.log("Objective completed!");
+                // Add completion animation
+                objectiveCard.classList.add('completed-objective');
+                
                 let userResponse = prompt("Great job! Describe what you did:");
                 if (userResponse) {
                     fetch("/ecoworld/save_objective_note/", {
@@ -113,34 +166,56 @@ function incrementObjective(objectiveId, button) {
                             message: userResponse,
                         }),
                     })
+                    .then(() => {
+                        // Update progress one final time after saving the note
+                        updateAllProgress();
+                    })
                     .catch(error => console.error("Error saving objective note:", error));
+                } else {
+                    // Update progress even if no note was provided
+                    updateAllProgress();
                 }
             }
         } else {
+            console.error("Server returned error:", data.message);
             alert(data.message);
         }
     })
-    .catch(error => console.error("Error incrementing objective:", error));
+    .catch(error => {
+        console.error("Error incrementing objective:", error);
+        alert("Error updating objective. Please try again.");
+    });
 }
 
-
-
-
-// Function to update progress bar dynamically
+// Function to update progress bar dynamically with improved animation
 function updateProgressBar(progressElement, newValue, maxValue) {
-    const initialValue = parseInt(progressElement.value);
-    const step = (newValue - initialValue) / 20; // Smooth animation steps
+    // Set the max value first
+    progressElement.max = maxValue;
+    
+    // Get the current value
+    const initialValue = parseInt(progressElement.value) || 0;
+    const step = (newValue - initialValue) / 30;
     let current = initialValue;
 
-    const animate = setInterval(() => {
+    // Clear any existing animation
+    if (progressElement.animationInterval) {
+        clearInterval(progressElement.animationInterval);
+    }
+
+    // Ensure immediate visual feedback
+    progressElement.value = initialValue;
+    
+    // Start the animation
+    progressElement.animationInterval = setInterval(() => {
         current += step;
         if ((step > 0 && current >= newValue) || (step < 0 && current <= newValue)) {
             progressElement.value = newValue;
-            clearInterval(animate);
+            clearInterval(progressElement.animationInterval);
+            delete progressElement.animationInterval;
         } else {
             progressElement.value = current;
         }
-    }, 25);
+    }, 20);
 }
 
 // Helper function to get CSRF token from cookies

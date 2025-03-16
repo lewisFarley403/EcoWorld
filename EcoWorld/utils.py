@@ -8,7 +8,9 @@ from django.utils.timezone import now
 
 from EcoWorld.models import ongoingChallenge, dailyObjective, challenge, cardRarity, card, pack
 
+DAILY_OBJECTIVE_RESET_INTERVAL = timedelta(seconds=30)
 
+CHALLENGE_RESET_INTERVAL = timedelta(seconds=30)
 def getUsersChallenges(user):
     """
     This function returns all challenges for a user.
@@ -33,7 +35,7 @@ def getUsersChallenges(user):
     return challenges
 
 # Set how often daily objectives should reset (change this value as needed)
-DAILY_OBJECTIVE_RESET_INTERVAL = timedelta(seconds=10)
+
 
 def getUsersDailyObjectives(user):
     """
@@ -58,7 +60,7 @@ def getUsersDailyObjectives(user):
 
     return dailyObjective.objects.filter(user=user)
         
-CHALLENGE_RESET_INTERVAL = timedelta(seconds=10)
+
 def createChallenges(user):
     """
     This function creates all challenges for a user.

@@ -272,7 +272,7 @@ def completeChallenge(request):
         chal.completion_count += 1
         chal.save()
 
-        worth = chal.Challenge.worth
+        worth = chal.challenge.worth
         user.profile.number_of_coins += worth
         user.profile.save()
         return JsonResponse({"success": True})

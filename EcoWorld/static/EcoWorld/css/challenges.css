@@ -98,7 +98,45 @@ body {
     margin-bottom: 20px;
 }
 
-/* Challenges Section */
+/* Animations */
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes completionPulse {
+    0% {
+        background-color: #f9f9f9;
+        transform: scale(1);
+    }
+    50% {
+        background-color: #8BC34A;
+        transform: scale(1.05);
+    }
+    100% {
+        background-color: #f9f9f9;
+        transform: scale(1);
+    }
+}
+
+/* Challenge Card Styles */
 .challenge-card {
     display: flex;
     justify-content: space-between;
@@ -107,7 +145,16 @@ body {
     padding: 20px;
     border-radius: 10px;
     margin-bottom: 12px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.3s ease-in-out;
+    opacity: 1;
+}
+
+.challenge-card.fade-out {
+    animation: fadeOut 0.5s ease-in-out forwards;
+}
+
+.challenge-card.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
 }
 
 .challenge-card:hover, .objective-card:hover {
@@ -117,9 +164,14 @@ body {
 }
 
 .challenge-card.completed {
-    background: #8BC34A; /* Softer green */
+    background: linear-gradient(45deg, #8BC34A, #4CAF50);
     color: white;
-    transition: background 0.3s ease-in-out;
+    transform: scale(1);
+    box-shadow: 0 4px 15px rgba(139, 195, 74, 0.4);
+}
+
+.challenge-card.completed .challenge-title {
+    font-weight: bold;
 }
 
 .complete-btn {
@@ -129,7 +181,26 @@ body {
     padding: 8px 15px;
     border-radius: 5px;
     cursor: pointer;
-    margin-left: auto; /* Aligns button properly */
+    margin-left: auto;
+    transition: all 0.3s ease-in-out;
+}
+
+.complete-btn.completed-btn {
+    background: #4CAF50;
+    font-size: 18px;
+    cursor: default;
+    box-shadow: none;
+    opacity: 0.8;
+}
+
+.complete-btn.completed-btn:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+.challenge-card.completed:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 20px rgba(139, 195, 74, 0.5);
 }
 
 /* Daily Objectives */
@@ -141,7 +212,11 @@ body {
     padding: 20px;
     border-radius: 10px;
     margin-bottom: 12px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: all 0.3s ease-in-out;
+}
+
+.objective-card.completed-objective {
+    animation: completionPulse 1s ease-in-out;
 }
 
 .progress-btn {
@@ -167,6 +242,9 @@ progress {
     height: 15px;
     border-radius: 10px;
     overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
 progress::-webkit-progress-bar {
@@ -177,6 +255,49 @@ progress::-webkit-progress-bar {
 progress::-webkit-progress-value {
     background: #00C774;
     border-radius: 10px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Firefox */
+progress::-moz-progress-bar {
+    background: #00C774;
+    border-radius: 10px;
+    transition: all 0.3s ease-in-out;
+}
+
+/* IE/Edge */
+progress {
+    color: #00C774;
+}
+
+/* Make sure both progress bars have the same styling */
+.progress-tracker-section progress:first-of-type,
+.progress-tracker-section progress:nth-of-type(2) {
+    background: #eee;
+}
+
+.progress-tracker-section progress:first-of-type::-webkit-progress-value,
+.progress-tracker-section progress:nth-of-type(2)::-webkit-progress-value {
+    background: #00C774;
+}
+
+.progress-tracker-section progress:first-of-type::-moz-progress-bar,
+.progress-tracker-section progress:nth-of-type(2)::-moz-progress-bar {
+    background: #00C774;
+}
+
+/* Button Animations */
+.complete-btn, .progress-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.complete-btn:hover, .progress-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 8px rgba(0, 199, 116, 0.4);
+}
+
+.complete-btn:active, .progress-btn:active {
+    transform: scale(0.95);
 }
 
 /* Responsive Fixes */
