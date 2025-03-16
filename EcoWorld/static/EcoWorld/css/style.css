@@ -277,9 +277,17 @@ body::before {
     text-align: center;
 }
 
+.form-container label {
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+    text-align: left;
+}
+
 .form-group {
     margin-bottom: 15px;
     text-align: left;
+    width: 100%;
 }
 
 /* input fields styling */
@@ -288,21 +296,28 @@ body::before {
     width: 100%;
     padding: 8px;
     border: 1px solid #ccc;
-    border-radius: 6px;
+    border-radius: 5px;
     margin-top: 5px;
+}
+
+.form-container .btn-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 10px;
 }
 
 /* buttons */
 .btn-location {
-    display: block;
-    margin: 10px auto;
-    padding: 8px 15px;
+    width: 48%; /* Ensures both buttons are equal size */
+    padding: 10px;
     background-color: #004d4d;
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: 0.3s;
+    text-align: center;
 }
 
 .btn-location:hover {

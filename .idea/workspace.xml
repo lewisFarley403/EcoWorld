@@ -5,12 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="05d3ce4a-8112-4cbb-ad09-03d2255b77d4" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/glassDisposal/static/js/location.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ECM2434/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/ECM2434/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/EcoWorld/static/EcoWorld/css/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/EcoWorld/static/EcoWorld/css/style.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/glassDisposal/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/glassDisposal/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/glassDisposal/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/glassDisposal/forms.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/glassDisposal/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/glassDisposal/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/glassDisposal/static/js/location.js" beforeDir="false" afterPath="$PROJECT_DIR$/glassDisposal/static/js/location.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/glassDisposal/templates/glassDisposal/submit_disposal.html" beforeDir="false" afterPath="$PROJECT_DIR$/glassDisposal/templates/glassDisposal/submit_disposal.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/glassDisposal/templates/glassDisposal/thankyou.html" beforeDir="false" afterPath="$PROJECT_DIR$/glassDisposal/templates/glassDisposal/thankyou.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/glassDisposal/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/glassDisposal/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/glassDisposal/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/glassDisposal/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -106,6 +107,7 @@
       <workItem from="1740618340453" duration="891000" />
       <workItem from="1740619268157" duration="1629000" />
       <workItem from="1741547331852" duration="8436000" />
+      <workItem from="1742131250910" duration="4128000" />
     </task>
     <servers />
   </component>

@@ -1,33 +1,27 @@
-function getLocation() {
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
-    } else {
-        alert("Geolocation is not supported by this browser.");
-    }
-}
+document.addEventListener("DOMContentLoaded", function () {
+    const locationButton = document.getElementById("get-location-btn");
+
+    locationButton.addEventListener("click", function () {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    });
+});
 
 function successCallback(position) {
     const latitude = position.coords.latitude;
     const longitude = position.coords.longitude;
 
-    //your What3Words API Key
-    const apiKey = "PAX0KSR0";
-    const apiUrl = `https://api.what3words.com/v3/convert-to-3wa?coordinates=${latitude},${longitude}&key=${apiKey}`;
+    document.getElementById("latitude").value = latitude;
+    document.getElementById("longitude").value = longitude;
 
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            if (data.words) {
-                document.getElementById("id_location").value = data.words;
-            } else {
-                alert("Could not fetch What3Words location.");
-            }
-        })
-        .catch(error => {
-            console.error("Error fetching What3Words data:", error);
-        });
+    alert(`Location set! Lat: ${latitude}, Lon: ${longitude}`);
 }
 
 function errorCallback(error) {
-    alert("Error getting location: " + error.message);
+    console.error("Error retrieving location:", error);
+    alert("Unable to retrieve location. Please allow location access.");
 }
+
