@@ -1,25 +1,80 @@
-from idlelib.rpc import request_queue
-
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required, permission_required
-
-from .forms import GuidesForm
+from .forms import GuidesForm, DeleteForm
 from .models import ContentQuizPair, UserQuizResult, User
 import json
-from django.core.serializers.json import DjangoJSONEncoder
+
+@permission_required("Accounts.can_view_admin_button")
+def remove_guide(request):
+    if request.method == 'POST':
+        form = DeleteForm(request.POST)
+        if form.is_valid():
+            selected_pair_id = form.cleaned_data['pair'].id
+            pair = ContentQuizPair.objects.get(id=selected_pair_id)
+            pair.delete()
+            return redirect('EcoWorld:admin_page')
+    else:
+        form = DeleteForm()
+
+    return render(request,"guides/remove_guide.html", {"form":form} )
 
 @permission_required("Accounts.can_view_admin_button")
 def add_guide(request):
     if request.method == 'POST':
         form = GuidesForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect("EcoWorld:admin_page")
+            title = form.cleaned_data['title']
+            content = form.cleaned_data['content']
 
+            questions = []
+            max_marks = 0
+            for key, value in request.POST.items():
+                if key.startswith('question_'):
+                    max_marks += 1
+                    question_id = key.split('_')[1]
+                    question = value
+                    answers = [
+                        {
+                            "text": request.POST[f'answer1_{question_id}'],
+                            "value": "A",
+                            "correct": f'1' in request.POST.getlist(f'correct_answers_{question_id}')
+                        },
+                        {
+                            "text": request.POST[f'answer2_{question_id}'],
+                            "value": "B",
+                            "correct": f'2' in request.POST.getlist(f'correct_answers_{question_id}')
+                        },
+                        {
+                            "text": request.POST[f'answer3_{question_id}'],
+                            "value": "C",
+                            "correct": f'3' in request.POST.getlist(f'correct_answers_{question_id}')
+                        },
+                        {
+                            "text": request.POST[f'answer4_{question_id}'],
+                            "value": "D",
+                            "correct": f'4' in request.POST.getlist(f'correct_answers_{question_id}')
+                        }
+                    ]
+                    questions.append({
+                        "question": question,
+                        "answers": answers
+                    })
+
+            quiz_json = json.dumps(questions)
+
+            pair = ContentQuizPair(
+                title=title,
+                content=content,
+                quiz_questions=quiz_json,
+                quiz_max_marks=max_marks
+            )
+            pair.save()
+
+            return redirect('EcoWorld:admin_page')
     else:
         form = GuidesForm()
-    return render(request, "guides/add_guide.html", {'form':form})
+    return render(request, 'guides/add_guide.html', {'form': form})
 
 @login_required
 def menu_view(request):
@@ -86,13 +141,8 @@ def quiz_view(request, pair_id):
         "pfp_url": pfp_url,
         "coins": user.profile.number_of_coins
     })
-    if pair.quiz_questions:
-        try:
-            quiz_questions_json = json.dumps(pair.quiz_questions, cls=DjangoJSONEncoder)
-        except TypeError:
-            quiz_questions_json = "[]"
-    else:
-        quiz_questions_json = "[]"
+
+    quiz_questions_json = pair.quiz_questions
 
     return render(request, 'guides/quiz.html', {
         'pair': pair,

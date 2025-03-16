@@ -132,8 +132,6 @@ document.addEventListener("DOMContentLoaded", function() {
                 score++;
             }
         }
-        console.log(score);
-        alert("Your score: " + score + "/" + totalQuestions);
 
         const csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
         fetch(`/guides/registerScore/${pair_id}/`, {

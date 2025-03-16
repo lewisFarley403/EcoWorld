@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Select a Guide</title>
+</head>
+<body>
+    <h1>Select a Guide</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Submit</button>
+    </form>
+    <a href="{% url 'EcoWorld:admin_page' %}" class="button"><button class="button">cancel</button></a>
+</body>
+</html>
