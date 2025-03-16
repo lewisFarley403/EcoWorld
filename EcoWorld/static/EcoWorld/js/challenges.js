@@ -24,13 +24,22 @@ function completeChallenge(challengeId, button) {
     .then(data => {
         if (data.success) {
             const challengeCard = button.closest(".challenge-card");
-
-            // Fade out the completed challenge
             challengeCard.classList.add("fade-out");
             setTimeout(() => {
-                challengeCard.remove(); // Remove challenge after animation
-                fetchNewChallenge(); // Fetch the next available challenge
+                challengeCard.remove();
+                fetchNewChallenge();
             }, 500);
+
+            // Update Progress Tracker dynamically
+            const progressElement = document.querySelector(".progress-tracker-section progress:first-of-type");
+            const progressCount = progressElement.nextElementSibling;
+
+            let currentValue = parseInt(progressElement.value);
+            let maxValue = parseInt(progressElement.max);
+            let newValue = currentValue + 1;
+
+            updateProgressBar(progressElement, newValue, maxValue);
+            progressCount.textContent = `${newValue}/${maxValue}`;
         } else {
             alert("Error: " + data.error);
         }
@@ -62,74 +71,77 @@ function fetchNewChallenge() {
 }
 
 function incrementObjective(objectiveId, button) {
-    const API_ENDPOINTS = {
-        incrementObjective: "/ecoworld/increment_objective/",
-        saveObjectiveNote: "/ecoworld/save_objective_note/",
-    };
-
-    const MESSAGES = {
-        taskComplete: "Great job! Describe what you did:",
-    };
-
-    const csrfToken = getCSRFToken();
-    if (!csrfToken) {
-        console.error("CSRF token not found. Request aborted.");
-        alert("An error occurred. Please refresh the page and try again.");
-        return;
-    }
-
-    fetch(API_ENDPOINTS.incrementObjective, {
+    fetch("/ecoworld/increment_objective/", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "X-CSRFToken": csrfToken,
+            "X-CSRFToken": getCSRFToken(),
         },
         body: JSON.stringify({ objective_id: objectiveId }),
     })
     .then(response => response.json())
     .then(data => {
-        progress = data.progress;
         if (data.success) {
-            if (button && button.nextElementSibling) {
-                let progressSpan = button.nextElementSibling;
-                if (progressSpan.textContent.includes("/")) {
-                    let parts = progressSpan.textContent.split("/");
-                    let total = parts[1];
-                    progressSpan.textContent = `${data.progress}/${total}`;
+            let progressSpan = button.nextElementSibling;
+            let parts = progressSpan.textContent.split("/");
+            let total = parseInt(parts[1]);
+            let newProgress = data.progress;
 
-                    if (Number(data.progress) === Number(data.goal)) {
-                        let userResponse = prompt("Great job! Describe what you did:");
-                        if (userResponse) {
-                            fetch("/ecoworld/save_objective_note/", {
-                                method: "POST",
-                                headers: {
-                                    "Content-Type": "application/json",
-                                    "X-CSRFToken": csrfToken,
-                                },
-                                body: JSON.stringify({
-                                    objective_id: objectiveId,
-                                    message: userResponse,
-                                }),
-                            })
-                            .catch(error => console.error("Error saving objective note:", error));
-                        }
-                    }
-                } else {
-                    console.error("Invalid progress span content");
+            progressSpan.textContent = `${newProgress}/${total}`;
+
+            const progressElement = document.querySelector(".progress-tracker-section .progress-item:nth-of-type(2) progress");
+            const progressCount = progressElement.nextElementSibling;
+
+            let currentValue = parseInt(progressElement.value);
+            let maxValue = parseInt(progressElement.max);
+            let newValue = data.completed_objectives;  // Now correctly fetched from backend
+
+            updateProgressBar(progressElement, newValue, maxValue);
+            progressCount.textContent = `${newValue}/${maxValue}`;
+
+            if (newProgress === total) {
+                let userResponse = prompt("Great job! Describe what you did:");
+                if (userResponse) {
+                    fetch("/ecoworld/save_objective_note/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": getCSRFToken(),
+                        },
+                        body: JSON.stringify({
+                            objective_id: objectiveId,
+                            message: userResponse,
+                        }),
+                    })
+                    .catch(error => console.error("Error saving objective note:", error));
                 }
-            } else {
-                console.error("Button or progress span not found");
             }
         } else {
             alert(data.message);
         }
     })
-    .catch(error => {
-        console.error("Error incrementing objective:", error);
-        alert("There was an error processing your request. Please try again.");
-    });
+    .catch(error => console.error("Error incrementing objective:", error));
 }
 
+
+
+
+// Function to update progress bar dynamically
+function updateProgressBar(progressElement, newValue, maxValue) {
+    const initialValue = parseInt(progressElement.value);
+    const step = (newValue - initialValue) / 20; // Smooth animation steps
+    let current = initialValue;
+
+    const animate = setInterval(() => {
+        current += step;
+        if ((step > 0 && current >= newValue) || (step < 0 && current <= newValue)) {
+            progressElement.value = newValue;
+            clearInterval(animate);
+        } else {
+            progressElement.value = current;
+        }
+    }, 25);
+}
 
 // Helper function to get CSRF token from cookies
 function getCSRFToken() {
@@ -149,9 +161,6 @@ function getCSRFToken() {
 // Auto-refresh daily objectives and challenges every X milliseconds
 const RESET_INTERVAL = 10000;  // Must match Python interval
 
-setInterval(() => {
-    location.reload();
-}, RESET_INTERVAL);
 
 
 

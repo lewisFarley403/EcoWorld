@@ -80,13 +80,13 @@
             <div class="progress-item">
                 <span>Daily Objectives Completed:</span>
                 <progress max="{{ total_objectives }}" value="{{ completed_objectives }}"></progress>
-                <span>{{ completed_objectives }}/{{ total_objectives }}</span>
+                <span id="daily-objectives-tracker">{{ completed_objectives }}/{{ total_objectives }}</span>
             </div>
         </div>
     </div>
 
     <div class="right-panel">
-        <img src={% static "EcoWorld/res/greenery.png" %} alt="greenery">
+        <img src={% static "EcoWorld/res/greenery.png" %} alt="greenery"
     </div>
 </main>
 

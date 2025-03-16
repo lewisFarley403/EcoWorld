@@ -358,22 +358,29 @@ def increment_daily_objective(request):
                 objective.progress += 1
                 objective.save()
 
-                # If the objective is now complete, give the user coins
+                # If the objective is now complete, mark as completed and give coins
                 if objective.progress == objective.goal:
-                    request.user.profile.number_of_coins += objective.coins # Add coins
+                    objective.completed = True
+                    request.user.profile.number_of_coins += objective.coins  # Add coins
                     request.user.profile.save()
+                    objective.save()
 
-                return JsonResponse({"success": True,
-                                     "progress": objective.progress,
-                                     "goal": objective.goal,
-                                     "reward": objective.coins})
+
+                completed_objectives_count = dailyObjective.objects.filter(user=request.user, completed=True).count()
+
+                return JsonResponse({
+                    "success": True,
+                    "progress": objective.progress,
+                    "goal": objective.goal,
+                    "reward": objective.coins,
+                    "completed_objectives": completed_objectives_count
+                })
             else:
                 return JsonResponse({"success": False, "message": "Goal already reached"})
         except dailyObjective.DoesNotExist:
             return JsonResponse({"success": False, "message": "Objective not found"}, status=404)
 
     return JsonResponse({"success": False, "message": "Invalid request"}, status=400)
-
 
 
 
