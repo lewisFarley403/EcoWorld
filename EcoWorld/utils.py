@@ -1,11 +1,16 @@
 
-from .models import ongoingChallenge,challenge,card, cardRarity, pack
-
+from django.db.models import Case, When, Value, BooleanField
 import random
 from django.conf import settings
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
+from django.utils.timezone import now
 
+from EcoWorld.models import ongoingChallenge, dailyObjective, challenge, cardRarity, card, pack
+
+DAILY_OBJECTIVE_RESET_INTERVAL = timedelta(seconds=30)
+
+CHALLENGE_RESET_INTERVAL = timedelta(seconds=30)
 def getUsersChallenges(user):
     """
     This function returns all challenges for a user.
@@ -16,33 +21,46 @@ def getUsersChallenges(user):
     Author:
         - Lewis Farley (lf507@exeter.ac.uk)
     """
-    
-    challenges= list(ongoingChallenge.objects.filter(user=user))
-    if len(challenges) ==0:
-        ## there are no challenges for the user, create them
-        print("creating challenges")
-        createChallenges(user)
-    else:
-        # expired = filter(lambda x: datetime.now()-x.created_on> settings.CHALLENGE_EXPIRY, challenges)
-        expired = [
-            x for x in challenges
-            if timezone.now() - x.created_on > settings.CHALLENGE_EXPIRY
-        ]
-        possibleChallenges = list(challenge.objects.all())
+    today = timezone.now().date()
 
-        for e in expired:
-            e.delete()
-            challenges.remove(e)
-        for i in range(len(expired)):
-            # create new challenges to replace the removed ones
-            c = random.choice(possibleChallenges)
-            while c in [ch.challenge for ch in challenges]: # make sure the challenge isn't already in the users challenges
-                c = random.choice(possibleChallenges)
-            ongoingChallenge.objects.create(challenge=c,user=user,submission=None,submitted_on=None)
-            possibleChallenges.remove(c)
-    return ongoingChallenge.objects.filter(user=user)
+    # Get the user's ongoing challenges
+    challenges = ongoingChallenge.objects.filter(user=user).annotate(
+        is_completed=Case(
+            When(submitted_on__isnull=False, submitted_on__date=today, then=Value(True)),
+            default=Value(False),
+            output_field=BooleanField(),
+        )
+    ).order_by("created_on")[:2]  # Limit to 2 active challenges
+
+    return challenges
+
+# Set how often daily objectives should reset (change this value as needed)
+
+
+def getUsersDailyObjectives(user):
+    """
+    Retrieves the user's daily objectives and resets them after a defined interval.
+    """
+    # Get the last reset time
+    last_reset_time = dailyObjective.objects.filter(user=user).order_by("-last_reset").first()
+    expiration_time = now() - DAILY_OBJECTIVE_RESET_INTERVAL
+
+    # If the last reset is outdated, refresh objectives
+    if not last_reset_time or last_reset_time.last_reset < expiration_time:
+        # Delete old objectives
+        dailyObjective.objects.filter(user=user).delete()
+
+        # Assign new objectives
+        new_objectives = [
+            dailyObjective(user=user, name="Recycle 10 Items", goal=10, last_reset=now()),
+            dailyObjective(user=user, name="Turn Off Lights", goal=5, last_reset=now()),
+            dailyObjective(user=user, name="Use Refill Station", goal=1, last_reset=now()),
+        ]
+        dailyObjective.objects.bulk_create(new_objectives)
+
+    return dailyObjective.objects.filter(user=user)
         
-    
+
 def createChallenges(user):
     """
     This function creates all challenges for a user.
@@ -53,16 +71,24 @@ def createChallenges(user):
     Author:
         - Lewis Farley (lf507@exeter.ac.uk)
     """
-    challenges = list(challenge.objects.all())
-    try:
-        for _ in range(settings.NUM_CHALLENGES):
+    expiration_time = now() - CHALLENGE_RESET_INTERVAL
 
-            c = random.choice(challenges)
-            challenges.remove(c)
-            ongoingChallenge.objects.create(challenge=c,user=user,submission=None,submitted_on=None)
-    except IndexError:
-        print("not enough challenges")
-        print("it is possible that the database hasn't been populated with enough challenges")
+    # Delete old challenges if they have expired
+    ongoingChallenge.objects.filter(user=user, created_on__lt=expiration_time).delete()
+
+    # Assign fresh challenges if none exist
+    if not ongoingChallenge.objects.filter(user=user).exists():
+        challenges = list(challenge.objects.all())
+        try:
+            for _ in range(settings.NUM_CHALLENGES):
+                if challenges:
+                    c = random.choice(challenges)
+                    challenges.remove(c)
+                    ongoingChallenge.objects.create(
+                        challenge=c, user=user, submission=None, submitted_on=None, created_on=now()
+                    )
+        except IndexError:
+            print("Not enough challenges available.")
 
 
 def createItemsInDb():

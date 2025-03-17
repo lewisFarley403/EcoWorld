@@ -159,10 +159,13 @@ GARDEN_SIZE=5
 NUM_CHALLENGES=3
 from datetime import datetime, timedelta
 
-CHALLENGE_EXPIRY = timedelta(seconds=10)  # The time in seconds before a challenge expires
+CHALLENGE_EXPIRY = timedelta(minutes=10)  # The time in seconds before a challenge expires
 
 CHALLENGE_WORTH = 10  # The number of coins a challenge is worth
 QR_CODE_WIDTH=128
 QR_CODE_HEIGHT=128
 DRINKING_COOLDOWN = timedelta(seconds=20)  # The time in minutes before a user can drink again
 DRINK_VALUE = 10  # The number of coins a drink is worth
+DAILY_OBJECTIVE_RESET_INTERVAL = timedelta(seconds=30)
+
+CHALLENGE_RESET_INTERVAL = timedelta(seconds=30)

@@ -1,407 +1,95 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Challenges</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: auto;
-            padding: 20px;
-        }
-        .challenge-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-        .progress-bar {
-            height: 10px;
-            background: #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        .progress {
-            height: 100%;
-            background: #4caf50;
-        }
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        button:hover {
-            background: #0056b3;
-        }
-        input {
-            width: 100%;
-            padding: 8px;
-            margin-bottom: 15px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Challenges</h1>
-    <input type="text" id="search" placeholder="Search challenges..." onkeyup="filterChallenges()">
-    <div id="challenges-list"></div>
-    <button onclick="createChallenge()">Create New Challenge</button>
-
-    <script>
-        const challengesData = [
-            { id: 1, title: "10K Steps a Day", description: "Walk 10,000 steps daily.", progress: 60 },
-            { id: 2, title: "Read 5 Books", description: "Finish 5 books this month.", progress: 30 },
-            { id: 3, title: "Code 30 Days", description: "Write code every day for 30 days.", progress: 75 },
-        ];
-
-        function displayChallenges(challenges) {
-            const list = document.getElementById("challenges-list");
-            list.innerHTML = "";
-            challenges.forEach(challenge => {
-                list.innerHTML += `
-                    <div class="challenge-card">
-                        <h2>${challenge.title}</h2>
-                        <p>${challenge.description}</p>
-                        <div class="progress-bar"><div class="progress" style="width:${challenge.progress}%"></div></div>
-                        <button onclick="joinChallenge(${challenge.id})">Join Challenge</button>
-                    </div>
-                `;
-            });
-        }
-
-        function filterChallenges() {
-            const searchValue = document.getElementById("search").value.toLowerCase();
-            const filtered = challengesData.filter(challenge => challenge.title.toLowerCase().includes(searchValue));
-            displayChallenges(filtered);
-        }
-
-        function joinChallenge(id) {
-            alert("Joined challenge " + id);
-        }
-
-        function createChallenge() {
-            alert("Feature to create a new challenge coming soon!");
-        }
-
-        document.addEventListener("DOMContentLoaded", () => displayChallenges(challengesData));
-    </script>
-</body>
-</html> -->
-
-<!-- <DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Challenges</title>
-        <style>
-            body {
-                font-family: Arial, sans-serif;
-                margin: 0;
-                height: 100vh;
-                display: flex;
-                background-color: #00dea5;
-                justify-content: center;
-                align-items: center;
-            }
-            .container {
-                background-color: #fff;
-                padding: 20px;
-                border-radius: 8px;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                width: 400px;
-                text-align: center;
-            }
-            h1 {
-                color: #003c3c;
-            }
-            input {
-                width: calc(100% - 25px);
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                font-size: 14px;
-                box-shadow: 4px 4px 0 #00dea5;
-                transition: box-shadow 0.3s ease;
-            }
-            input:focus {
-                outline: none;
-                border-color: #00dea5;
-                box-shadow: 4px 4px 0 #00dea5;
-            }
-            .challenge-card {
-                border: 1px solid #ddd;
-                border-radius: 8px;
-                padding: 15px;
-                margin-bottom: 15px;
-                background-color: #fff;
-                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            }
-            .progress-bar {
-                height: 10px;
-                background: #ddd;
-                border-radius: 5px;
-                overflow: hidden;
-                margin: 10px 0;
-            }
-            .progress {
-                height: 100%;
-                background: #007bff;
-            }
-            button {
-                background: #007bff;
-                color: white;
-                border: none;
-                padding: 10px;
-                cursor: pointer;
-                border-radius: 5px;
-            }
-            button:hover {
-                background: #00dea5;
-            }
-            .signup-link a {
-                color: #007bff;
-                text-decoration: none;
-            }
-            .signup-link a:hover {
-                text-decoration: underline;
-                color: #00dea5;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Challenges</h1>
-            <input type="text" id="search" placeholder="Search challenges..." onkeyup="filterChallenges()">
-            <div id="challenges-list">
-                {%for challenge in challenges%}
-                <div class="challenge-card">
-                    <h2>{{challenge.challenge.name}}</h2>
-                    <p>{{challenge.challenge.description}}</p>
-                    <div class="progress-bar"><div class="progress" style="width:${challenge.progress}%"></div></div>
-                    <button onclick="joinChallenge('{{challenge.id}}')">Join Challenge</button>
-                </div>
-                {%endfor%}
-                
-            </div>
-            <button onclick="createChallenge()">Create New Challenge</button>
-        </div>
-        <script>
-            const challengesData = [
-                { id: 1, title: "10K Steps a Day", description: "Walk 10,000 steps daily.", progress: 60 },
-                { id: 2, title: "Read 5 Books", description: "Finish 5 books this month.", progress: 30 },
-                { id: 3, title: "Code 30 Days", description: "Write code every day for 30 days.", progress: 75 },
-            ];
-    
-            // function displayChallenges(challenges) {
-            //     const list = document.getElementById("challenges-list");
-            //     list.innerHTML = "";
-            //     challenges.forEach(challenge => {
-            //         list.innerHTML += `
-            //             <div class="challenge-card">
-            //                 <h2>${challenge.title}</h2>
-            //                 <p>${challenge.description}</p>
-            //                 <div class="progress-bar"><div class="progress" style="width:${challenge.progress}%"></div></div>
-            //                 <button onclick="joinChallenge(${challenge.id})">Join Challenge</button>
-            //             </div>
-            //         `;
-            //     });
-            // }
-    
-            function filterChallenges() {
-                const searchValue = document.getElementById("search").value.toLowerCase();
-                const filtered = challengesData.filter(challenge => challenge.title.toLowerCase().includes(searchValue));
-                displayChallenges(filtered);
-            }
-    
-            function joinChallenge(id) {
-                alert("Joined challenge " + id);
-                fetch('/EcoWorld/submitChallenge/', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrfToken // Add CSRF token in the headers
-                    },
-                    body: JSON.stringify({ id: id })
-                })
-            }
-    
-            function createChallenge() {
-                alert("Feature to create a new challenge coming soon!");
-            }
-    
-            document.addEventListener("DOMContentLoaded", () => displayChallenges(challengesData));
-        </script>
-    </body>
-    </html>
-</DOCTYPE>     -->
-
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Challenges</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            height: 100vh;
-            display: flex;
-            background-color: #00dea5;
-            justify-content: center;
-            align-items: center;
-        }
-        .container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 400px;
-            text-align: center;
-        }
-        h1 {
-            color: #003c3c;
-        }
-        input {
-            width: calc(100% - 25px);
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 14px;
-            box-shadow: 4px 4px 0 #00dea5;
-            transition: box-shadow 0.3s ease;
-        }
-        input:focus {
-            outline: none;
-            border-color: #00dea5;
-            box-shadow: 4px 4px 0 #00dea5;
-        }
-        .challenge-card {
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .progress-bar {
-            height: 10px;
-            background: #ddd;
-            border-radius: 5px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        .progress {
-            height: 100%;
-            background: #007bff;
-        }
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        button:hover {
-            background: #00dea5;
-        }
-        .signup-link a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .signup-link a:hover {
-            text-decoration: underline;
-            color: #00dea5;
-        }
-        .user-info {
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;  /* Adds space between username and coins */
-        }
-        .user-info h3 {
-            margin: 0;
-        }
-    </style>
+    <title>Eco World - Challenges</title>
+    <link rel="stylesheet" href="{% static 'EcoWorld/css/challenges.css' %}">
 </head>
 <body>
-    <div class="container">
-        {% csrf_token %}
-        <div class="user-info">
-            <h3>{{ username }}</h3>
-            <p>{{ coins }}</p>
+<header class="header">
+    <nav class="navbar">
+        <div class="left-links">
+            <a href="/ecoworld/dashboard">Home</a>
+            <a href="/ecoworld/challenge">Challenges</a>
+            <a href="/guides">Guides</a>
+            <a href="/garden">Garden</a>
+            <a href="/ecoworld/store">Store</a>
+            {% if perms.Accounts.can_view_admin_button %}
+                <a href="/ecoworld/admin">Admin Page</a>
+            {% endif %}
         </div>
-        <h1>Challenges</h1>
-        <!-- <input type="text" id="search" placeholder="Search challenges..." onkeyup="filterChallenges()"> -->
-        <div id="challenges-list">
-            {% for challenge in challenges %}
-                <div class="challenge-card">
-                    <h2>{{ challenge.challenge.name }}</h2>
-                    <p>{{ challenge.challenge.description }}</p>
+        <div class="logo">Eco World</div>
+        <div class="right-links">
+            <span>{{ userinfo.username }}</span>
+            {% load static %}
+            <a href = "/accounts/profile">
+                <img src="{{ userinfo.pfp_url }}" alt="Username" class="profile-pic">
+            </a>
+            <span style="padding-left: 20px;">Coins: {{ userinfo.coins }}</span>
+            <a href = "/ecoworld/friends">
+                <img src="/media/misc/friend.png" class="profile-pic" alt="Friends">
+            </a>
+        </div>
+    </nav>
+</header>
 
-                    {% if challenge.submitted_on != None %}
-                        <p>Completed!</p>
-                    {% else %}
-                        <button onclick="completeChallenge('{{ challenge.id }}')">Complete Challenge</button>
-                    {% endif %}
-                    <!-- <button onclick="completeChallenge('{{ challenge.id }}')">Complete Challenge</button> -->
-                </div>
-            {% endfor %}
-            <div class="challenge-card">
-                <h2>Fill Water Bottle</h2>
-                <p>Fill Water Bottle At A Fountain on to avoid using a single use plastic bottle!</p>
-                <a href ='/qrcode/scanner'>
-                    <button >Fill Water Bottle Now</button>
-                </a>
+<main class="main-content">
+    <div class="left-panel">
+        <img src={% static "EcoWorld/res/greenery.png" %} alt="greenery">
+    </div>
+
+    <div class="center-content">
+        <div class="tile challenges-section">
+            <h2>Challenges</h2>
+            <div id="challenges-container">
+                {% for challenge in challenges %}
+                    <div class="challenge-card {% if challenge.is_completed %}completed{% endif %}" id="challenge-{{ challenge.id }}">
+                        <span class="challenge-title">{{ challenge.challenge.name }}</span>
+                        {% if challenge.challenge.redirect_url %}
+                            <button class="complete-btn" onclick="window.location.href='{{ challenge.challenge.redirect_url }}'">✔</button>
+                        {% else %}
+                            <button class="complete-btn" onclick="completeChallenge('{{ challenge.id }}')">✔</button>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="tile daily-objectives-section">
+            <h2>Daily Objectives</h2>
+            <div id="objectives-container">
+                {% for objective in daily_objectives %}
+                    <div class="objective-card">
+                        <span class="objective-title">{{ objective.name }}</span>
+                        <button class="progress-btn" onclick="incrementObjective('{{ objective.id }}', this)">+</button>
+                        <span class="progress-count">{{ objective.progress }}/{{ objective.goal }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="tile progress-tracker-section">
+            <h2>Progress Tracker</h2>
+            <div class="progress-item">
+                <span>Challenges Completed:</span>
+                <progress max="{{ total_challenges }}" value="{{ completed_challenges }}"></progress>
+                <span>{{ completed_challenges }}/{{ total_challenges }}</span>
+            </div>
+            <div class="progress-item">
+                <span>Daily Objectives Completed:</span>
+                <progress max="{{ total_objectives }}" value="{{ completed_objectives }}"></progress>
+                <span id="daily-objectives-tracker">{{ completed_objectives }}/{{ total_objectives }}</span>
+            </div>
         </div>
     </div>
 
-    <script>
-        const challengesData = [
-            { id: 1, title: "10K Steps a Day", description: "Walk 10,000 steps daily.", progress: 60 },
-            { id: 2, title: "Read 5 Books", description: "Finish 5 books this month.", progress: 30 },
-            { id: 3, title: "Code 30 Days", description: "Write code every day for 30 days.", progress: 75 },
-        ];
+    <div class="right-panel">
+        <img src={% static "EcoWorld/res/greenery.png" %} alt="greenery"
+    </div>
+</main>
 
-        function filterChallenges() {
-            const searchValue = document.getElementById("search").value.toLowerCase();
-            const filtered = challengesData.filter(challenge => challenge.title.toLowerCase().includes(searchValue));
-            displayChallenges(filtered);
-        }
-
-        function completeChallenge(id) {
-            console.log("completed challenge " + id);
-            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-            // alert("completed challenge " + id);
-            var resp = fetch('/ecoworld/completeChallenge/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken // Add CSRF token in the headers
-                },
-                body: JSON.stringify({ id: id })
-            })
-            .then(data => {
-                
-                console.log(data);
-                location.reload();
-            });
-        }
-
-        function createChallenge() {
-            alert("Feature to create a new challenge coming soon!");
-        }
-
-        document.addEventListener("DOMContentLoaded", () => displayChallenges(challengesData));
-    </script>
+<script src="{% static '/EcoWorld/js/challenges.js' %}"></script>
 </body>
 </html>

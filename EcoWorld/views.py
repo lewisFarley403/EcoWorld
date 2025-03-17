@@ -6,18 +6,28 @@ Author:
     -Lewis Farley (lf507@exeter.ac.uk)
     -Chris Lynch (cl1037@exeter.ac.uk)
 """
+from django.contrib.auth import user_logged_in
 from django.contrib.auth.models import Permission
 import random
 from django.shortcuts import get_object_or_404, render, redirect
+<<<<<<< HEAD
 from .models import User, pack, ownsCard, challenge, ongoingChallenge, card, Merge
+=======
+from django.views.decorators.csrf import csrf_exempt
+
+from .models import drinkEvent, User, waterFountain, pack, ownsCard, challenge, ongoingChallenge, card, cardRarity, \
+    Merge, dailyObjective
+>>>>>>> origin/css_for_challenges3
 import json
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required, permission_required
-from .utils import getUsersChallenges
-from datetime import datetime
+from .utils import getUsersChallenges, getUsersDailyObjectives, createChallenges
+from datetime import datetime, timezone
 from Accounts.models import Friends, FriendRequests
 from .forms import ChallengeForm
 from django.db.models import Q
+from django.utils.timezone import now
+from datetime import date
 
 # Create your views here.
 def getUserInfo(request):
@@ -169,6 +179,7 @@ def pack_opening_page(request):
     image_url = card_received.image.url
     return render(request, "EcoWorld/pack_opening_page.html", {"image": image_url})
 
+<<<<<<< HEAD
 @login_required
 def challenge(request):
     challenges = getUsersChallenges(request.user)
@@ -176,25 +187,172 @@ def challenge(request):
     print(type(user.username)) 
     print(user.profile.number_of_coins)   
     return render(request, "EcoWorld/challengePage.html", {"challenges":challenges,'username':user.username,'coins':user.profile.number_of_coins})
+=======
+
+@login_required
+def challenge(request):
+    user = request.user
+
+    createChallenges(user)
+    challenges = getUsersChallenges(user)
+
+    getUsersDailyObjectives(user)
+    daily_objectives = getUsersDailyObjectives(user)
+
+    today = date.today()
+    total_challenges = len(challenges)
+    completed_challenges = sum(1 for c in challenges if c.is_completed)
+
+    total_objective_worth = sum(obj.goal for obj in daily_objectives)  # Total worth of all objectives
+    completed_objective_worth = sum(obj.progress for obj in daily_objectives)  # Sum of completed progress
+
+    return render(request, "EcoWorld/challengePage.html", {
+        "challenges": challenges,
+        "daily_objectives": daily_objectives,
+        "username": user.username,
+        "coins": user.profile.number_of_coins,
+        "today_date": today,
+        "total_challenges": total_challenges,
+        "completed_challenges": completed_challenges,
+        "total_objectives": total_objective_worth,
+        "completed_objectives": completed_objective_worth
+    })
+
+>>>>>>> origin/css_for_challenges3
 
 @login_required
 def completeChallenge(request):
     if request.method == "POST":
         data = json.loads(request.body)
-        print(request.user.id)
-        user = User.objects.get(id=request.user.id)
-        onGoingChallenge = data["id"]
-        print(f"User: {user}")
-        print(f"Challenge: {challenge}")
-        chal = ongoingChallenge.objects.get(id=onGoingChallenge)
-        worth = chal.challenge.worth
-        chal.submitted_on = datetime.now()
-        
-        user.profile.number_of_coins += worth
-        user.save()
+        user = request.user
+        ongoing_challenge_id = data["id"]
+
+        try:
+            chal = ongoingChallenge.objects.get(id=ongoing_challenge_id, user=user)
+        except ongoingChallenge.DoesNotExist:
+            return JsonResponse({"error": "Challenge Not Found"}, status=400)
+        #Get the date
+        today = now().date()
+        #Check if challenge has been completed
+        if chal.submitted_on and chal.submitted_on.date() == today:
+            return JsonResponse({"error": "Challenge already completed"}, status=400)
+
+        #Update completion tracking
+        chal.submitted_on = now()
+        chal.completion_count += 1
         chal.save()
-        return HttpResponse("Challenge completed")
-    return HttpResponse("Invalid request type")
+
+        worth = chal.challenge.worth
+        user.profile.number_of_coins += worth
+        user.profile.save()
+        return JsonResponse({"success": True})
+    return JsonResponse({"error", "Invalid request"}, status=400)
+
+@login_required
+def get_next_challenge(request):
+    """
+    Fetches the next available challenge for the user when one is completed.
+    """
+    user = request.user
+    today = timezone.now().date()
+
+    # Get the next challenge not already assigned
+    assigned_challenges = ongoingChallenge.objects.filter(user=user).values_list("challenge_id", flat=True)
+    next_challenge = challenge.objects.exclude(id__in=assigned_challenges).first()
+
+    if next_challenge:
+        new_challenge = ongoingChallenge.objects.create(user=user, challenge=next_challenge, created_on=timezone.now())
+
+        return JsonResponse({
+            "success": True,
+            "challenge": {
+                "id": new_challenge.id,
+                "name": new_challenge.challenge.name
+            }
+        })
+
+    return JsonResponse({"success": False, "error": "No new challenges available"})
+
+def assign_challenges(sender, request, user, **kwargs):
+    """
+    Ensure new users get assigned challenges when they log in for the first time.
+    """
+    if not ongoingChallenge.objects.filter(user=user).exists():  # Only assign if none exist
+        createChallenges(user)
+
+user_logged_in.connect(assign_challenges)
+
+@csrf_exempt
+@login_required
+def save_objective_note(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        objective_id = data.get("objective_id")
+        message = data.get("message")
+
+        try:
+            objective = dailyObjective.objects.get(id=objective_id, user=request.user)
+            objective.submission = message  # Store the user's note
+            objective.save()
+            return JsonResponse({"success": True})
+        except dailyObjective.DoesNotExist:
+            return JsonResponse({"error": "Objective not found"}, status=404)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+@login_required
+@permission_required("Accounts.can_view_admin_button")
+def view_objective_submissions(request):
+    """
+    Admin view to see users' daily objective submissions.
+    """
+    submissions = dailyObjective.objects.exclude(submission__isnull=True).exclude(submission="")
+
+    return render(request, "EcoWorld/admin_objective_submissions.html", {"submissions": submissions})
+
+
+
+@login_required
+def increment_daily_objective(request):
+    """
+    Increments the progress of a daily objective by 1.
+    Grants coins when an objective is completed.
+    """
+    if request.method == "POST":
+        data = json.loads(request.body)
+        objective_id = data.get("objective_id")
+
+        try:
+            objective = dailyObjective.objects.get(id=objective_id, user=request.user)
+            if objective.progress < objective.goal:  # Ensure it does not exceed goal
+                objective.progress += 1
+                objective.save()
+
+                # If the objective is now complete, mark as completed and give coins
+                if objective.progress == objective.goal:
+                    objective.completed = True
+                    request.user.profile.number_of_coins += objective.coins  # Add coins
+                    request.user.profile.save()
+                    objective.save()
+
+
+                completed_objectives_count = dailyObjective.objects.filter(user=request.user, completed=True).count()
+
+                return JsonResponse({
+                    "success": True,
+                    "progress": objective.progress,
+                    "goal": objective.goal,
+                    "reward": objective.coins,
+                    "completed_objectives": completed_objectives_count
+                })
+            else:
+                return JsonResponse({"success": False, "message": "Goal already reached"})
+        except dailyObjective.DoesNotExist:
+            return JsonResponse({"success": False, "message": "Objective not found"}, status=404)
+
+    return JsonResponse({"success": False, "message": "Invalid request"}, status=400)
+
+
 
 
 @permission_required("Accounts.can_view_admin_button")  # Only existing admins can access
