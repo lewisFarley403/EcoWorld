@@ -8,16 +8,12 @@ Author:
 
 from django.urls import path
 
-from .views import addDrink, merge_opening_page, buy_pack, mergecards,store,pack_opening_page, upload_bottle_photo, scan_qr_code, generate_qr_code, friends # Import the view
+from .views import merge_opening_page, buy_pack, mergecards,store,pack_opening_page, friends # Import the view
 from . import views
 
 app_name = 'EcoWorld'
 urlpatterns = [
     path("", views.dashboard, name='dashboard'),  # URL for the dashboard page
-    path('addDrink/', addDrink, name='home'),  # Root URL
-    path('scan/', scan_qr_code, name='scan_qr'),
-    path('upload_photo/', upload_bottle_photo, name="upload_photo"),
-    path('generate_qr/', generate_qr_code, name="generate_qr"),
     path("store/", store, name='store'),  # URL for the signup page
     path('buyPack/', buy_pack, name='buyPack'),  # URL for the signup page
     path("packopening/", pack_opening_page, name='packopening'),
@@ -31,9 +27,8 @@ urlpatterns = [
     path("mergecards/", mergecards, name="mergecards"), #URL for merging cards page
     path("mergereveal/", merge_opening_page, name="mergereveal"),
     path('complete_challenge/', views.completeChallenge, name='complete_challenge'), #Url for completing a challenge
-    path('get_next_challenge/', views.get_next_challenge, name='get_next_challenge'), #Url for getting another challenge
     path("increment_objective/", views.increment_daily_objective, name="increment_objective"), #Url for incrementing the progress tracker
     path("save_objective_note/", views.save_objective_note, name="save_objective_note"), #Url for the that pops up after an objective
-    path("admin/objective_submissions/", views.view_objective_submissions, name="view_objective_submissions")
+    # path("admin/objective_submissions/", views.view_objective_submissions, name="view_objective_submissions")
 
 ]

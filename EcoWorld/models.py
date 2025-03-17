@@ -39,6 +39,7 @@ class challenge(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_on = models.DateField()
     worth = models.IntegerField(default=settings.CHALLENGE_WORTH)
+    goal = models.IntegerField(default=1)
     redirect_url = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
@@ -63,9 +64,12 @@ class ongoingChallenge(models.Model):
     submitted_on = models.DateTimeField(null=True, blank=True)
     created_on = models.DateTimeField( auto_now_add=True) #sets this to the current date when the object is created
     completion_count = models.IntegerField(default=0)
+    progress = models.IntegerField(default =0)
 
     def __str__(self):
         return self.challenge.name + " by " + self.user.username
+    def is_complete(self):
+        return self.submission is not None
     
 
     
@@ -241,20 +245,20 @@ class Merge(models.Model):
     def __str__(self):
         return f"Merge operation for {self.userID.username}"
 
-
-class dailyObjective(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
-    progress = models.IntegerField(default=0)
-    goal = models.IntegerField(default=10)  # Example: Must recycle 10 items
-    completed = models.BooleanField(default=False)
-    date_created = models.DateField(default=now)
-    last_reset = models.DateTimeField(default=now) #Field for tracking resets
-    submission = models.TextField(null=True, blank=True)  # Store user's response
-    coins = models.IntegerField(default=10)  # New field for coin rewards
-
-
-    def __str__(self):
-        return f"{self.name} - {self.user.username}"
+#
+# class dailyObjective(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     name = models.CharField(max_length=255)
+#     progress = models.IntegerField(default=0)
+#     goal = models.IntegerField(default=10)  # Example: Must recycle 10 items
+#     completed = models.BooleanField(default=False)
+#     date_created = models.DateField(default=now)
+#     last_reset = models.DateTimeField(default=now) #Field for tracking resets
+#     submission = models.TextField(null=True, blank=True)  # Store user's response
+#     coins = models.IntegerField(default=10)  # New field for coin rewards
+#
+#
+#     def __str__(self):
+#         return f"{self.name} - {self.user.username}"
 
 

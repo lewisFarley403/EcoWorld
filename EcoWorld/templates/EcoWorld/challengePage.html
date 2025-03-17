@@ -67,7 +67,7 @@
                     {% else %}
                         <span class="countdown" id="drink-countdown"></span><span class="clock-emoji" id="clock-animation">🕐</span>
                     {% endif %}
-                                    <div class="challenge-card {% if not is_drink_available %}completed{% endif %}" id="challenge-{{ challenges.0.id }}">
+                        <div class="challenge-card {% if not is_drink_available %}completed{% endif %}" id="challenge-{{ challenges.0.id }}">
             
                 </div>
             </div>
@@ -91,9 +91,9 @@
             <div id="objectives-container">
                 {% for objective in daily_objectives %}
                     <div class="objective-card">
-                        <span class="objective-title">{{ objective.name }}</span>
+                        <span class="objective-title">{{ objective.challenge.name }}</span>
                         <button class="progress-btn" onclick="incrementObjective('{{ objective.id }}', this)">+</button>
-                        <span class="progress-count">{{ objective.progress }}/{{ objective.goal }}</span>
+                        <span class="progress-count">{{ objective.progress }}/{{ objective.challenge.goal }}</span>
                     </div>
                 {% endfor %}
             </div>
@@ -102,13 +102,8 @@
         <div class="tile progress-tracker-section">
             <h2>Progress Tracker</h2>
             <div class="progress-item">
-                <span>Challenges Completed:</span>
-                <progress max="{{ total_challenges }}" value="{{ completed_challenges }}"></progress>
-                <span>{{ completed_challenges }}/{{ total_challenges }}</span>
-            </div>
-            <div class="progress-item">
                 <span>Daily Objectives Completed:</span>
-                <progress max="{{ total_objectives }}" value="{{ completed_objectives }}"></progress>
+                <progress id = 'progress-bar' max="{{ total_objectives }}" value="{{ completed_objectives }}"></progress>
                 <span id="daily-objectives-tracker">{{ completed_objectives }}/{{ total_objectives }}</span>
             </div>
         </div>

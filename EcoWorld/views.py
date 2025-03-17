@@ -6,47 +6,24 @@ Author:
     -Lewis Farley (lf507@exeter.ac.uk)
     -Chris Lynch (cl1037@exeter.ac.uk)
 """
-from django.contrib.auth import user_logged_in
 from django.contrib.auth.models import Permission
 import random
-from django.conf import settings
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import drinkEvent, User, waterFountain, pack, ownsCard, challenge, ongoingChallenge, card, cardRarity, \
-    Merge, dailyObjective
+from .models import User, pack, ownsCard, challenge, ongoingChallenge, card, Merge, drinkEvent
 import json
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required, permission_required
-from .utils import getUsersChallenges, getUsersDailyObjectives, createChallenges
-from datetime import datetime, timezone
+from .utils import getUsersChallenges
+from datetime import datetime
 from Accounts.models import Friends, FriendRequests
-# from qr_code.qrcode.utils import QRCodeOptions
-from .forms import WaterBottleFillForm, ChallengeForm
+from .forms import ChallengeForm
 from django.db.models import Q
 from django.utils.timezone import now
 from datetime import date
-
+from django.conf import settings
 # Create your views here.
-def addDrink(request):
-    print("add drink post req")
-    if request.method == "POST":
-        data = json.loads(request.body)
-        user = data["user"]
-        fountain = data["fountain"]
-        drank_on = data["drank_on"]
-        print(f'request with body {data}')
-        user = User.objects.get(id=user)
-        fountain = waterFountain.objects.get(id=fountain)
-        if user is None or fountain is None:
-            return HttpResponse("Invalid user or fountain")
-        
-        drinkEvent.objects.create(user=user,fountain=fountain,drank_on=drank_on)
-
-        return HttpResponse("Added drink event")
-    return HttpResponse("Invalid request type 2")
-
-
 def getUserInfo(request):
     """
     This function gets the user info for the navbar
@@ -69,12 +46,13 @@ def getUserInfo(request):
     return userinfo
 
 
+@login_required
 def dashboard(request):
     """
     Dashboard on request takes user info to send to dashboard
     Returns: render request and userinfo to be displayed
 
-    Author: 
+    Author:
     Chris Lynch (cl1037@exeter.ac.uk)
     """
 
@@ -83,30 +61,6 @@ def dashboard(request):
         userinfo = getUserInfo(request)
 
         return render(request, "EcoWorld/dashboard.html", {"userinfo":userinfo[0]})
-
-def generate_qr_code(request):
-    """
-    This Generates a QR code and renders it on a template (For functionality)
-    """
-    qr_options = QRCodeOptions(size='M' , border=6, error_correction='L')
-    qr_data = "https://EcoWorld.com/scan/" #Change this to website name I have no idea
-    return render(request, 'EcoWorld/qr_code.html', {'qr_data': qr_data, 'qr_options': qr_options})
-
-def scan_qr_code(request):
-    return render(request, 'EcoWorld/scan_qr_code.html')
-
-def upload_bottle_photo(request):
-    if request.method == 'POST':
-        form = WaterBottleFillForm(request.POST, request.FILES)
-        if form.is_valid():
-            water_fill = form.save(commit=False)
-            water_fill.user = request.user
-            water_fill.save()
-            return redirect('success_page') #Create a success page
-    else:
-        form = WaterBottleFillForm()
-
-    return render(request, 'EcoWorld/upload_photo.html', {'form': form})
 
 @login_required
 def store(request):
@@ -117,7 +71,7 @@ def store(request):
     Render request plus two dictionaries one of user data for the header and one of the pack data for viewing
     Author:
     Chris Lynch (cl1037@exeter.ac.uk)
-    
+
     """
     if request.method == "GET":
         packs = pack.objects.all()
@@ -139,13 +93,13 @@ def store(request):
                 "color_class": pack_.color_class,
 
             })
-        
+
         #Function to get the user data and then adds it to the user dictionary
         userinfo = getUserInfo(request)
-        
+
         #Sends the info to the page
         return render(request, "ecoWorld/store.html",{ "packs": pack_list, "userinfo": userinfo[0]})
-    
+
     return HttpResponse("Invalid request")
 
 
@@ -158,7 +112,7 @@ def buy_pack(request):
     No coins if the user doesnt have enough
     Success if it can be bought
 
-    Author: 
+    Author:
     Chris Lynch (cl1037@exeter.ac.uk)
     """
     if request.method == "POST":
@@ -190,7 +144,7 @@ def buy_pack(request):
 @login_required
 def pack_opening_page(request):
     """
-    Webpage to render the pack opening animation. When a pack is bought it redirects to here where it will send the correct info 
+    Webpage to render the pack opening animation. When a pack is bought it redirects to here where it will send the correct info
     to the page so the right pack gets opened
     It has a function to buy pack from the packs model in models.py
     Returns:
@@ -198,7 +152,7 @@ def pack_opening_page(request):
 
     Author:
     Chris Lynch (cl1037@exeter.ac.uk)
-    
+
     """
     #Gets pack id
     pack_id = request.GET.get("pack_id")
@@ -207,7 +161,7 @@ def pack_opening_page(request):
         selected_pack = pack.objects.get(id=pack_id)
     except pack.DoesNotExist:
         return JsonResponse({"error": "Invalid pack ID"}, status=400)
-    
+
     #Card received variable when opening a pack, adds to inventory and saves
     card_received = selected_pack.openPack()
     inventory, _ = ownsCard.objects.get_or_create(user=request.user, card=card_received)
@@ -219,21 +173,17 @@ def pack_opening_page(request):
     image_url = card_received.image.url
     return render(request, "EcoWorld/pack_opening_page.html", {"image": image_url})
 
-
 @login_required
 def challenge(request):
-    user = request.user
-
-    createChallenges(user)
-    challenges = getUsersChallenges(user)
-
-    getUsersDailyObjectives(user)
-    daily_objectives = getUsersDailyObjectives(user)
+    daily_objectives = getUsersChallenges(request.user)
+    user = User.objects.get(id=request.user.id)
+    print(type(user.username))
+    print(user.profile.number_of_coins)
 
     # Get the user's last drink event
     last_drink = drinkEvent.objects.filter(user=user).order_by('-drank_on').first()
     last_drink_time = last_drink.drank_on if last_drink else None
-    
+
     # Check if the drink is on cooldown
     is_drink_available = True
     if last_drink_time:
@@ -241,20 +191,18 @@ def challenge(request):
         is_drink_available = time_difference >= settings.DRINKING_COOLDOWN
 
     today = date.today()
-    total_challenges = len(challenges)
-    completed_challenges = sum(1 for c in challenges if c.is_completed)
+    total_daily_objectives = len(daily_objectives)
+    completed_daily_objectives = sum(1 for c in daily_objectives if c.is_complete())
 
-    total_objective_worth = sum(obj.goal for obj in daily_objectives)  # Total worth of all objectives
+    total_objective_worth = sum(obj.challenge.goal for obj in daily_objectives)  # Total worth of all objectives
     completed_objective_worth = sum(obj.progress for obj in daily_objectives)  # Sum of completed progress
-
-    return render(request, "EcoWorld/challengePage.html", {
-        "challenges": challenges,
+    context = {
         "daily_objectives": daily_objectives,
         "username": user.username,
         "coins": user.profile.number_of_coins,
         "today_date": today,
-        "total_challenges": total_challenges,
-        "completed_challenges": completed_challenges,
+        "total_challenges": total_daily_objectives,
+        "completed_challenges": completed_daily_objectives,
         "total_objectives": total_objective_worth,
         "completed_objectives": completed_objective_worth,
         "last_drink_time": last_drink_time,
@@ -262,99 +210,8 @@ def challenge(request):
         "settings": {
             "DRINKING_COOLDOWN": settings.DRINKING_COOLDOWN
         }
-    })
-
-
-@login_required
-def completeChallenge(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        user = request.user
-        ongoing_challenge_id = data["id"]
-
-        try:
-            chal = ongoingChallenge.objects.get(id=ongoing_challenge_id, user=user)
-        except ongoingChallenge.DoesNotExist:
-            return JsonResponse({"error": "Challenge Not Found"}, status=400)
-        #Get the date
-        today = now().date()
-        #Check if challenge has been completed
-        if chal.submitted_on and chal.submitted_on.date() == today:
-            return JsonResponse({"error": "Challenge already completed"}, status=400)
-
-        #Update completion tracking
-        chal.submitted_on = now()
-        chal.completion_count += 1
-        chal.save()
-
-        worth = chal.challenge.worth
-        user.profile.number_of_coins += worth
-        user.profile.save()
-        return JsonResponse({"success": True})
-    return JsonResponse({"error", "Invalid request"}, status=400)
-
-@login_required
-def get_next_challenge(request):
-    """
-    Fetches the next available challenge for the user when one is completed.
-    """
-    user = request.user
-    today = timezone.now().date()
-
-    # Get the next challenge not already assigned
-    assigned_challenges = ongoingChallenge.objects.filter(user=user).values_list("challenge_id", flat=True)
-    next_challenge = challenge.objects.exclude(id__in=assigned_challenges).first()
-
-    if next_challenge:
-        new_challenge = ongoingChallenge.objects.create(user=user, challenge=next_challenge, created_on=timezone.now())
-
-        return JsonResponse({
-            "success": True,
-            "challenge": {
-                "id": new_challenge.id,
-                "name": new_challenge.challenge.name
-            }
-        })
-
-    return JsonResponse({"success": False, "error": "No new challenges available"})
-
-def assign_challenges(sender, request, user, **kwargs):
-    """
-    Ensure new users get assigned challenges when they log in for the first time.
-    """
-    if not ongoingChallenge.objects.filter(user=user).exists():  # Only assign if none exist
-        createChallenges(user)
-
-user_logged_in.connect(assign_challenges)
-
-@csrf_exempt
-@login_required
-def save_objective_note(request):
-    if request.method == "POST":
-        data = json.loads(request.body)
-        objective_id = data.get("objective_id")
-        message = data.get("message")
-
-        try:
-            objective = dailyObjective.objects.get(id=objective_id, user=request.user)
-            objective.submission = message  # Store the user's note
-            objective.save()
-            return JsonResponse({"success": True})
-        except dailyObjective.DoesNotExist:
-            return JsonResponse({"error": "Objective not found"}, status=404)
-
-    return JsonResponse({"error": "Invalid request"}, status=400)
-
-@login_required
-@permission_required("Accounts.can_view_admin_button")
-def view_objective_submissions(request):
-    """
-    Admin view to see users' daily objective submissions.
-    """
-    submissions = dailyObjective.objects.exclude(submission__isnull=True).exclude(submission="")
-
-    return render(request, "EcoWorld/admin_objective_submissions.html", {"submissions": submissions})
-
+    }
+    return render(request, "EcoWorld/challengePage.html", context)
 
 
 @login_required
@@ -367,37 +224,71 @@ def increment_daily_objective(request):
         data = json.loads(request.body)
         objective_id = data.get("objective_id")
 
-        try:
-            objective = dailyObjective.objects.get(id=objective_id, user=request.user)
-            if objective.progress < objective.goal:  # Ensure it does not exceed goal
-                objective.progress += 1
+
+        objective = ongoingChallenge.objects.get(id=objective_id, user=request.user)
+        if objective.progress < objective.challenge.goal:  # Ensure it does not exceed goal
+            objective.progress += 1
+            objective.save()
+
+            # If the objective is now complete, mark as completed and give coins
+            if objective.progress == objective.challenge.goal:
+                objective.completed = True
+                request.user.profile.number_of_coins += objective.challenge.worth  # Add coins
+                request.user.profile.save()
                 objective.save()
 
-                # If the objective is now complete, mark as completed and give coins
-                if objective.progress == objective.goal:
-                    objective.completed = True
-                    request.user.profile.number_of_coins += objective.coins  # Add coins
-                    request.user.profile.save()
-                    objective.save()
 
+            # completed_objectives_count = ongoingChallenge.objects.filter(user=request.user, completed=True).count()
+            users_ongoing_challenges = ongoingChallenge.objects.filter(user=request.user)
+            completed_objectives_count =0
+            for challenge in users_ongoing_challenges:
+                print(challenge.is_complete())
+                if challenge.is_complete():
+                    completed_objectives_count +=1
 
-                completed_objectives_count = dailyObjective.objects.filter(user=request.user, completed=True).count()
+            daily_objectives = getUsersChallenges(request.user)
+            total_objective_worth = sum(obj.challenge.goal for obj in daily_objectives)  # Total worth of all objectives
+            completed_objective_worth = sum(obj.progress for obj in daily_objectives)  # Sum of completed progress
+            return JsonResponse({
+                "success": True,
+                "progress": objective.progress,
+                "goal": objective.challenge.goal,
+                "reward": objective.challenge.worth,
+                "completed_objectives": completed_objectives_count,
+                "total_objective_worth":total_objective_worth,
+                "completed_objective_worth":completed_objective_worth
+            })
 
-                return JsonResponse({
-                    "success": True,
-                    "progress": objective.progress,
-                    "goal": objective.goal,
-                    "reward": objective.coins,
-                    "completed_objectives": completed_objectives_count
-                })
-            else:
-                return JsonResponse({"success": False, "message": "Goal already reached"})
-        except dailyObjective.DoesNotExist:
-            return JsonResponse({"success": False, "message": "Objective not found"}, status=404)
+        else:
+            return JsonResponse({"success": False, "message": "Goal already reached"})
+        # except ongoingChallenge.DoesNotExist:
+        # except Exception as e:
+        #     print(e)
+        #     return JsonResponse({"success": False, "message": "Objective not found"}, status=404)
 
     return JsonResponse({"success": False, "message": "Invalid request"}, status=400)
+@login_required
+def completeChallenge(request):
 
+    if request.method == "POST":
+        data = json.loads(request.body)
+        print(request.user.id)
+        user = User.objects.get(id=request.user.id)
+        onging = ongoingChallenge.objects.filter(user=user)
 
+        print(len(onging))
+        onGoingChallenge = data["id"]
+        print(f"User: {user}")
+        print(f"Challenge: {challenge}")
+        chal = ongoingChallenge.objects.get(id=onGoingChallenge)
+        worth = chal.challenge.worth
+        chal.submitted_on = datetime.now()
+
+        user.profile.number_of_coins += worth
+        user.save()
+        chal.save()
+        return HttpResponse("Challenge completed")
+    return HttpResponse("Invalid request type")
 
 
 @permission_required("Accounts.can_view_admin_button")  # Only existing admins can access
@@ -461,64 +352,41 @@ def add_challenge(request):
 def friends(request):
     """
     Web portal for friends in the ecoworld system. This page has 3 main parts: A current friends list, a search bar to add friends
-    and a requests box. 
+    and a requests box.
     It uses the models created in accounts for friends and friend requests
-    Depending on the action made it has returns for adding a friend in the search, accepting or declining a friend request and 
+    Depending on the action made it has returns for adding a friend in the search, accepting or declining a friend request and
     removing a friend from the friends list
 
     Author:
     Chris Lynch (cl1037@exeter.ac.uk)
     """
     if request.method == "GET":
-        user = request.user
-        user = User.objects.get(id=user.id)
-        pfp_url = user.profile.profile_picture
-        pfp_url = "/media/pfps/" + pfp_url
+        user=request.user
+        userinfo = getUserInfo(request)
 
-        userinfo = []
-        userinfo.append({
-            "username": user.username,
-            "pfp_url": pfp_url,
-            "coins" : user.profile.number_of_coins
-            })
-        
         #Gets pending requests
         friendreqs = FriendRequests.objects.filter(receiverID=user)
 
         userFriends = Friends.objects.filter(Q(userID1=user) | Q(userID2=user))
 
-        
+
 
         return render(request, "EcoWorld/friends.html", {"userinfo" : userinfo[0], "friendreqs": friendreqs, "friends" : userFriends})
-    
+
     elif request.method == "POST":
-
-        #Gets user data for the navbar
+        userinfo = getUserInfo(request)
         user = request.user
-        user = User.objects.get(id=user.id)
-        userID = request.user.id
-
-
-        pfp_url = user.profile.profile_picture
-        pfp_url = "/media/pfps/" + pfp_url
-
-        userinfo = []
-        userinfo.append({
-            "username": user.username,
-            "pfp_url": pfp_url,
-            "coins" : user.profile.number_of_coins
-            })
-        
+        userID     = user.id
         #Gets pending requests
         friendreqs = FriendRequests.objects.filter(receiverID=user)
 
         #Gets user friends
         userFriends = Friends.objects.filter(Q(userID1=user) | Q(userID2=user))
-        
+
         #Get the username sent in the form for adding friend
         username = request.POST.get("friendUsername")
 
-        #Get friend request if sent and username 
+        #Get friend request if sent and username
         friendAccOrRej = request.POST.get("friendar")
         friendAction = request.POST.get("friendaction")
 
@@ -532,27 +400,27 @@ def friends(request):
             error = None
             #Gets the requested user for the friend request
             requestedUser = User.objects.filter(username=username).first()
-            
+
 
 
             #Check for user existing
             if not requestedUser:
                 error = "User Not Found!"
                 return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends})
-            
+
             #Check if user tried to add themselves
             if username == user.username:
                 error = "You cant request yourself"
-                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends}) 
-            
+                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends})
+
             requestedUserID = requestedUser.id
             existing_request = FriendRequests.objects.filter(senderID=userID, receiverID=requestedUserID).exists() or FriendRequests.objects.filter(senderID=requestedUserID, receiverID=userID).exists()
-            
+
             #Checks if pending request already made
             if existing_request:
                 error = "Friend request already pending"
                 return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends})
-            
+
 
             #Check if they are already friends
             existing_Friends = Friends.objects.filter(userID1=requestedUserID, userID2= userID).exists() or Friends.objects.filter(userID1=userID, userID2=requestedUserID).exists()
@@ -582,7 +450,7 @@ def friends(request):
                 userFriends = Friends.objects.filter(Q(userID1=user) | Q(userID2=user))
 
                 return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs,"friends" : userFriends})
-            
+
             else:
                 #Deletes friend request info as its a reject
                 FriendRequests.objects.filter(senderID=requestedUser, receiverID=user).delete()
@@ -591,17 +459,17 @@ def friends(request):
                 friendreqs = FriendRequests.objects.filter(receiverID=user)
 
                 return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs,"friends" : userFriends})
-            
 
-            
 
-            
+
+
+
         #If removing a friend
         else:
             removeUser = User.objects.filter(username=removeUser).first()
             removeUserID = removeUser.id
             Friends.objects.filter(Q(userID1=user, userID2=removeUserID) | Q(userID1=removeUserID, userID2=user)).delete()
-            
+
             #Updates data on friend requests
             friendreqs = FriendRequests.objects.filter(receiverID=user)
 
@@ -612,17 +480,8 @@ def friends(request):
 
 def mergecards(request):
     user = request.user
-    user = User.objects.get(id=user.id)
-    pfp_url = user.profile.profile_picture
-    pfp_url = "/media/pfps/" + pfp_url
+    userinfo = getUserInfo(request)
 
-    userinfo = []
-    userinfo.append({
-        "username": user.username,
-        "pfp_url": pfp_url,
-        "coins" : user.profile.number_of_coins
-        })
-        
     if request.method == "GET":
 
         merge, created = Merge.objects.get_or_create(userID=request.user)
@@ -640,7 +499,7 @@ def mergecards(request):
 
 
         return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "merge":cardImages})
-    
+
     elif request.method == "POST":
         #Gets rarity option chosen if so
         rarity = request.POST.get("rarity")
@@ -659,7 +518,7 @@ def mergecards(request):
             for item in playerInventoryStorage:
                 item['card__image'] = "/media/" + item['card__image']
 
-            
+
             playerItems = playerInventoryStorage
 
             merge, created = Merge.objects.get_or_create(userID=request.user)
@@ -673,10 +532,10 @@ def mergecards(request):
                     cardImages.append({'id': f'cardID{i}', 'image': cardField.image.url})
                 else:
                     cardImages.append({'id': None, 'image' : None})
-            
+
 
             return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity":rarity,"merge":cardImages},)
-        
+
         if addCard:
             #Get rarity and card id
             rarityforbutton = request.POST.get("rarityforbutton")
@@ -743,8 +602,8 @@ def mergecards(request):
                 merge.save()
 
             ownCard.quantity -=1
-            ownCard.save()   
-            
+            ownCard.save()
+
             #Gets the player inventory for the certain rarity
             playerInventoryStorage = ownsCard.objects.filter(user=request.user, card__rarity_id=rarityforbutton).select_related('card').values('card__title', 'card__image', 'quantity', 'card__id')
 
@@ -789,8 +648,8 @@ def mergecards(request):
 
             cardToRemove = None
             if merge.cardID1 and str(merge.cardID1.id) == str(cardID):
-                cardToRemove = merge.cardID1  
-                merge.cardID1 = None 
+                cardToRemove = merge.cardID1
+                merge.cardID1 = None
             elif merge.cardID2 and str(merge.cardID2.id) == str(cardID):
                 cardToRemove = merge.cardID2
                 merge.cardID2 = None
@@ -798,7 +657,7 @@ def mergecards(request):
                 cardToRemove = merge.cardID3
                 merge.cardID3 = None
             elif merge.cardID4 and str(merge.cardID4.id) == str(cardID):
-                cardToRemove = merge.cardID4 
+                cardToRemove = merge.cardID4
                 merge.cardID4 = None
             elif merge.cardID5 and str(merge.cardID5.id) == str(cardID):
                 cardToRemove = merge.cardID5
@@ -810,10 +669,10 @@ def mergecards(request):
                 # Update the user's inventory by adding 1 back
                 ownCard = ownsCard.objects.get(user=request.user, card_id=cardID)
                 ownCard.quantity += 1
-                
+
                 #Save merge db and ownsCard db for user
-                ownCard.save() 
-                merge.save() 
+                ownCard.save()
+                merge.save()
 
 
                 #Gets the player inventory for the certain rarity
@@ -866,7 +725,7 @@ def mergecards(request):
             for item in playerInventoryStorage:
                 item['card__image'] = "/media/" + item['card__image']
 
-            
+
             playerItems = playerInventoryStorage
 
             merge, created = Merge.objects.get_or_create(userID=request.user)
@@ -882,12 +741,12 @@ def mergecards(request):
                     cardImages.append({'id': f'cardID{i}', 'image': cardField.image.url})
                 else:
                     cardImages.append({'id': None, 'image' : None})
-            
+
 
             if mergeCardsFunc == 5:
                 error = "This card rarity cannot be merged!"
                 return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity":rarity,"merge":cardImages, "error":error},)
-                
+
 
             if merge.cardID1 and merge.cardID2 and merge.cardID3 and merge.cardID4 and merge.cardID5:
                 merge.cardID1 = None
@@ -896,8 +755,8 @@ def mergecards(request):
                 merge.cardID4 = None
                 merge.cardID5 = None
 
-                
-                
+
+
                 mergeCardsFunc = int(mergeCardsFunc)
                 mergeCardsFunc += 1
 
@@ -920,7 +779,7 @@ def mergecards(request):
 
                 merge, created = Merge.objects.get_or_create(userID=request.user)
 
-            
+
 
                 cardImages = []
 
@@ -932,12 +791,31 @@ def mergecards(request):
                     else:
                         cardImages.append({'id': f'cardID{i}', 'image' : None})
 
-           
+
                 return render(request, "EcoWorld/merge_opening_page.html", {"image": cardToReturn.image.url})
 
 
         return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0]})
-           
+
 
 def merge_opening_page(request):
     return render(request, "EcoWorld/merge_opening_page.html")
+
+
+@csrf_exempt
+@login_required
+def save_objective_note(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        objective_id = data.get("objective_id")
+        message = data.get("message")
+
+        try:
+            objective = ongoingChallenge.objects.get(id=objective_id, user=request.user)
+            objective.submission = message  # Store the user's note
+            objective.save()
+            return JsonResponse({"success": True})
+        except ongoingChallenge.DoesNotExist:
+            return JsonResponse({"error": "Objective not found"}, status=404)
+
+    return JsonResponse({"error": "Invalid request"}, status=400)

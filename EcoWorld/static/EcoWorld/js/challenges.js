@@ -30,7 +30,7 @@ function calculateTotalProgress() {
 
     console.log(`Total progress - Completed: ${completedTasks}, Total: ${totalTasks}`);
     return {
-        challenges: { completed: completedChallenges, total: challengeCards.length },
+        // challenges: { completed: completedChallenges, total: challengeCards.length },
         objectives: { completed: completedTasks, total: totalTasks }
     };
 }
@@ -38,15 +38,18 @@ function calculateTotalProgress() {
 // Function to update all progress bars
 function updateAllProgress() {
     const progress = calculateTotalProgress();
-    
+    console.log("PROGRESS")
+    console.log(progress.objectives.completed, progress.objectives.total)
     // Update challenges progress
     const challengeProgressElement = document.querySelector(".progress-tracker-section progress:first-of-type");
     const challengeProgressCount = challengeProgressElement.nextElementSibling;
-    updateProgressBar(challengeProgressElement, progress.challenges.completed, progress.challenges.total);
-    challengeProgressCount.textContent = `${progress.challenges.completed}/${progress.challenges.total}`;
+    // updateProgressBar(challengeProgressElement, progress.challenges.completed, progress.challenges.total);
+    // challengeProgressCount.textContent = `${progress.challenges.completed}/${progress.challenges.total}`;
     
     // Update objectives progress
-    const objectiveProgressElement = document.querySelector(".progress-tracker-section .progress-item:nth-of-type(2) progress");
+    // const objectiveProgressElement = document.querySelector(".progress-tracker-section .progress-item:nth-of-type(2) progress");
+    const objectiveProgressElement=document.getElementById("progress-bar")
+    console.log(objectiveProgressElement)
     const objectiveProgressCount = objectiveProgressElement.nextElementSibling;
     updateProgressBar(objectiveProgressElement, progress.objectives.completed, progress.objectives.total);
     objectiveProgressCount.textContent = `${progress.objectives.completed}/${progress.objectives.total}`;
@@ -121,6 +124,7 @@ function incrementObjective(objectiveId, button) {
     .then(response => response.json())
     .then(data => {
         console.log("Server response:", data);
+
         if (data.success) {
             // Find the objective card and its progress elements
             const objectiveCard = button.closest('.objective-card');

@@ -34,7 +34,7 @@ SECRET_KEY = "django-insecure-kyoddd82$!d_nttqwz9-u%kt8+ql)(@hgpkqm2&&70nf6ri7eu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['whniecm2434.pythonanywhere.com','127.0.0.1','http://192.168.0.33:8000']
+ALLOWED_HOSTS = ['whniecm2434.pythonanywhere.com','127.0.0.1','http://192.168.0.33:8000','10.207.102.152']
 
 
 
@@ -157,7 +157,7 @@ GARDEN_SIZE=5
 NUM_CHALLENGES=3
 from datetime import datetime, timedelta
 
-CHALLENGE_EXPIRY = timedelta(minutes=10)  # The time in seconds before a challenge expires
+CHALLENGE_EXPIRY = timedelta(minutes=1)  # The time in seconds before a challenge expires
 
 CHALLENGE_WORTH = 10  # The number of coins a challenge is worth
 QR_CODE_WIDTH=128
