@@ -36,6 +36,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['whniecm2434.pythonanywhere.com','127.0.0.1','http://192.168.0.33:8000','10.207.102.152','ecm2434.onrender.com']
 
+# for hosting
+CSRF_TRUSTED_ORIGINS = [
+    "https://ecm2434.onrender.com",  # Add your deployed URL
+]
 
 
 
