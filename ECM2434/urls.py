@@ -28,6 +28,7 @@ urlpatterns = [
     path("guides/", include("guides.urls")),
     path("leaderboards/", include("leaderboards.urls")),
     path('game/', include('SustainabilityGame.urls')),
+    path("glass-disposal/", include("glassDisposal.urls")),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 print(static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT))
 print(urlpatterns[1])

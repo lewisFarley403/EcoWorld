@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'guides',
     'leaderboards',
     'SustainabilityGame',
+    'glassDisposal',
 ]
 
 MIDDLEWARE = [
@@ -169,3 +170,5 @@ DRINK_VALUE = 10  # The number of coins a drink is worth
 DAILY_OBJECTIVE_RESET_INTERVAL = timedelta(seconds=30)
 
 CHALLENGE_RESET_INTERVAL = timedelta(seconds=30)
+
+GLASS_DISPOSAL_REWARD_PER_BOTTLE = 10 #the number of coins gained from handing in a bottle (each)
