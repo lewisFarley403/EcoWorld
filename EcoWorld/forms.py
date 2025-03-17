@@ -12,7 +12,7 @@ class WaterBottleFillForm(forms.ModelForm):
 class ChallengeForm(forms.ModelForm):
     class Meta:
         model = challenge
-        fields = ['name', 'description', 'worth']  # We'll set created_by and created_on automatically
+        fields = ['name', 'description', 'worth', 'goal']  # We'll set created_by and created_on automatically
 
     # Optionally, override save to assign created_by and created_on
     def save(self, commit=True, created_by=None):
