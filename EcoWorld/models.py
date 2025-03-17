@@ -64,6 +64,7 @@ class ongoingChallenge(models.Model):
     created_on = models.DateTimeField( auto_now_add=True) #sets this to the current date when the object is created
     completion_count = models.IntegerField(default=0)
 
+
     def __str__(self):
         return self.challenge.name + " by " + self.user.username
 
