@@ -67,24 +67,13 @@
                     {% else %}
                         <span class="countdown" id="drink-countdown"></span><span class="clock-emoji" id="clock-animation">🕐</span>
                     {% endif %}
-                        <div class="challenge-card {% if not is_drink_available %}completed{% endif %}" id="challenge-{{ challenges.0.id }}">
-            
+                </div>
+                <div class="challenge-card" id="challenge-recycle">
+                    <span class="challenge-title">Recycle Glass</span>
+                    <button class="complete-btn" onclick="window.location.href='#'">✔</button>
                 </div>
             </div>
         </div>
-        <div id="challenges-container">
-            <div class="challenge-card {% if not is_drink_available %}completed{% endif %}" id="challenge-{{ challenges.0.id }}">
-                <span class="challenge-title">Recycle Glass</span>
-                {% if is_drink_available %}
-                    <button class="complete-btn" onclick="window.location.href='#'">✔</button>
-                {% else %}
-                    <span class="countdown" id="drink-countdown"></span><span class="clock-emoji" id="clock-animation">🕐</span>
-                {% endif %}
-                                <div class="challenge-card {% if not is_drink_available %}completed{% endif %}" id="challenge-{{ challenges.0.id }}">
-        
-            </div>
-        </div>
-    </div>
 
         <div class="tile daily-objectives-section">
             <h2>Daily Objectives</h2>
@@ -103,14 +92,14 @@
             <h2>Progress Tracker</h2>
             <div class="progress-item">
                 <span>Daily Objectives Completed:</span>
-                <progress id = 'progress-bar' max="{{ total_objectives }}" value="{{ completed_objectives }}"></progress>
+                <progress id="progress-bar" max="{{ total_objectives }}" value="{{ completed_objectives }}"></progress>
                 <span id="daily-objectives-tracker">{{ completed_objectives }}/{{ total_objectives }}</span>
             </div>
         </div>
     </div>
 
     <div class="right-panel">
-        <img src={% static "EcoWorld/res/greenery.png" %} alt="greenery"
+        <img src="{% static 'EcoWorld/res/greenery.png' %}" alt="greenery">
     </div>
 </main>
 
