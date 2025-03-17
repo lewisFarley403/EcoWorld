@@ -10,14 +10,11 @@ from django.contrib.auth import user_logged_in
 from django.contrib.auth.models import Permission
 import random
 from django.shortcuts import get_object_or_404, render, redirect
-<<<<<<< HEAD
-from .models import User, pack, ownsCard, challenge, ongoingChallenge, card, Merge
-=======
+
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import drinkEvent, User, waterFountain, pack, ownsCard, challenge, ongoingChallenge, card, cardRarity, \
+from .models import User, pack, ownsCard, challenge, ongoingChallenge, card, cardRarity, \
     Merge, dailyObjective
->>>>>>> origin/css_for_challenges3
 import json
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required, permission_required
@@ -179,15 +176,15 @@ def pack_opening_page(request):
     image_url = card_received.image.url
     return render(request, "EcoWorld/pack_opening_page.html", {"image": image_url})
 
-<<<<<<< HEAD
-@login_required
-def challenge(request):
-    challenges = getUsersChallenges(request.user)
-    user = User.objects.get(id=request.user.id)
-    print(type(user.username)) 
-    print(user.profile.number_of_coins)   
-    return render(request, "EcoWorld/challengePage.html", {"challenges":challenges,'username':user.username,'coins':user.profile.number_of_coins})
-=======
+
+# @login_required
+# def challenge(request):
+#     challenges = getUsersChallenges(request.user)
+#     user = User.objects.get(id=request.user.id)
+#     print(type(user.username)) 
+#     print(user.profile.number_of_coins)   
+#     return render(request, "EcoWorld/challengePage.html", {"challenges":challenges,'username':user.username,'coins':user.profile.number_of_coins})
+
 
 @login_required
 def challenge(request):
@@ -218,7 +215,6 @@ def challenge(request):
         "completed_objectives": completed_objective_worth
     })
 
->>>>>>> origin/css_for_challenges3
 
 @login_required
 def completeChallenge(request):

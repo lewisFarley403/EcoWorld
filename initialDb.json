@@ -1,19 +1,5 @@
 [
-    {
-        "model": "auth.user",
-        "pk": 1,
-        "fields": {
-            "username": "taskmaster",
-            "first_name": "Test",
-            "last_name": "User",
-            "email": "taskmaster@ecoworld.com",
-            "password": "P@ssword123", 
-            "is_superuser": true,
-            "is_staff": true,
-            "is_active": true,
-            "date_joined": "2025-02-17T12:00:00Z"
-        }
-    },
+
     {
         "model": "EcoWorld.challenge",
         "pk": 1,
