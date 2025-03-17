@@ -1,13 +1,6 @@
 from django import forms
 from django.utils import timezone
-from .models import WaterBottleFill, challenge
-
-class WaterBottleFillForm(forms.ModelForm):
-    class Meta:
-        model = WaterBottleFill
-        fields = ['image']
-
-
+from .models import challenge
 
 class ChallengeForm(forms.ModelForm):
     class Meta:

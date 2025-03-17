@@ -24,7 +24,6 @@
 <div class="right-side">
     <div class="login-container">
         <div class="logo">
-            <!-- Placeholder for logo image -->
             <img src="{% static 'Accounts/res/logo-placeholder.png' %}" alt="Eco World Logo">
         </div>
         <h1>Log In</h1>
@@ -40,11 +39,10 @@
             </div>
             <button type="submit" class="login-button">Log In</button>
         </form>
-        <!-- Forgot Password Button -->
         <div class="forgot-password">
-            <button type="button" class="forgot-password-button" onclick="window.location.href='{% url 'password_reset' %}'">
+            <a href="{% url 'password_reset' %}" class="forgot-password-button">
                 Forgot Password?
-            </button>
+            </a>
         </div>
         <div class="signup-link">
             Don't have an account? <a href="{% url 'signup' %}">Sign Up</a>

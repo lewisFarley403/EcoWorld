@@ -9,6 +9,7 @@ Author:
 from django.urls import path
 
 from .views import merge_opening_page, buy_pack, mergecards,store,pack_opening_page, friends # Import the view
+
 from . import views
 
 app_name = 'EcoWorld'

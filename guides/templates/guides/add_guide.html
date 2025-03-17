@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <title>Add Guide</title>
+    <link rel="stylesheet" href="{% static 'EcoWorld/css/dashboard.css' %}">
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .form-group input[type="text"],
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-check {
+            margin-bottom: 10px;
+        }
+
+        .form-check-label {
+            margin-left: 5px;
+            color: #555;
+        }
+
+        .button {
+            background-color: #00dea5;
+            color: black;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        .button:hover {
+            background-color: #03c091;
+        }
+
+        .question-block {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .add-question {
+            margin-bottom: 20px;
+        }
+
+        /* Scrollable Form Container */
+        .scrollable-form {
+            max-height: 70vh; /* Adjust this value as needed */
+            overflow-y: auto; /* Enable vertical scrolling */
+            padding-right: 10px; /* Add padding to prevent content from touching the scrollbar */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Add New Guide</h2>
+        <form method="post" id="quiz-form">
+            {% csrf_token %}
+            <div class="scrollable-form">
+                <!-- Title and Content -->
+                <div class="form-group">
+                    <label for="id_title">Title:</label>
+                    <input type="text" name="title" id="id_title" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_content">Content:</label>
+                    <textarea name="content" id="id_content" class="form-control" rows="4" required></textarea>
+                </div>
+
+                <!-- Dynamic Questions Container -->
+                <div id="questions-container">
+                    <div class="question-block" id="question-1">
+                        <div class="form-group">
+                            <label for="id_question_1">Question:</label>
+                            <input type="text" name="question_1" id="id_question_1" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_answer1_1">Answer 1:</label>
+                            <input type="text" name="answer1_1" id="id_answer1_1" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_answer2_1">Answer 2:</label>
+                            <input type="text" name="answer2_1" id="id_answer2_1" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_answer3_1">Answer 3:</label>
+                            <input type="text" name="answer3_1" id="id_answer3_1" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="id_answer4_1">Answer 4:</label>
+                            <input type="text" name="answer4_1" id="id_answer4_1" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Correct Answers:</label>
+                            <div class="form-check">
+                                <input type="checkbox" name="correct_answers_1" value="1" id="id_correct_answers_1_1">
+                                <label for="id_correct_answers_1_1">Answer 1</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" name="correct_answers_1" value="2" id="id_correct_answers_1_2">
+                                <label for="id_correct_answers_1_2">Answer 2</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" name="correct_answers_1" value="3" id="id_correct_answers_1_3">
+                                <label for="id_correct_answers_1_3">Answer 3</label>
+                            </div>
+                            <div class="form-check">
+                                <input type="checkbox" name="correct_answers_1" value="4" id="id_correct_answers_1_4">
+                                <label for="id_correct_answers_1_4">Answer 4</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Question Button -->
+            <button type="button" class="button add-question" onclick="addQuestion()">Add Another Question</button>
+
+            <!-- Submit Button -->
+            <button type="submit" class="button">Add Guide</button>
+        </form>
+        <a href="{% url 'EcoWorld:admin_page' %}" class="button">Back to Admin Page</a>
+    </div>
+
+    <!-- JavaScript for Dynamic Questions -->
+    <script>
+        let questionCount = 1;
+
+        function addQuestion() {
+            questionCount++;
+            const questionsContainer = document.getElementById('questions-container');
+            const newQuestionBlock = document.createElement('div');
+            newQuestionBlock.className = 'question-block';
+            newQuestionBlock.id = `question-${questionCount}`;
+            newQuestionBlock.innerHTML = `
+                <div class="form-group">
+                    <label for="id_question_${questionCount}">Question:</label>
+                    <input type="text" name="question_${questionCount}" id="id_question_${questionCount}" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_answer1_${questionCount}">Answer 1:</label>
+                    <input type="text" name="answer1_${questionCount}" id="id_answer1_${questionCount}" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_answer2_${questionCount}">Answer 2:</label>
+                    <input type="text" name="answer2_${questionCount}" id="id_answer2_${questionCount}" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_answer3_${questionCount}">Answer 3:</label>
+                    <input type="text" name="answer3_${questionCount}" id="id_answer3_${questionCount}" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="id_answer4_${questionCount}">Answer 4:</label>
+                    <input type="text" name="answer4_${questionCount}" id="id_answer4_${questionCount}" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Correct Answers:</label>
+                    <div class="form-check">
+                        <input type="checkbox" name="correct_answers_${questionCount}" value="1" id="id_correct_answers_${questionCount}_1">
+                        <label for="id_correct_answers_${questionCount}_1">Answer 1</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" name="correct_answers_${questionCount}" value="2" id="id_correct_answers_${questionCount}_2">
+                        <label for="id_correct_answers_${questionCount}_2">Answer 2</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" name="correct_answers_${questionCount}" value="3" id="id_correct_answers_${questionCount}_3">
+                        <label for="id_correct_answers_${questionCount}_3">Answer 3</label>
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" name="correct_answers_${questionCount}" value="4" id="id_correct_answers_${questionCount}_4">
+                        <label for="id_correct_answers_${questionCount}_4">Answer 4</label>
+                    </div>
+                </div>
+            `;
+            questionsContainer.appendChild(newQuestionBlock);
+
+            newQuestionBlock.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>

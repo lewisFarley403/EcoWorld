@@ -11,7 +11,9 @@ import random
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import User, pack, ownsCard, challenge, ongoingChallenge, card, Merge, drinkEvent
+
+from .models import User, pack, ownsCard, challenge, ongoingChallenge, card, Merge
+from qrCodes.models import drinkEvent
 import json
 from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required, permission_required

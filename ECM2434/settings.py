@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     "qrCodes",
     'guides',
     'leaderboards',
+    'SustainabilityGame',
 ]
 
 MIDDLEWARE = [
@@ -85,6 +86,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = "ECM2434.wsgi.application"
 
