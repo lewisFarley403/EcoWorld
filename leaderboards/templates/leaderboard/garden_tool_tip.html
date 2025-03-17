@@ -10,30 +10,31 @@
 </head>
 <body id = 'body'>
     {%csrf_token%}
-    <div class="main-container">
+    <div class="garden-tooltip">
+        <h3 class="garden-title">{{ username }}'s Garden</h3>
         <div class="grid-wrapper">
             <div class="grid-container">
                 {% for row in squares %}
-                    {% for square in row %}
-                        <div class="grid-square" 
-                             ondragover="allowDrop(event)" 
-                             ondrop="drop(event, '{{ forloop.parentloop.counter }}', '{{ forloop.counter }}')"
-                             data-row="{{ forloop.parentloop.counter }}" 
-                             data-col="{{ forloop.counter }}">
-                            {% if square.cardID %}
-                                <img src="{{ square.cardID.image.url }}" alt="{{ square.cardID.title }}">
-                            {% else %}
-                                <img src="{{ MEDIA_URL }}cards/dirt.jpeg" alt="Empty Square">
-                            {% endif %}
-                        </div>
-                    {% endfor %}
+                    <div class="grid-row">
+                        {% for square in row %}
+                            <div class="grid-square">
+                                {% if square.cardID %}
+                                    <img src="{{ square.cardID.image.url }}" 
+                                         alt="{{ square.cardID.title }}"
+                                         class="plant-image"
+                                         title="{{ square.cardID.title }}">
+                                {% else %}
+                                    <img src="{{ MEDIA_URL }}cards/dirt.jpeg" 
+                                         alt="Empty Square"
+                                         class="plant-image"
+                                         title="Empty Plot">
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
                 {% endfor %}
             </div>
-            
         </div>
-    
-        
-        
     </div>
 </body>
 </html>

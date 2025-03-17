@@ -1,4 +1,8 @@
 /* General Styles */
+:root {
+    --navbar-height: 60px;
+}
+
 body {
     font-family: 'poppins', cursive;
     background-color: skyblue;
@@ -8,7 +12,15 @@ body {
     padding: 0;
     box-sizing: border-box;
     position: relative;
-    overflow: hidden;
+    min-height: 100vh;
+}
+
+.container {
+    padding-top: calc(var(--navbar-height) + 20px);
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 .leaf {
@@ -32,7 +44,6 @@ body {
     }
 }
 
-
 h1.text-center {
     display: flex;
     justify-content: center;
@@ -45,7 +56,7 @@ h1.text-center {
         -2px  2px 0 black,
          2px  2px 0 black;
     font-size: 3vw;
-    margin: 0% ;
+    margin: 0;
 }
 
 .card {
@@ -53,6 +64,8 @@ h1.text-center {
     max-width: 800px;
     margin: 0 auto;
     border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
 }
 
 .question-box {
@@ -73,7 +86,6 @@ h1.text-center {
 .question-box.slide-in-next {
     transform: translateX(0);
 }
-
 
 .question-box.slide-out-next {
     transform: translateX(-100%);
@@ -193,41 +205,6 @@ button {
     align-items: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     padding: 10px 20px;
-}
-
-.navbar {
-    width: 100%;
-    max-width: 1200px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.navbar .left-links a,
-.navbar .right-links span {
-    margin-right: 20px;
-    font-size: 16px;
-    text-decoration: none;
-    color: #003c3c;
-}
-
-.navbar .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #003c3c;
-}
-
-.navbar .right-links {
-    display: flex;
-    align-items: center;
-}
-
-.profile-pic {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-left: 10px;
-    border: 2px solid #00dea5;
 }
 
 .menu-button {
