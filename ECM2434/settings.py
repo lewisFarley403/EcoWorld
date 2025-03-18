@@ -36,6 +36,7 @@ DEBUG = True
 
 # ALLOWED_HOSTS = ['whniecm2434.pythonanywhere.com','127.0.0.1','http://192.168.0.33:8000','10.207.102.152','ecm2434.onrender.com']
 ALLOWED_HOSTS = ["*"]
+
 # for hosting
 # CSRF_TRUSTED_ORIGINS = [
 #     "https://ecm2434.onrender.com",  # Add your deployed URL
@@ -143,10 +144,10 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 # Ensure Django knows where to find static files (only needed for local development)
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
-# STATIC_ROOT = BASE_DIR / 'static' deployment only
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+# ]
+STATIC_ROOT = BASE_DIR / 'static' #deployment only
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
