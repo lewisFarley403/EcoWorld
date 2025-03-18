@@ -39,10 +39,10 @@ DEBUG = False
 ALLOWED_HOSTS = ["*"]
 
 # for hosting
-# CSRF_TRUSTED_ORIGINS = [
-#     "https://ecm2434.onrender.com",  # Add your deployed URL
-#     "http://127.0.0.1:8000",
-# ]
+CSRF_TRUSTED_ORIGINS = [
+    "https://ecm2434.onrender.com",  # Add your deployed URL
+    "http://127.0.0.1:8000",
+]
 
 
 
@@ -148,7 +148,7 @@ STATIC_URL = "static/"
 # STATICFILES_DIRS = [
 #     os.path.join(BASE_DIR, "static"),
 # ]
-# STATIC_ROOT = BASE_DIR / 'static' #deployment only
+STATIC_ROOT = BASE_DIR / 'static' #deployment only
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
