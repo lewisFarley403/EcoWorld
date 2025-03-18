@@ -25,6 +25,7 @@ from django.db.models import Q
 from django.utils.timezone import now
 from datetime import date
 from django.conf import settings
+from forum.models import Post
 # Create your views here.
 def getUserInfo(request):
     """
@@ -169,6 +170,7 @@ def pack_opening_page(request):
     inventory, _ = ownsCard.objects.get_or_create(user=request.user, card=card_received)
     inventory.quantity += 1
     inventory.save()
+    Post.create_from_card(card_received, request.user)
 
 
     #Image of the card won to return to the page
@@ -816,6 +818,7 @@ def save_objective_note(request):
             objective = ongoingChallenge.objects.get(id=objective_id, user=request.user)
             objective.submission = message  # Store the user's note
             objective.save()
+            Post.create_from_ongoing_challenge(objective)
             return JsonResponse({"success": True})
         except ongoingChallenge.DoesNotExist:
             return JsonResponse({"error": "Objective not found"}, status=404)

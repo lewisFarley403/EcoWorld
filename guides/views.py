@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from .forms import GuidesForm, DeleteForm
 from .models import ContentQuizPair, UserQuizResult, User
 import json
+from forum.models import Post
 
 @permission_required("Accounts.can_view_admin_button")
 def remove_guide(request):
@@ -176,7 +177,7 @@ def registerScore_view(request, pair_id):
         user.save()
 
     result.save()
-
+    Post.create_from_guide(pair.title, pair.content, user, score)
     return JsonResponse({'status': 'success', 'redirect_url': f'/guides/results/{pair_id}/'})
 
 @login_required

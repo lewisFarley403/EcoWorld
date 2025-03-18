@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'guides',
     'leaderboards',
     'SustainabilityGame',
+    'forum',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,897 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoWorld Forum</title>
+    <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #00dea5;
+            --primary-dark: #00c090;
+            --background-color: #0e4d46;
+            --card-background: #ffffff;
+            --text-primary: #003c3c;
+            --text-secondary: #787C7E;
+            --border-color: #e0e0e0;
+            --hover-color: #f5f5f5;
+            --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--background-color);
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 80px 20px 20px 20px;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 24px;
+        }
+
+        .main-content {
+            width: 100%;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .filter-container {
+            background-color: var(--card-background);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .filter-button {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .filter-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .filter-button.active {
+            background: var(--text-primary);
+            color: var(--primary-color);
+        }
+
+        .post {
+            background-color: var(--card-background);
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+            display: flex;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .post:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .vote-column {
+            width: 60px;
+            padding: 12px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background-color: var(--card-background);
+            border-right: 1px solid var(--border-color);
+        }
+
+        .vote-button {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            width: 40px;
+        }
+
+        .vote-button:hover {
+            color: var(--primary-color);
+            background-color: var(--hover-color);
+        }
+
+        .vote-button.active {
+            color: var(--primary-color);
+        }
+
+        .vote-button .material-icons {
+            font-size: 20px;
+        }
+
+        .vote-button .interaction-count {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .post-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .post-type {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .username {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        .post-meta {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .post-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin: 16px 0;
+            color: var(--text-primary);
+            line-height: 1.4;
+        }
+
+        .post-description {
+            color: var(--text-primary);
+            font-size: 15px;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        /* Challenge and Card Details Styles */
+        .challenge-details, .card-details, .guide-details {
+            padding: 16px;
+            background-color: var(--hover-color);
+            border-radius: 12px;
+        }
+
+        .challenge-header, .card-header, .guide-header {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--text-primary);
+        }
+
+        .challenge-user, .card-user, .guide-user {
+            color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        .challenge-section, .card-section, .guide-section {
+            margin-bottom: 16px;
+        }
+
+        .challenge-section h4, .card-section h4, .guide-section h4 {
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .challenge-section p, .card-section p, .guide-section p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .challenge-stats, .card-stats, .guide-stats {
+            font-size: 13px;
+            color: var(--text-secondary);
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .post-footer {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            color: var(--text-secondary);
+            font-size: 13px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .streak-badge {
+            background-color: #ff6b6b;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .challenge-link {
+            display: inline-flex;
+            align-items: center;
+            background: var(--gradient-primary);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 16px;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .challenge-link:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+            font-size: 16px;
+        }
+
+        .error {
+            background: linear-gradient(135deg, #ff6b6b, #ff8e8e);
+            color: white;
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 24px;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .sidebar-card {
+            background-color: var(--card-background);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-md);
+        }
+
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .post-type-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .post-type-button {
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .post-type-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .post-type-button.active {
+            background: var(--text-primary);
+            color: var(--primary-color);
+        }
+
+        .sort-container {
+            margin-top: 16px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+
+        .sort-select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--border-color);
+            border-radius: 25px;
+            background-color: white;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+        }
+
+        .sort-select:hover {
+            border-color: var(--primary-color);
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 222, 165, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+
+            .post {
+                flex-direction: column;
+            }
+
+            .vote-column {
+                width: 100%;
+                flex-direction: row;
+                justify-content: center;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+                padding: 8px;
+            }
+
+            .vote-count {
+                margin: 0 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    {% include "partials/navbar.html" %}
+    
+    <div class="container">
+        <div class="main-content">
+            <div class="filter-container">
+                <div class="filter-buttons">
+                    <button class="filter-button active" data-filter="my">My Posts</button>
+                    <button class="filter-button" data-filter="friends">Friends</button>
+                    <button class="filter-button" data-filter="university">University</button>
+                </div>
+                <div class="post-type-filter">
+                    <button class="post-type-button active" data-type="all">All</button>
+                    <button class="post-type-button" data-type="challenge">Challenges</button>
+                    <button class="post-type-button" data-type="guide">Guides</button>
+                    <button class="post-type-button" data-type="card">Cards</button>
+                </div>
+                <div class="sort-container">
+                    <select id="sort-select" class="sort-select">
+                        <option value="recent">Most Recent</option>
+                        <option value="likes">Most Liked</option>
+                        <option value="completed">Most Completed</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="posts-container">
+                <div class="loading">Loading posts...</div>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="sidebar-card">
+                <div class="sidebar-title">About EcoWorld Feed</div>
+                <p style="color: var(--text-secondary); font-size: 14px;">
+                    Share and celebrate your eco-friendly achievements with the community. Track your progress, connect with friends, and inspire others to make a difference.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        let currentFilter = 'my';
+        let lastData = null;
+        let currentPostType = 'all';
+        let currentSort = 'recent';
+
+        // Add click handlers for filter buttons
+        document.querySelectorAll('.filter-button').forEach(button => {
+            button.addEventListener('click', () => {
+                // Update active state
+                document.querySelectorAll('.filter-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Update filter and fetch new data
+                currentFilter = button.dataset.filter;
+                lastData = null; // Reset last data to force refresh
+                fetchPosts();
+            });
+        });
+
+        // Add post type filter functionality
+        document.querySelectorAll('.post-type-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.post-type-button').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentPostType = button.dataset.type;
+                filterPosts();
+            });
+        });
+
+        // Add sort select handler
+        document.getElementById('sort-select').addEventListener('change', (event) => {
+            currentSort = event.target.value;
+            if (lastData) {
+                displayPosts(lastData);
+            }
+        });
+
+        function createPostElement(data, type) {
+            const post = document.createElement('div');
+            post.className = 'post';
+            post.dataset.postId = data.id;
+            post.dataset.postType = type.toLowerCase();
+
+            const voteColumn = document.createElement('div');
+            voteColumn.className = 'vote-column';
+
+            const upvoteButton = document.createElement('button');
+            upvoteButton.className = 'vote-button';
+            upvoteButton.innerHTML = '<span class="material-icons">arrow_upward</span>';
+            upvoteButton.innerHTML += '<span class="interaction-count">0</span>';
+
+            const voteCount = document.createElement('div');
+            voteCount.className = 'vote-count';
+            voteCount.style.display = 'none'; // Hide the separate vote count element
+
+            const downvoteButton = document.createElement('button');
+            downvoteButton.className = 'vote-button';
+            downvoteButton.innerHTML = '<span class="material-icons">arrow_downward</span>';
+            downvoteButton.innerHTML += '<span class="interaction-count">0</span>';
+
+            voteColumn.appendChild(upvoteButton);
+            voteColumn.appendChild(voteCount);
+            voteColumn.appendChild(downvoteButton);
+
+            const contentWrapper = document.createElement('div');
+            contentWrapper.className = 'post-content';
+
+            const header = document.createElement('div');
+            header.className = 'post-header';
+
+            const typeSpan = document.createElement('span');
+            typeSpan.className = 'post-type';
+            typeSpan.textContent = type;
+            header.appendChild(typeSpan);
+
+            const username = document.createElement('span');
+            username.className = 'username';
+            username.textContent = data.username === '{{ username }}' ? 'You' : data.username;
+            header.appendChild(username);
+
+            if (data.current_streak > 0) {
+                const streakSpan = document.createElement('span');
+                streakSpan.className = 'streak-badge';
+                streakSpan.innerHTML = `🔥 ${data.current_streak} day streak`;
+                if (data.current_streak === data.highest_streak) {
+                    streakSpan.innerHTML += ' (Personal Best!)';
+                }
+                header.appendChild(streakSpan);
+            }
+
+            const meta = document.createElement('span');
+            meta.className = 'post-meta';
+            meta.textContent = formatDate(type === 'Challenge' ? data.submitted_on : data.created_at);
+            header.appendChild(meta);
+
+            contentWrapper.appendChild(header);
+
+            const title = document.createElement('h2');
+            title.className = 'post-title';
+            title.textContent = data.name;
+            contentWrapper.appendChild(title);
+
+            const description = document.createElement('div');
+            description.className = 'post-description';
+            if (type === 'Challenge') {
+                description.innerHTML = `
+                    <div class="challenge-details">
+                        <div class="challenge-header">
+                            <span class="challenge-user">${data.username}</span> completed this challenge!
+                        </div>
+                        <div class="challenge-section">
+                            <h4>What they had to do:</h4>
+                            <p>${data.description}</p>
+                        </div>
+                        <div class="challenge-section">
+                            <h4>How they did it:</h4>
+                            <p>${data.submission || 'No submission provided'}</p>
+                        </div>
+                        <div class="challenge-stats">
+                            <span>Times completed: ${data.completion_count}</span>
+                        </div>
+                    </div>
+                    ${data.redirect_url && data.redirect_url !== 'null' ? `<p><a href="${data.redirect_url}" class="challenge-link">Go to Challenge</a></p>` : ''}
+                `;
+            } else if (type === 'Card') {
+                description.innerHTML = `
+                    <div class="card-details">
+                        <div class="card-header">
+                            <span class="card-user">${data.username}</span> unlocked a new card!
+                        </div>
+                        <div class="card-section">
+                            <h4>Card Details:</h4>
+                            <p>${data.description}</p>
+                        </div>
+                        <div class="card-stats">
+                            <span>Rarity: ${data.rarity}</span>
+                        </div>
+                        ${data.image ? `<img src="${data.image}" alt="${data.name}" style="max-width: 200px; border-radius: 4px; margin-top: 16px;">` : ''}
+                    </div>
+                `;
+            } else if (type === 'Guide') {
+                description.innerHTML = `
+                    <div class="guide-details">
+                        <div class="guide-header">
+                            <span class="guide-user">${data.username}</span> completed ${data.title}!
+                        </div>
+                        <div class="guide-section">
+                            <h4>Guide Description:</h4>
+                            <p>${data.description}</p>
+                        </div>
+                        <div class="guide-stats">
+                            <span>Score: ${data.score}%</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                description.innerHTML = `
+                    <p>Completed ${data.progress}/${data.goal}</p>
+                    ${data.submission ? `<p><strong>Submission:</strong> ${data.submission}</p>` : ''}
+                `;
+            }
+            contentWrapper.appendChild(description);
+
+            const footer = document.createElement('div');
+            footer.className = 'post-footer';
+            
+            const stats = document.createElement('div');
+            if (type === 'Challenge') {
+                stats.textContent = `Completed ${data.completion_count} time(s)`;
+            } else if (type === 'Card') {
+                stats.textContent = `Rarity: ${data.rarity}`;
+            } else {
+                stats.textContent = `Earned ${data.coins_earned} coins`;
+            }
+            footer.appendChild(stats);
+
+            post.appendChild(voteColumn);
+            post.appendChild(contentWrapper);
+
+            // Load initial interaction counts
+            loadInteractions(data.id, upvoteButton, downvoteButton);
+
+            // Add event listeners for interactions
+            upvoteButton.addEventListener('click', () => handleInteraction(data.id, 'like', upvoteButton, downvoteButton));
+            downvoteButton.addEventListener('click', () => handleInteraction(data.id, 'dislike', upvoteButton, downvoteButton));
+
+            return post;
+        }
+
+        async function loadInteractions(postId, upvoteButton, downvoteButton) {
+            if (!postId) {
+                // If there's no post ID, hide the interaction buttons
+                upvoteButton.style.display = 'none';
+                downvoteButton.style.display = 'none';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/forum/interactions/${postId}/`);
+                if (!response.ok) throw new Error('Failed to load interactions');
+                
+                const data = await response.json();
+                updateInteractionButtons(upvoteButton, downvoteButton, data);
+            } catch (error) {
+                console.error('Error loading interactions:', error);
+                // Hide buttons on error
+                upvoteButton.style.display = 'none';
+                downvoteButton.style.display = 'none';
+            }
+        }
+
+        async function handleInteraction(postId, type, upvoteButton, downvoteButton) {
+            try {
+                const response = await fetch('/forum/interact/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')
+                    },
+                    body: JSON.stringify({
+                        post_id: postId,
+                        type: type
+                    })
+                });
+
+                if (!response.ok) throw new Error('Failed to update interaction');
+                
+                const data = await response.json();
+                updateInteractionButtons(upvoteButton, downvoteButton, {
+                    likes: data.likes,
+                    dislikes: data.dislikes,
+                    user_interaction: data.action === 'removed' ? null : type
+                });
+            } catch (error) {
+                console.error('Error updating interaction:', error);
+            }
+        }
+
+        function updateInteractionButtons(upvoteButton, downvoteButton, data) {
+            // Update counts
+            upvoteButton.querySelector('.interaction-count').textContent = data.likes;
+            downvoteButton.querySelector('.interaction-count').textContent = data.dislikes;
+
+            // Update active states
+            upvoteButton.classList.toggle('active', data.user_interaction === 'like');
+            downvoteButton.classList.toggle('active', data.user_interaction === 'dislike');
+        }
+
+        function filterPosts() {
+            const posts = document.querySelectorAll('.post');
+            posts.forEach(post => {
+                if (currentPostType === 'all' || post.dataset.postType === currentPostType) {
+                    post.style.display = '';
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+        }
+
+        function compareData(newData, oldData) {
+            if (!oldData) return true;
+            
+            // Compare lengths
+            if (newData.ongoing_challenges.length !== oldData.ongoing_challenges.length ||
+                (newData.guides?.length || 0) !== (oldData.guides?.length || 0) ||
+                (newData.card_achievements?.length || 0) !== (oldData.card_achievements?.length || 0)) {
+                return true;
+            }
+
+            // Compare challenges
+            for (let i = 0; i < newData.ongoing_challenges.length; i++) {
+                const newChallenge = newData.ongoing_challenges[i];
+                const oldChallenge = oldData.ongoing_challenges[i];
+                if (newChallenge.submitted_on !== oldChallenge.submitted_on ||
+                    newChallenge.completion_count !== oldChallenge.completion_count ||
+                    newChallenge.username !== oldChallenge.username) {
+                    return true;
+                }
+            }
+
+            // Compare guides
+            if (newData.guides && oldData.guides) {
+                for (let i = 0; i < newData.guides.length; i++) {
+                    const newGuide = newData.guides[i];
+                    const oldGuide = oldData.guides[i];
+                    if (newGuide.created_at !== oldGuide.created_at ||
+                        newGuide.score !== oldGuide.score ||
+                        newGuide.username !== oldGuide.username) {
+                        return true;
+                    }
+                }
+            }
+
+            // Compare card achievements
+            if (newData.card_achievements && oldData.card_achievements) {
+                for (let i = 0; i < newData.card_achievements.length; i++) {
+                    const newCard = newData.card_achievements[i];
+                    const oldCard = oldData.card_achievements[i];
+                    if (newCard.created_at !== oldCard.created_at ||
+                        newCard.username !== oldCard.username) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        async function displayPosts(data) {
+            const container = document.getElementById('posts-container');
+            container.innerHTML = '';
+
+            if (currentFilter === 'friends' && data.has_no_friends) {
+                container.innerHTML = `
+                    <div class="post">
+                        <div class="post-content">
+                            <p>You haven't added any friends yet!</p>
+                            <p>Visit the <a href="/ecoworld/friends" style="color: #00dea5; text-decoration: none;">Find Friends</a> page to connect with other users.</p>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Combine all posts into a single array with their type
+            const allPosts = [
+                ...data.ongoing_challenges.map(post => ({ ...post, type: 'Challenge', date: new Date(post.submitted_on) })),
+                ...(data.guides || []).map(post => ({ ...post, type: 'Guide', date: new Date(post.created_at) })),
+                ...(data.card_achievements || []).map(post => ({ ...post, type: 'Card', date: new Date(post.created_at) }))
+            ];
+
+            // Load interaction counts for all posts before sorting
+            await Promise.all(allPosts.map(async (post) => {
+                try {
+                    const response = await fetch(`/forum/interactions/${post.id}/`);
+                    if (response.ok) {
+                        const interactionData = await response.json();
+                        post.likes = interactionData.likes || 0;
+                        post.dislikes = interactionData.dislikes || 0;
+                    }
+                } catch (error) {
+                    console.error('Error loading interactions for post:', error);
+                    post.likes = 0;
+                    post.dislikes = 0;
+                }
+            }));
+
+            // Sort posts according to current sort option
+            const sortedPosts = sortPosts(allPosts);
+
+            // Create post elements in sorted order
+            sortedPosts.forEach(post => {
+                container.appendChild(createPostElement(post, post.type));
+            });
+
+            if (sortedPosts.length === 0) {
+                container.innerHTML = '<div class="post">No posts found.</div>';
+            }
+        }
+
+        function sortPosts(posts) {
+            switch (currentSort) {
+                case 'recent':
+                    return posts.sort((a, b) => b.date - a.date);
+                case 'likes':
+                    return posts.sort((a, b) => {
+                        const bLikes = b.likes || 0;
+                        const aLikes = a.likes || 0;
+                        if (bLikes === aLikes) {
+                            return b.date - a.date; // If likes are equal, sort by date
+                        }
+                        return bLikes - aLikes;
+                    });
+                case 'completed':
+                    return posts.sort((a, b) => {
+                        const aCount = a.type === 'Challenge' ? (a.completion_count || 0) : 0;
+                        const bCount = b.type === 'Challenge' ? (b.completion_count || 0) : 0;
+                        if (bCount === aCount) {
+                            return b.date - a.date; // If completion counts are equal, sort by date
+                        }
+                        return bCount - aCount;
+                    });
+                default:
+                    return posts;
+            }
+        }
+
+        async function fetchPosts() {
+            try {
+                const response = await fetch(`/forum/getchallengeinfo/?filter=${currentFilter}`, {
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken')
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch posts');
+                }
+
+                const data = await response.json();
+                
+                // Only update the DOM if the data has changed
+                if (compareData(data, lastData)) {
+                    // Store the data and display posts
+                    lastData = data;
+                    displayPosts(data);
+                }
+            } catch (error) {
+                const container = document.getElementById('posts-container');
+                container.innerHTML = '<div class="error">Error loading posts. Please try again later.</div>';
+                console.error('Error:', error);
+            }
+        }
+
+        // Fetch posts when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchPosts(); // Initial fetch
+            // Set up periodic polling every minute
+            setInterval(fetchPosts, 60000);
+        });
+    </script>
+</body>
+</html> 
