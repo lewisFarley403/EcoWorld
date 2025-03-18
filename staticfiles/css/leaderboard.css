@@ -1,0 +1,158 @@
+/* todo:
+add scroll to the table, 
+have the table fill the box and not collapse in
+fix the current logged in user at the bottom of the table */
+
+
+
+/* Base styles */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+body {
+    background-color: #00dea5;
+}
+
+/* Root container */
+.root {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Leaderboard container */
+#leaderboard {
+    flex: 1; /* Takes up all available space */
+    width: 80%;
+    background-color: #003c3d;
+    border-radius: 36px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Table styles */
+#leaderboard-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 5vh; /* Ensures spacing between rows */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+/* Header - Sticky */
+#leaderboard-table thead {
+    background-color: #002a2b;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+/* Body - Scrollable */
+#leaderboard-table tbody {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Footer - Sticky (Current User) */
+#leaderboard-table tfoot {
+    position: sticky;
+    bottom: 0;
+    background-color: #004a4b;
+    z-index: 2;
+}
+
+/* Row styling */
+#leaderboard-table tr {
+    display: flex;
+    width: 100%;
+    min-height: calc(100% / 5); /* Ensures 5 rows fit */
+    align-items: center;
+    justify-content: center;
+}
+
+/* Table cell (th, td) styling */
+#leaderboard-table th, 
+#leaderboard-table td {
+    flex: 1;
+    padding: 10px;
+    color: white;
+    text-align: center;
+}
+
+/* Scrollbar customization */
+#leaderboard-table tbody::-webkit-scrollbar {
+    width: 8px;
+}
+
+#leaderboard-table tbody::-webkit-scrollbar-thumb {
+    background: #00dea5;
+    border-radius: 4px;
+}
+
+/* Profile Image (pfp) */
+.pfp {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 10px;
+    border: 2px solid #00dea5;
+}
+
+/* Top-3 player container */
+#top3 {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+    position: relative;
+    top: 50px;
+}
+
+.player-container {
+    text-align: center;
+}
+
+#second-container {
+    position: relative;
+    top: -100px;
+}
+
+.under-container {
+    gap: 20px;
+    margin-top: 150px;
+    padding-bottom:50px;
+}
+
+/* Crown styling */
+.crown {
+    width: 50%;
+    height: auto;
+    position: absolute;
+    top: -70px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Top-3 container */
+.top-3-container {
+    padding-left: 15% !important;
+    padding-right: 15% !important;
+}
+
+.title {
+    font-weight: bold;
+    font-size: 18.7px;
+}

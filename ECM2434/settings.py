@@ -34,7 +34,14 @@ SECRET_KEY = "django-insecure-kyoddd82$!d_nttqwz9-u%kt8+ql)(@hgpkqm2&&70nf6ri7eu
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
 DEBUG = False
-
+STATIC_URL = "static/"
+# This production code might break development mode, so we check whether we're in DEBUG mode
+if not DEBUG:
+    # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
+    # and renames the files with unique names for each version to support long-term caching
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # ALLOWED_HOSTS = ['whniecm2434.pythonanywhere.com','127.0.0.1','http://192.168.0.33:8000','10.207.102.152','ecm2434.onrender.com']
 ALLOWED_HOSTS = ["*"]
 
@@ -67,6 +74,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -148,7 +156,7 @@ STATIC_URL = "static/"
 # STATICFILES_DIRS = [
 #     os.path.join(BASE_DIR, "static"),
 # ]
-STATIC_ROOT = BASE_DIR / 'static' #deployment only
+# STATIC_ROOT = BASE_DIR / 'static' #deployment only
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field

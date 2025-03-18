@@ -1,0 +1,160 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    height: 100vh;
+    display: flex;
+}
+
+/* Left side (60% of the screen) */
+.left-side {
+    width: 60%;
+    background-color: #00dea5;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centers images horizontally */
+    align-content: center;
+}
+
+/* Right side (40% of the screen) */
+.right-side {
+    width: 40%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #fff;
+}
+
+.login-container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 300px; /* Fixed width for the login container */
+    text-align: center;
+}
+
+.arch-photo img{
+    width: 70%;
+    margin-left: 15%;
+    margin-top: 5%
+}
+
+.logo img {
+    width: 100px;
+    margin-bottom: 20px;
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #003c3c;
+}
+
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.input-group input {
+    width: calc(100% - 25px); /* Adjust width to account for padding */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    box-shadow: 4px 4px 0 #00dea5; /* Shadow to the bottom and right */
+    transition: box-shadow 0.3s ease;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #00dea5;
+    box-shadow: 4px 4px 0 #00dea5; /* Keep shadow on focus */
+}
+
+.login-button {
+    width: 50%;
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.login-button:hover {
+    background-color: #00dea5;
+}
+
+.signup-link {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #555;
+}
+
+.signup-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.signup-link a:hover {
+    text-decoration: underline;
+    color: #00dea5;
+}
+
+.forgot-password-button {
+    display: inline-block;
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 5px;
+    margin-top: 10px;
+    text-decoration: none;
+}
+
+.forgot-password-button:hover {
+    text-decoration: underline;
+    color: #00dea5;
+}
+
+/* Media query for mobile responsiveness */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+
+    .left-side {
+        display: none; /* Hide the left section with arch image */
+    }
+
+    .right-side {
+        width: 100%; /* Make form section take full width */
+    }
+
+    .login-container {
+        width: 90%;
+        max-width: 300px;
+        padding: 15px;
+        box-shadow: none;
+    }
+
+    .input-group input {
+        width: calc(100% - 22px);
+    }
+
+    .login-button {
+        width: 100%;
+    }
+
+    .forgot-password-button {
+        width: 100%;
+    }
+}
