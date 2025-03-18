@@ -32,48 +32,81 @@
     <!-- Link to the global navbar.css file -->
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
     <!-- Add a script to fetch user info from the API -->
+    <link rel="icon" type="image/png" href="{% static 'misc/favicon.png' %}">
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Fetch user info from the API endpoint
+        function updateUserInfo() {
             fetch('/api/userinfo/')
                 .then(response => response.json())
                 .then(data => {
-                    // Update the navbar with the user data
-                    document.getElementById('username').innerText = data.username;
-                    document.getElementById('pfp').src = data.pfp_url;
-                    document.getElementById('coins').innerText = `Coins: ${data.coins}`;
+                    const usernameEl = document.getElementById('username');
+                    const pfpEl = document.getElementById('pfp');
+                    const coinsEl = document.getElementById('coins');
+                    
+                    if (usernameEl) usernameEl.innerText = data.username;
+                    if (pfpEl) pfpEl.src = data.pfp_url || "{% static 'misc/default_pfp.png' %}";
+                    if (coinsEl) coinsEl.innerText = data.coins;
                 })
                 .catch(error => {
                     console.error('Error fetching user data:', error);
                 });
-        });
+        }
+
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', updateUserInfo);
+        } else {
+            updateUserInfo();
+        }
     </script>
 </head>
 
 <header class="header">
     <nav class="navbar">
-        <div class="left-links">
-            <a href="/ecoworld/dashboard">Home</a>
-            <a href="/ecoworld/challenge">Challenges</a>
-            <a href="/guides">Guides</a>
-            <a href="/garden">Garden</a>
-            <a href="/ecoworld/store">Store</a>
-            <a href="/leaderboards">Leaderboard</a>
-            <a href="/game/play/">Minigame</a>
-            {% if perms.Accounts.can_view_admin_button %}
-                <a href="/ecoworld/admin">Admin Page</a>
-            {% endif %}
-        </div>
-        <div class="logo">Eco World</div>
-        <div class="right-links">
-            <span id="username">Loading...</span>
-            <a href="/accounts/profile">
-                <img id="pfp" src="" alt="Username" class="profile-pic">
-            </a>
-            <span style="padding-left: 20px;" id="coins">Loading...</span>
-            <a href="/ecoworld/friends">
-                <img src="/media/misc/friend.png" class="profile-pic">
-            </a>
+        <div class="navbar-container">
+            <div class="navbar-left">
+                <a href="/ecoworld/dashboard" class="navbar-brand">
+                    <!-- <img src="{% static 'misc/logo.png' %}" alt="Eco World" class="navbar-logo"> -->
+                    <span>Eco World</span>
+                </a>
+                <button class="navbar-menu-button" onclick="toggleMenu()">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12h18M3 6h18M3 18h18"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="navbar-links" id="navLinks">
+                <a href="/ecoworld/dashboard" class="navbar-link">Home</a>
+                <a href="/ecoworld/challenge" class="navbar-link">Challenges</a>
+                <a href="/guides" class="navbar-link">Guides</a>
+                <a href="/garden" class="navbar-link">Garden</a>
+                <a href="/ecoworld/store" class="navbar-link">Store</a>
+                <a href="/leaderboards" class="navbar-link">Leaderboard</a>
+                <a href="/game/play" class="navbar-link">Minigame</a>
+                {% if perms.Accounts.can_view_admin_button %}
+                <a href="/ecoworld/admin" class="navbar-link">Admin Page</a>
+                {% endif %}
+            </div>
+
+            <div class="navbar-user">
+                <span id="username" class="navbar-username"></span>
+                <a href="/accounts/profile">
+                    <img id="pfp" src="{% static 'misc/default_pfp.png' %}" alt="Profile" class="profile-pic">
+                </a>
+                <span class="navbar-coins">
+                    <span id="coins">0</span>
+                </span>
+                <a href="/ecoworld/friends">
+                    <img src="{% static 'misc/friend.png' %}" alt="Friends" class="friend-icon">
+                </a>
+            </div>
         </div>
     </nav>
 </header>
+
+<script>
+function toggleMenu() {
+    const navLinks = document.getElementById('navLinks');
+    navLinks.classList.toggle('active');
+}
+</script>

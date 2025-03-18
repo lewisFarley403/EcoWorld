@@ -4,54 +4,9 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>EcoWorld - Store </title>
+        {% load static %}
+        <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
         <style>
-
-        .header {
-            background-color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 10px 20px;
-            top: 0;
-            width: 100%;
-            position: fixed;
-        }
-
-        .navbar {
-            width: 100%;
-            max-width: 1200px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar .left-links a,
-        .navbar .right-links span {
-            margin-right: 20px;
-            font-size: 16px;
-            text-decoration: none;
-            color: #003c3c;
-        }
-
-        .navbar .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #003c3c;
-        }
-
-        .navbar .right-links {
-            display: flex;
-            align-items: center;
-        }
-
-        .profile-pic {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-left: 10px;
-            border: 2px solid #00dea5;
-        }
             body {
                 background: linear-gradient(to bottom, #0e4d46, rgb(13, 143, 13));
                 color: white; 
@@ -59,10 +14,17 @@
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                justify-content: center;
-                height: 100vh;
-                overflow-y: hidden;
+                min-height: 100vh;
                 overflow-x: hidden;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 1200px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 80px;
             }
 
             .h1 {
@@ -106,7 +68,6 @@
                 height: 350px;
                 width: 240px;
                 outline: 1px solid white;
-
             }
 
             .packBox:hover .packInfo {
@@ -149,8 +110,6 @@
             .buy-btn:hover {
                 background-color: #2d3748;
             }
-
-            
         </style>
     </head>
     <body>
