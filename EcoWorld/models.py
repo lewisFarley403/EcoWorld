@@ -36,7 +36,7 @@ class challenge(models.Model):
     """
     name = models.CharField(max_length=50)
     description = models.TextField()
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     created_on = models.DateField()
     worth = models.IntegerField(default=settings.CHALLENGE_WORTH)
     goal = models.IntegerField(default=1)
