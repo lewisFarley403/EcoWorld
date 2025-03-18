@@ -61,6 +61,7 @@ class ongoingChallenge(models.Model):
     challenge = models.ForeignKey(challenge, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     submission = models.TextField(null=True)
+
     submitted_on = models.DateTimeField(null=True, blank=True)
     created_on = models.DateTimeField( auto_now_add=True) #sets this to the current date when the object is created
     completion_count = models.IntegerField(default=0)
