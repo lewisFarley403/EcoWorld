@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     function createLeaf() {
         let leaf = document.createElement("img");
-        leaf.src = "/static/guides/leaves/leaf" + (Math.floor(Math.random() * 5) + 1) + ".png"; // Random leaf image
+        leaf.src = "/static/guides/leaves/leaf" + (Math.floor(Math.random() * 4) + 1) + ".png"; // Random leaf image
         leaf.classList.add("leaf");
 
         // Set random position, size, and animation properties
