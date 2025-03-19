@@ -1,4 +1,6 @@
+import datetime
 from datetime import timedelta
+from unittest.mock import patch
 
 from django.test import TestCase
 from django.urls import reverse
@@ -114,25 +116,52 @@ class QRCodesViewsTests(TestCase):
         self.regular_user.profile.refresh_from_db()
         self.assertEqual(self.regular_user.profile.number_of_coins, initial_coins)
 
+    from unittest.mock import patch
+
+    from unittest.mock import patch
+    from datetime import timedelta
+    from django.utils import timezone
+
+    from unittest.mock import patch
+    from datetime import timedelta
+    from django.utils import timezone
+
     def test_scan_qr_after_cooldown(self):
         """
         If the user’s last drink event was longer ago than DRINKING_COOLDOWN,
         a new drink event should be created and coins updated.
         """
         self.client.login(username='user', password='userpass')
-        past_time = timezone.now() - (settings.DRINKING_COOLDOWN + timedelta(minutes=1))
-        drinkEvent.objects.create(user=self.regular_user, fountain=self.fountain, drank_on=past_time)
-        initial_coins = self.regular_user.profile.number_of_coins
 
-        url = reverse('qrCodes:scan_qr')
-        response = self.client.get(url, {'id': self.fountain.id})
-        # Expecting the view to render 'drink_registered.html'
-        self.assertTemplateUsed(response, 'drink_registered.html')
-        self.assertEqual(drinkEvent.objects.filter(user=self.regular_user).count(), 2)
+        # Mock timezone.now() to return a fixed time during the test
+        with patch('django.utils.timezone.now') as mock_now:
+            mock_now.return_value = timezone.make_aware(datetime.datetime(2025, 3, 19, 13, 30, 0))
 
-        self.regular_user.profile.refresh_from_db()
-        expected_coins = initial_coins + settings.VALUE_OF_DRINK
-        self.assertEqual(self.regular_user.profile.number_of_coins, expected_coins)
+            # Set past_time to the previous day (24 hours before mock_now)
+            past_time = mock_now.return_value - timedelta(days=1)
+            print(str(past_time)+"--------------------------------------------")
+
+            # Create the previous drink event with past_time
+            drinkEvent.objects.create(user=self.regular_user, fountain=self.fountain, drank_on=past_time)
+
+            # Save initial coins for comparison
+            initial_coins = self.regular_user.profile.number_of_coins
+
+            # Send the GET request to scan the QR code
+            url = reverse('qrCodes:scan_qr')
+            response = self.client.get(url, {'id': self.fountain.id})
+
+            # Verify that the correct template is used
+            self.assertTemplateUsed(response, 'drink_registered.html')
+
+            # Verify a new drink event was created
+            self.assertEqual(drinkEvent.objects.filter(user=self.regular_user).count(), 2)
+
+            # Verify that the user's coins have been updated
+            self.regular_user.profile.refresh_from_db()
+            expected_coins = initial_coins + settings.VALUE_OF_DRINK
+            self.assertEqual(self.regular_user.profile.number_of_coins, expected_coins)
+
 
     # --- Tests for add_water_fountain view ---
     def test_add_water_fountain_get(self):
@@ -150,16 +179,23 @@ class QRCodesViewsTests(TestCase):
         Note: The view redirects to "EcoWorld:admin_page". Adjust this if your redirect URL changes.
         """
         self.client.login(username='admin', password='adminpass')
-        # IMPORTANT: Update post_data with all required fields for WaterFountainForm.
+
+        # Ensure all required fields are included
         post_data = {
             'name': 'New Fountain',
-            # e.g., 'description': 'Test fountain description', 'location': 'Test location'
+            'location': 'Test Location',  # Required field
         }
+
         response = self.client.post(reverse('qrCodes:add_water_fountain'), post_data)
+
+        # Print form errors if the test still fails
+        print(response.context.get('form').errors if response.context else "No form errors")
+
         # Check if the form validated and the view redirected.
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('EcoWorld:admin_page'))
         self.assertEqual(waterFountain.objects.filter(name='New Fountain').count(), 1)
+
 
     def test_add_water_fountain_post_invalid(self):
         """
