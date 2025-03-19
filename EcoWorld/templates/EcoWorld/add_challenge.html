@@ -6,14 +6,22 @@
     <title>Add Challenge</title>
     <link rel="stylesheet" href="{% static 'EcoWorld/css/dashboard.css' %}">
 </head>
+<style>
+    .challenge-form{
+        padding:60px;
+    }
+</style>
+
 <body>
+{% include "partials/navbar.html" %}
+<div class="challenge-form">
     <h2>Add New Challenge</h2>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit" class="button">Add Challenge</button>
     </form>
-    <a href="{% url 'EcoWorld:admin_page' %}">Back to Admin Page</a>
+    </div>
 </body>
 </html>
 
