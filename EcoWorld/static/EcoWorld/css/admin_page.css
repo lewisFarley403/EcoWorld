@@ -19,7 +19,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 60px;
 }
 table {
     width: 100%;
@@ -53,47 +53,3 @@ button:hover {
     gap: 20px;
 }
 
-/* Header Section */
-.header {
-    background-color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    padding: 10px 20px;
-}
-
-.navbar {
-    width: 100%;
-    max-width: 1200px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.navbar .left-links a,
-.navbar .right-links span {
-    margin-right: 20px;
-    font-size: 16px;
-    text-decoration: none;
-    color: #003c3c;
-}
-
-.navbar .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #003c3c;
-}
-
-.navbar .right-links {
-    display: flex;
-    align-items: center;
-}
-
-.profile-pic {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-left: 10px;
-    border: 2px solid #00dea5;
-}
