@@ -1,6 +1,9 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
+
+from EcoWorld.forms import ChallengeForm
+from EcoWorld.models import challenge
 from qrCodes.models import drinkEvent, waterFountain
 import json
 
@@ -75,3 +78,76 @@ class EcoWorldViewsTest(TestCase):
 
 
 
+class AdminViewTests(TestCase):
+    def setUp(self):
+        """Create test users and permissions."""
+        self.admin_user = User.objects.create_user(username="admin", password="adminpassword")
+        self.regular_user = User.objects.create_user(username="user", password="userpassword")
+
+        # Assign permission to the admin user
+        self.admin_permission = Permission.objects.get(codename="can_view_admin_button")
+        self.admin_user.user_permissions.add(self.admin_permission)
+
+    def test_admin_page_access_as_admin(self):
+        """Ensure an admin can access the admin page."""
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.get(reverse("EcoWorld:admin_page"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "EcoWorld/admin_page.html")
+
+    def test_admin_page_access_as_regular_user(self):
+        """Ensure a non-admin user is denied access to the admin page."""
+        self.client.login(username="user", password="userpassword")
+        response = self.client.get(reverse("EcoWorld:admin_page"))
+        self.assertEqual(response.status_code, 403)  # Forbidden
+
+    def test_admin_page_access_unauthenticated(self):
+        """Ensure unauthenticated users are redirected to login."""
+        response = self.client.get(reverse("EcoWorld:admin_page"))
+        self.assertEqual(response.status_code, 302)  # Redirect to login
+        self.assertTrue(response.url.startswith("/accounts/login/"))
+
+    def test_grant_admin_as_admin(self):
+        """Ensure an admin can grant another user admin rights."""
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.post(reverse("EcoWorld:grant_admin", args=[self.regular_user.id]))
+
+        # Check if the user got the admin permission
+        self.regular_user.refresh_from_db()
+        self.assertTrue(self.regular_user.has_perm("Accounts.can_view_admin_button"))
+
+        # Check redirection
+        self.assertRedirects(response, reverse("EcoWorld:admin_page"))
+
+    def test_grant_admin_as_non_admin(self):
+        """Ensure a regular user cannot grant admin rights."""
+        self.client.login(username="user", password="userpassword")
+        response = self.client.post(reverse("EcoWorld:grant_admin", args=[self.admin_user.id]))
+        self.assertEqual(response.status_code, 403)  # Forbidden
+
+        # Ensure admin permission was NOT granted
+        self.admin_user.refresh_from_db()
+        self.assertFalse(self.admin_user.has_perm("Accounts.can_view_admin_button"))
+
+    def test_add_challenge_as_admin(self):
+        """Ensure an admin can add a challenge."""
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.post(reverse("EcoWorld:add_challenge"), {"name": "New Challenge"})
+
+        # Check if challenge was added
+        self.assertEqual(challenge.objects.count(), 1)
+        self.assertRedirects(response, reverse("EcoWorld:admin_page"))
+
+    def test_add_challenge_as_regular_user(self):
+        """Ensure a non-admin user cannot add a challenge."""
+        self.client.login(username="user", password="userpassword")
+        response = self.client.post(reverse("EcoWorld:add_challenge"), {"name": "New Challenge"})
+        self.assertEqual(response.status_code, 403)  # Forbidden
+        self.assertEqual(challenge.objects.count(), 0)  # No challenge should be added
+
+    def test_add_challenge_form_display(self):
+        """Ensure the challenge form is displayed for admins."""
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.get(reverse("EcoWorld:add_challenge"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.context["form"], ChallengeForm)
