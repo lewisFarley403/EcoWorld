@@ -116,16 +116,6 @@ class QRCodesViewsTests(TestCase):
         self.regular_user.profile.refresh_from_db()
         self.assertEqual(self.regular_user.profile.number_of_coins, initial_coins)
 
-    from unittest.mock import patch
-
-    from unittest.mock import patch
-    from datetime import timedelta
-    from django.utils import timezone
-
-    from unittest.mock import patch
-    from datetime import timedelta
-    from django.utils import timezone
-
     def test_scan_qr_after_cooldown(self):
         """
         If the user’s last drink event was longer ago than DRINKING_COOLDOWN,
@@ -139,7 +129,6 @@ class QRCodesViewsTests(TestCase):
 
             # Set past_time to the previous day (24 hours before mock_now)
             past_time = mock_now.return_value - timedelta(days=1)
-            print(str(past_time)+"--------------------------------------------")
 
             # Create the previous drink event with past_time
             drinkEvent.objects.create(user=self.regular_user, fountain=self.fountain, drank_on=past_time)
@@ -176,7 +165,6 @@ class QRCodesViewsTests(TestCase):
     def test_add_water_fountain_post_valid(self):
         """
         A valid POST by an admin should create a new waterFountain and redirect.
-        Note: The view redirects to "EcoWorld:admin_page". Adjust this if your redirect URL changes.
         """
         self.client.login(username='admin', password='adminpass')
 
