@@ -342,8 +342,9 @@ def add_challenge(request):
     if request.method == 'POST':
         form = ChallengeForm(request.POST)
         if form.is_valid():
-            # Save the form with the current user as the creator
-            form.save(created_by=request.user)
+            new_challenge = form.save(commit=False)  # Don't save to DB yet
+            new_challenge.created_by = request.user  # Set creator manually
+            new_challenge.save()  # Now save
             return redirect("EcoWorld:admin_page")  # Redirect back to the admin page after saving
     else:
         form = ChallengeForm()

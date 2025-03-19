@@ -1,6 +1,9 @@
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
+
+from EcoWorld.forms import ChallengeForm
+from EcoWorld.models import challenge
 from qrCodes.models import drinkEvent, waterFountain
 import json
 
@@ -73,5 +76,98 @@ class EcoWorldViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "EcoWorld/upload_photo.html")
 
+class AdminViewTests(TestCase):
+    def setUp(self):
+        # Create an admin user and a regular user.
+        self.admin_user = User.objects.create_user(username="admin", password="adminpassword")
+        self.regular_user = User.objects.create_user(username="user", password="userpassword")
 
+        # Get and assign the permission to view admin pages.
+        self.admin_permission = Permission.objects.get(codename="can_view_admin_button")
+        self.admin_user.user_permissions.add(self.admin_permission)
 
+    # --- Tests for the admin_page view ---
+
+    def test_admin_page_access_as_admin(self):
+        """An authorized admin user should see the admin page."""
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.get(reverse("EcoWorld:admin_page"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "EcoWorld/admin_page.html")
+        # Check that expected context data is present.
+        self.assertIn("userinfo", response.context)
+        self.assertIn("users", response.context)
+        self.assertIn("missing_rows", response.context)
+
+    def test_admin_page_access_as_regular_user(self):
+        """A regular user should be redirected (unauthorized) when accessing the admin page."""
+        self.client.login(username="user", password="userpassword")
+        response = self.client.get(reverse("EcoWorld:admin_page"))
+        # Expecting a 302 redirect to the login page.
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith("/accounts/login/"))
+
+    def test_admin_page_access_unauthenticated(self):
+        """An unauthenticated request should redirect to the login page."""
+        response = self.client.get(reverse("EcoWorld:admin_page"))
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith("/accounts/login/"))
+
+    # --- Tests for the grant_admin view ---
+
+    def test_grant_admin_as_admin(self):
+        """An admin can grant admin privileges to another user."""
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.post(reverse("EcoWorld:grant_admin", args=[self.regular_user.id]))
+        self.regular_user.refresh_from_db()
+        self.assertTrue(self.regular_user.has_perm("Accounts.can_view_admin_button"))
+        self.assertRedirects(response, reverse("EcoWorld:admin_page"))
+
+    def test_grant_admin_as_regular_user(self):
+        """A regular user should be redirected when attempting to grant admin privileges."""
+        self.client.login(username="user", password="userpassword")
+        response = self.client.post(reverse("EcoWorld:grant_admin", args=[self.admin_user.id]))
+        # By default, @permission_required redirects unauthorized users to login.
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith("/accounts/login/"))
+
+    # --- Tests for the add_challenge view ---
+
+    def test_add_challenge_as_admin(self):
+        """An admin should be able to add a new challenge."""
+        self.client.login(username="admin", password="adminpassword")
+        post_data = {
+            "name": "New Challenge",
+            "description": "Test challenge",
+            "worth": 10,
+            "goal": 5,
+        }
+        response = self.client.post(reverse("EcoWorld:add_challenge"), post_data)
+        # On successful submission, the view redirects to the admin page.
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse("EcoWorld:admin_page"))
+        # Verify that the challenge was created.
+        self.assertEqual(challenge.objects.count(), 1)
+
+    def test_add_challenge_as_regular_user(self):
+        """A regular user should be redirected when trying to add a challenge."""
+        self.client.login(username="user", password="userpassword")
+        post_data = {
+            "name": "New Challenge",
+            "description": "Test challenge",
+            "worth": 10,
+            "goal": 5,
+        }
+        response = self.client.post(reverse("EcoWorld:add_challenge"), post_data)
+        # Unauthorized users are redirected to login.
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith("/accounts/login/"))
+        # No new challenge should be created.
+        self.assertEqual(challenge.objects.count(), 0)
+
+    def test_add_challenge_form_display(self):
+        """The challenge form should be displayed for an admin accessing the page via GET."""
+        self.client.login(username="admin", password="adminpassword")
+        response = self.client.get(reverse("EcoWorld:add_challenge"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIsInstance(response.context["form"], ChallengeForm)

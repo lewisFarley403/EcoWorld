@@ -8,8 +8,6 @@ from django.urls import reverse
 from django.conf import settings
 from datetime import timedelta
 from django.db.models import Q
-from django.urls import path
-from views import friends
 
 """
 Testing class for the packmodels

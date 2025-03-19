@@ -22,10 +22,7 @@ def scan_code(request):
     user = request.user
     fountain_id = request.GET.get('id')
     last_drink = drinkEvent.objects.filter(user=user).order_by('-drank_on').first()
-    print("lastEvent")
-    print(last_drink)
     if last_drink:
-        print("last drink not none")
         time_difference = timezone.now() - last_drink.drank_on
         if time_difference < settings.DRINKING_COOLDOWN:
             return render(request, 'drink_cooldown_page.html')

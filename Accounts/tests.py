@@ -1,5 +1,4 @@
 from django.test import TestCase
-from django.test import TestCase
 from django.contrib.auth.models import User
 from .models import Profile, FriendRequests, Friends
 from .forms import SignUpForm,ProfileUpdateForm
@@ -41,7 +40,7 @@ class testSignupForm(TestCase):
         }
         form = SignUpForm(data=form_data)
         self.assertTrue(form.is_valid())
-        
+
     def test_invalid_email_signup_form(self):
         form_data = {
             'first_name': 'John',
@@ -291,3 +290,33 @@ class FriendRequestsTest(TestCase):
     def testStr(self):
         request = FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
         self.assertEqual(str(request), "user1 sent a request to user2")
+
+
+class DeleteAccountViewTest(TestCase):
+    def setUp(self):
+        """Create a test user."""
+        self.user = User.objects.create_user(username="testuser", password="testpassword")
+
+    def test_delete_account_authenticated_user(self):
+        """Ensure a logged-in user can delete their account."""
+        self.client.login(username="testuser", password="testpassword")
+        response = self.client.post(reverse("delete_account"))
+
+        # Check user is deleted
+        self.assertFalse(User.objects.filter(username="testuser").exists())
+
+        # Check redirection
+        self.assertRedirects(response, "/")
+
+        # Check success message
+        messages = list(response.wsgi_request._messages)
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), "Your account has been deleted successfully.")
+
+    def test_delete_account_unauthenticated_user(self):
+        """Ensure an unauthenticated user is redirected to login."""
+        response = self.client.post(reverse("delete_account"))
+
+        # Should redirect to login
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith("/accounts/login/"))
