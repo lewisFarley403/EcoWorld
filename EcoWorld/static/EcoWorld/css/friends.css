@@ -235,3 +235,84 @@ body {
     transition: 0.5s ease-in-out;
     background-color: #ff2a2a;
 }
+
+@media (max-width: 768px) {
+    .navbar {
+        width: 100%;
+        max-width: 1200px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .navbar .left-links a,
+    .navbar .right-links span {
+        margin-right: 20px;
+        font-size: 16px;
+        text-decoration: none;
+        color: #003c3c;
+    }
+
+    .navbar .logo {
+        font-size: 24px;
+        font-weight: bold;
+        color: #003c3c;
+    }
+
+    .navbar .right-links {
+        display: flex;
+        align-items: center;
+    }
+
+    .friendContainer,
+    .requestContainer {
+        flex-direction: column;
+        height: auto;
+        padding: 15px;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .buttonContainer {
+        flex-direction: row;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .addFriendtextbox,
+    .addFriendButton {
+        width: 85%;
+    }
+}
+
+@media (max-width: 480px) {
+    .header {
+        padding: 5px;
+    }
+
+    .navbar .logo {
+        font-size: 18px;
+    }
+
+    .userFriendsbox,
+    .userAddFriendbox,
+    .userRequestBox {
+        width: 95%;
+        padding: 10px;
+        border-radius: 8px;
+    }
+
+    .gardenViewButton,
+    .removeButton {
+        width: 100%;
+        max-width: 140px;
+        font-size: 14px;
+    }
+
+    .addbutton,
+    .rejectbutton {
+        height: 35px;
+        width: 35px;
+    }
+}
