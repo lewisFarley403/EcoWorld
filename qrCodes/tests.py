@@ -2,17 +2,16 @@ import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
+from django.conf import settings
+from django.contrib.auth.models import User, Permission
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-from django.contrib.auth.models import User, Permission
-from django.conf import settings
-
-from qrCodes.models import waterFountain, drinkEvent
-from qrCodes.forms import WaterFountainForm
 
 # Import your actual Profile model from the Accounts app
 from Accounts.models import Profile
+from qrCodes.forms import WaterFountainForm
+from qrCodes.models import waterFountain, drinkEvent
 
 
 class QRCodesViewsTests(TestCase):

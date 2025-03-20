@@ -1,10 +1,11 @@
+from django.conf import settings
+from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect
+from django.utils import timezone
 
 from .forms import WaterFountainForm
-from .models import waterFountain,drinkEvent
-from django.contrib.auth.decorators import login_required, permission_required
-from django.utils import timezone
-from django.conf import settings
+from .models import waterFountain, drinkEvent
+
 # Create your views here.
 @permission_required("Accounts.can_view_gamekeeper_button")  # Only allowed gamekeepers can generate new QR codes
 def generate_qr_code(request):

@@ -1,13 +1,15 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
-from EcoWorld.models import ongoingChallenge, card
-from Accounts.models import Friends
-from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.models import User
-from django.db.models import Q, Count, Case, When, IntegerField
-from .models import Post, PostInteraction
-from EcoWorld.views import getUserInfo
 import json
+
+from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import Q, Count, Case, When, IntegerField
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
+
+from Accounts.models import Friends
+from EcoWorld.models import ongoingChallenge, card
+from EcoWorld.views import getUserInfo
+from .models import Post, PostInteraction
+
 
 # Create your views here.
 

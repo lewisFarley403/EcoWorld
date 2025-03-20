@@ -1,10 +1,13 @@
-from django.test import TestCase
-from django.contrib.auth.models import User
-from .models import Profile, FriendRequests, Friends
-from .forms import SignUpForm,ProfileUpdateForm
-from django.urls import reverse
-from Garden.models import garden,gardenSquare
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.urls import reverse
+
+from Garden.models import garden, gardenSquare
+from .forms import SignUpForm, ProfileUpdateForm
+from .models import Profile, FriendRequests, Friends
+
+
 # model test
 class ProfileModelTest(TestCase):
     def setUp(self):

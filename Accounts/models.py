@@ -12,9 +12,11 @@ It creates database tables for storing user profile information.
 """
 
 
-# models.py
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+
+# models.py
+
 class Profile(models.Model):
     """
     Model for storing user profile information.

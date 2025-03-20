@@ -6,26 +6,28 @@ Author:
     -Lewis Farley (lf507@exeter.ac.uk)
     -Chris Lynch (cl1037@exeter.ac.uk)
 """
-from django.contrib.auth.models import Permission
+import json
 import random
+from datetime import date
+from datetime import datetime
+
+from django.conf import settings
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.models import Permission
+from django.db.models import Q
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
+from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 
-
-from .models import User, pack, ownsCard, challenge, ongoingChallenge, card, Merge
-from qrCodes.models import drinkEvent
-import json
-from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.decorators import login_required, permission_required
-from .utils import getUsersChallenges
-from datetime import datetime
 from Accounts.models import Friends, FriendRequests
-from .forms import ChallengeForm
-from django.db.models import Q
-from django.utils.timezone import now
-from datetime import date
-from django.conf import settings
 from forum.models import Post
+from qrCodes.models import drinkEvent
+from .forms import ChallengeForm
+from .models import User, pack, ownsCard, ongoingChallenge, card, Merge
+from .utils import getUsersChallenges
+
+
 # Create your views here.
 def getUserInfo(request):
     """

@@ -7,9 +7,11 @@ author:
 
 """
 
-from Garden.models import garden,gardenSquare
 from django.conf import settings
+
 from EcoWorld.models import card, ownsCard
+from Garden.models import garden, gardenSquare
+
 
 def createGarden(user):
     """

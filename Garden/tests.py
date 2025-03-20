@@ -15,12 +15,14 @@ Chris Lynch (cl1037@exeter.ac.uk)
 
 """
 import json
+
 from django.test import TestCase, Client
 from django.urls import reverse
 
 from Accounts.models import Profile
 from EcoWorld.models import cardRarity, ownsCard, card
 from .models import garden, gardenSquare, User
+
 
 class TestGarden(TestCase):
 

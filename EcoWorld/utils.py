@@ -1,9 +1,9 @@
-from .models import ongoingChallenge, challenge, card, cardRarity, pack
-
 import random
+
 from django.conf import settings
-from datetime import datetime
 from django.utils import timezone
+
+from .models import ongoingChallenge, challenge, card, cardRarity, pack
 
 
 def getUsersChallenges(user):

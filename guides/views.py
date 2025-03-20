@@ -1,10 +1,13 @@
+import json
+
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required, permission_required
+
+from forum.models import Post
 from .forms import GuidesForm, DeleteForm
 from .models import ContentQuizPair, UserQuizResult, User
-import json
-from forum.models import Post
+
 
 @permission_required("Accounts.can_view_gamekeeper_button")
 def remove_guide(request):

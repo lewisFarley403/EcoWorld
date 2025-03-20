@@ -1,14 +1,15 @@
-from venv import logger
-from django.shortcuts import render
-from .models import garden, gardenSquare
-from django.http import JsonResponse
-from EcoWorld.models import ownsCard,card, User
 import json
-from django.core import serializers
 
+from django.conf import settings
 # Create your views here.
 from django.contrib.auth.decorators import login_required
-from django.conf import settings
+from django.http import JsonResponse
+from django.shortcuts import render
+
+from EcoWorld.models import ownsCard, card, User
+from .models import garden, gardenSquare
+
+
 @login_required
 def show_garden(request):
     """
