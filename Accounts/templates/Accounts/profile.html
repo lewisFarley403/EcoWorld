@@ -7,6 +7,7 @@
     {% block extra_css %}
         <link rel="stylesheet" href="{% static 'Accounts/css/profile.css' %}">
     {% endblock %}
+        {% include "partials/navbar.html" %}
     <style>
         #modal{
             display: none; /* Hidden by default */
@@ -48,9 +49,6 @@
         <!-- Left Sidebar -->
         <div class="profile-sidebar">
             <h2>{{ profile.username }}</h2>
-            <a href="/ecoworld/dashboard" class="home-button">
-                <img src="{% static 'Accounts/res/house-icon.png' %}" alt="Home">
-            </a>
             <div class="profile-picture-container">
                 <img src="{% static 'Accounts/pfps/' %}{{ profile.profile_picture }}" alt="Profile Picture" class="profile-picture">
             </div>
