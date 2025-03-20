@@ -201,7 +201,7 @@ def get_post_interactions(request, post_id):
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found"}, status=404)
 
-@permission_required("Accounts.can_view_admin_button")
+@permission_required("Accounts.can_view_gamekeeper_button")
 def admin_page(request):
     """
     Admin page for managing forum posts and interactions.
@@ -241,7 +241,7 @@ def admin_page(request):
         "userinfo": userinfo[0]
     })
 
-@permission_required("Accounts.can_view_admin_button")
+@permission_required("Accounts.can_view_gamekeeper_button")
 def delete_post(request, post_id):
     """Delete a post and its interactions."""
     if request.method == "POST":

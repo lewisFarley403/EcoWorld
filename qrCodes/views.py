@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.utils import timezone
 from django.conf import settings
 # Create your views here.
-@permission_required("Accounts.can_view_admin_button")  # Only allowed admins can generate new QR codes
+@permission_required("Accounts.can_view_gamekeeper_button")  # Only allowed gamekeepers can generate new QR codes
 def generate_qr_code(request):
     fountains = waterFountain.objects.all() 
     print(fountains)
@@ -35,13 +35,13 @@ def scan_code(request):
     
     return render(request, 'drink_registered.html')
 
-@permission_required("Accounts.can_view_admin_button")
+@permission_required("Accounts.can_view_gamekeeper_button")
 def add_water_fountain(request):
     if request.method == "POST":
         form = WaterFountainForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect("EcoWorld:admin_page")
+            return redirect("EcoWorld:gamekeeper_page")
     else:
         form = WaterFountainForm()
 

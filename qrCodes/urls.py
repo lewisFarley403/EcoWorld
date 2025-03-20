@@ -1,5 +1,4 @@
-from django.contrib import admin
-from django.urls import path,include
+from django.urls import path
 from .views import generate_qr_code, scan_code, scan_code_page, add_water_fountain
 
 app_name = 'qrCodes'

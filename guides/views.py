@@ -6,7 +6,7 @@ from .models import ContentQuizPair, UserQuizResult, User
 import json
 from forum.models import Post
 
-@permission_required("Accounts.can_view_admin_button")
+@permission_required("Accounts.can_view_gamekeeper_button")
 def remove_guide(request):
     if request.method == 'POST':
         form = DeleteForm(request.POST)
@@ -14,13 +14,13 @@ def remove_guide(request):
             selected_pair_id = form.cleaned_data['pair'].id
             pair = ContentQuizPair.objects.get(id=selected_pair_id)
             pair.delete()
-            return redirect('EcoWorld:admin_page')
+            return redirect('EcoWorld:gamekeeper_page')
     else:
         form = DeleteForm()
 
     return render(request,"guides/remove_guide.html", {"form":form} )
 
-@permission_required("Accounts.can_view_admin_button")
+@permission_required("Accounts.can_view_gamekeeper_button")
 def add_guide(request):
     if request.method == 'POST':
         form = GuidesForm(request.POST)
@@ -72,7 +72,7 @@ def add_guide(request):
             )
             pair.save()
 
-            return redirect('EcoWorld:admin_page')
+            return redirect('EcoWorld:gamekeeper_page')
     else:
         form = GuidesForm()
     return render(request, 'guides/add_guide.html', {'form': form})
