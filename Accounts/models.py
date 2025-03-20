@@ -41,7 +41,7 @@ class Profile(models.Model):
 
     class Meta:
         permissions = [
-            ("can_view_gamekeeper_button", "Can grant admin rights"),
+            ("can_view_gamekeeper_button", "Can grant gamekeeper rights"),
         ]
 
 
