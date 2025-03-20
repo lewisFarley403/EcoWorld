@@ -202,9 +202,9 @@ def get_post_interactions(request, post_id):
         return JsonResponse({"error": "Post not found"}, status=404)
 
 @permission_required("Accounts.can_view_gamekeeper_button")
-def admin_page(request):
+def gamekeeper_page(request):
     """
-    Admin page for managing forum posts and interactions.
+    gamekeeper page for managing forum posts and interactions.
     Shows posts with high dislike ratios and allows moderation.
     """
     if request.method == "GET":
@@ -236,7 +236,7 @@ def admin_page(request):
                     'ratio': f"{ratio:.2%}"
                 })
 
-    return render(request, "forum/admin_page.html", {
+    return render(request, "forum/gamekeeper_page.html", {
         "posts": posts_with_ratios,
         "userinfo": userinfo[0]
     })
@@ -247,5 +247,5 @@ def delete_post(request, post_id):
     if request.method == "POST":
         post = get_object_or_404(Post, id=post_id)
         post.delete()
-        return redirect('forum:admin_page')
-    return redirect('forum:admin_page')
+        return redirect('forum:gamekeeper_page')
+    return redirect('forum:gamekeeper_page')
