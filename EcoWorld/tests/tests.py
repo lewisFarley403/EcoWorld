@@ -3,7 +3,7 @@ import os
 from django.test import TestCase, Client
 from django.core.management import call_command
 from Accounts.models import Profile, FriendRequests, Friends
-from EcoWorld.models import pack, card, cardRarity, ownsCard, User,ongoingChallenge
+from EcoWorld.models import pack, card, cardRarity, User,ongoingChallenge
 from django.urls import reverse
 from django.conf import settings
 from datetime import timedelta

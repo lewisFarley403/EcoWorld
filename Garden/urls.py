@@ -1,6 +1,6 @@
-from django.contrib import admin
-from django.urls import path,include
-from .views import show_garden,removeCard,addCard
+from django.urls import path
+
+from .views import show_garden, removeCard, addCard
 
 urlpatterns = [
     path('', show_garden, name='home'), 

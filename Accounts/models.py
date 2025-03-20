@@ -12,9 +12,11 @@ It creates database tables for storing user profile information.
 """
 
 
-# models.py
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
+
+# models.py
+
 class Profile(models.Model):
     """
     Model for storing user profile information.
@@ -41,7 +43,7 @@ class Profile(models.Model):
 
     class Meta:
         permissions = [
-            ("can_view_admin_button", "Can grant admin rights"),
+            ("can_view_gamekeeper_button", "Can grant gamekeeper rights"),
         ]
 
 

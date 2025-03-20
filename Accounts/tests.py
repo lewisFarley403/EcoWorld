@@ -1,10 +1,13 @@
-from django.test import TestCase
-from django.contrib.auth.models import User
-from .models import Profile, FriendRequests, Friends
-from .forms import SignUpForm,ProfileUpdateForm
-from django.urls import reverse
-from Garden.models import garden,gardenSquare
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.urls import reverse
+
+from Garden.models import garden, gardenSquare
+from .forms import SignUpForm, ProfileUpdateForm
+from .models import Profile, FriendRequests, Friends
+
+
 # model test
 class ProfileModelTest(TestCase):
     def setUp(self):
@@ -80,9 +83,9 @@ class testSignupForm(TestCase):
         self.assertEqual(user.username, 'testuser')
         self.assertEqual(user.email, 'testuser@gmail.com')
         profile = Profile.objects.get(user=user)
-        print("FIRST NAME : "+profile.first_name)
         self.assertEqual(profile.first_name, 'John')
         self.assertEqual(profile.last_name, 'Doe')
+
     def test_garden_creation(self):
         '''
         Test that a garden is created for a user when they sign up

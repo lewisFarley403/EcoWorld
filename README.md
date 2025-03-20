@@ -44,7 +44,7 @@ awareness and actionable steps towards environmental sustainability.
    python manage.py loaddata initialDb.json
    ```
    
-3. Next, create a superuser account to access the admin panel:
+3. Next, create a superuser account to access the gamekeeper panel for the first time:
    ```sh
    python manage.py createsuperuser
    ```

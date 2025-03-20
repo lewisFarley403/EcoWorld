@@ -5,22 +5,25 @@ module defines views for the Accounts app:
 author:
     - Ethan Sweeney (es1052@exeter.ac.uk) 
 """
-from django.contrib import messages
-# views.py
+import json
 
-from django.contrib.auth.decorators import login_required
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.core import serializers
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
+
+from EcoWorld.models import ownsCard
+from Garden.models import garden
 from .forms import SignUpForm
 from .models import Profile
 from .utils import createGarden, createOwnsDb
-from Garden.models import garden
-from EcoWorld.models import ownsCard
-import json
-from django.core import serializers
-from django.conf import settings
-from django.http import JsonResponse
-from django.contrib.auth.models import User
+
+
+# views.py
 
 
 def privacy_policy(request):
@@ -51,8 +54,6 @@ def signup(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user=form.save()
-            print("User: ")
-            print(user)
             # create garden for user
             createGarden(user)
             #creates cards owned by user set default as 0.

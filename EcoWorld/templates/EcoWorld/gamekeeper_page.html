@@ -4,27 +4,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Management</title>
-    <link rel ="stylesheet" href="{% static 'EcoWorld/css/admin_page.css' %}">
+    <title>Gamekeeper Management</title>
+    <link rel ="stylesheet" href="{% static 'EcoWorld/css/gamekeeper_page.css' %}">
 </head>
 <body>
 {% include "partials/navbar.html" %}
-<div class="admin-page">
-<h2>Admin Management</h2>
+<div class="gamekeeper-page">
+<h2>Gamekeeper Management</h2>
 <table>
     <tr>
-        <th>Non Admin User</th>
+        <th>Non Gamekeeper User</th>
         <th>Email</th>
-        <th>Grant Admin</th>
+        <th>Grant Gamekeeper</th>
     </tr>
     {% for user in users %}
         <tr>
             <td>{{ user.username }}</td>
             <td>{{ user.email }}</td>
             <td>
-                <form action="{% url 'EcoWorld:grant_admin' user.id %}" method="post">
+                <form action="{% url 'EcoWorld:grant_gamekeeper' user.id %}" method="post">
                     {% csrf_token %}
-                    <button type="submit">Grant Admin</button>
+                    <button type="submit">Grant Gamekeeper</button>
                 </form>
             </td>
         </tr>
@@ -37,7 +37,7 @@
         </tr>
     {% endfor %}
 </table>
-<div class="admin-page-button-container">
+<div class="gamekeeper-page-button-container">
     <a href="{% url 'EcoWorld:add_challenge' %}"><button class="button">Add New Challenge</button></a>
     <a href="{% url 'qrCodes:add_water_fountain' %}"><button class="button"> Add New Water Fountain</button></a>
     <a href="{% url 'qrCodes:generate_qr' %}"><button class="button"> Generate QR Codes</button></a>

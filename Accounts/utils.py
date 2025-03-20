@@ -7,9 +7,11 @@ author:
 
 """
 
-from Garden.models import garden,gardenSquare
 from django.conf import settings
+
 from EcoWorld.models import card, ownsCard
+from Garden.models import garden, gardenSquare
+
 
 def createGarden(user):
     """
@@ -23,7 +25,6 @@ def createGarden(user):
         - Lewis Farley (lf507@exeter.ac.uk)
     """
     # Create a garden for the user
-    print(user)
     g = garden(userID=user)
     g.save()
     for i in range(settings.GARDEN_SIZE**2):
@@ -34,7 +35,6 @@ def createGarden(user):
 
 
 def createOwnsDb(user):
-    print(type(user))
     for cards in card.objects.all():
         oCard = ownsCard(card_id=cards.id, user_id=user.id)
         oCard.save()

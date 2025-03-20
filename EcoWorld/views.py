@@ -6,26 +6,28 @@ Author:
     -Lewis Farley (lf507@exeter.ac.uk)
     -Chris Lynch (cl1037@exeter.ac.uk)
 """
-from django.contrib.auth.models import Permission
+import json
 import random
+from datetime import date
+from datetime import datetime
+
+from django.conf import settings
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.models import Permission
+from django.db.models import Q
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render, redirect
+from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 
-
-from .models import User, pack, ownsCard, challenge, ongoingChallenge, card, Merge
-from qrCodes.models import drinkEvent
-import json
-from django.http import HttpResponse, JsonResponse
-from django.contrib.auth.decorators import login_required, permission_required
-from .utils import getUsersChallenges
-from datetime import datetime
 from Accounts.models import Friends, FriendRequests
-from .forms import ChallengeForm
-from django.db.models import Q
-from django.utils.timezone import now
-from datetime import date
-from django.conf import settings
 from forum.models import Post
+from qrCodes.models import drinkEvent
+from .forms import ChallengeForm
+from .models import User, pack, ownsCard, ongoingChallenge, card, Merge
+from .utils import getUsersChallenges
+
+
 # Create your views here.
 def getUserInfo(request):
     """
@@ -181,8 +183,6 @@ def pack_opening_page(request):
 def challenge(request):
     daily_objectives = getUsersChallenges(request.user)
     user = User.objects.get(id=request.user.id)
-    print(type(user.username))
-    print(user.profile.number_of_coins)
 
     # Get the user's last drink event
     last_drink = drinkEvent.objects.filter(user=user).order_by('-drank_on').first()
@@ -215,7 +215,7 @@ def challenge(request):
             "DRINKING_COOLDOWN": settings.DRINKING_COOLDOWN
         }
     }
-    return render(request, "EcoWorld/challengePage.html", context)
+    return render(request, "EcoWorld/challenge_page.html", context)
 
 
 @login_required
@@ -246,7 +246,6 @@ def increment_daily_objective(request):
             users_ongoing_challenges = ongoingChallenge.objects.filter(user=request.user)
             completed_objectives_count =0
             for challenge in users_ongoing_challenges:
-                print(challenge.is_complete())
                 if challenge.is_complete():
                     completed_objectives_count +=1
 
@@ -271,19 +270,17 @@ def increment_daily_objective(request):
         #     return JsonResponse({"success": False, "message": "Objective not found"}, status=404)
 
     return JsonResponse({"success": False, "message": "Invalid request"}, status=400)
+
 @login_required
 def completeChallenge(request):
 
     if request.method == "POST":
         data = json.loads(request.body)
-        print(request.user.id)
         user = User.objects.get(id=request.user.id)
         onging = ongoingChallenge.objects.filter(user=user)
 
-        print(len(onging))
         onGoingChallenge = data["id"]
-        print(f"User: {user}")
-        print(f"Challenge: {challenge}")
+
         chal = ongoingChallenge.objects.get(id=onGoingChallenge)
         worth = chal.challenge.worth
         chal.submitted_on = datetime.now()
@@ -294,12 +291,11 @@ def completeChallenge(request):
         return HttpResponse("Challenge completed")
     return HttpResponse("Invalid request type")
 
-
-@permission_required("Accounts.can_view_admin_button")  # Only existing admins can access
-def admin_page(request):
+@permission_required("Accounts.can_view_gamekeeper_button")  # Only existing gamekeeper can access
+def gamekeeper_page(request):
     """
-    This view renders the admin page, which allows admins to do things a regular user cannot.
-    Returns: render request and a list of users who are not admins
+    This view renders the gamekeeper page, which allows gamekeepers to do things a regular user cannot.
+    Returns: render request and a list of users who are not gamekeepers
 
     Author:
     Ethan Sweeney (es1052@exeter.ac.uk)
@@ -307,25 +303,25 @@ def admin_page(request):
     if request.method == "GET":
         userinfo = getUserInfo(request)
 
-    users = User.objects.exclude(user_permissions__codename="can_view_admin_button")
+    users = User.objects.exclude(user_permissions__codename="can_view_gamekeeper_button")
     missing_rows = range(max(0, 3 - users.count()))
-    return render(request, "EcoWorld/admin_page.html", {"users": users, "missing_rows": missing_rows, "userinfo":userinfo[0]})
+    return render(request, "EcoWorld/gamekeeper_page.html", {"users": users, "missing_rows": missing_rows, "userinfo":userinfo[0]})
 
-@permission_required("Accounts.can_view_admin_button")  # Only admins can promote others
-def grant_admin(request, user_id):
+@permission_required("Accounts.can_view_gamekeeper_button")  # Only gamekeepers can promote others
+def grant_gamekeeper(request, user_id):
     """
-    This view grants the can_view_admin_button permission to a user, effectively promoting them to an admin.
+    This view grants the can_view_gamekeeper_button permission to a user, effectively promoting them to an gamekeeper.
 
-    Returns: Reloading of the admin page with the updated list of users.
+    Returns: Reloading of the gamekeeper page with the updated list of users.
 
     Author:
     Ethan Sweeney (es1052@exeter.ac.uk)
     """
-    if not request.user.has_perm("Accounts.can_view_admin_button"):
+    if not request.user.has_perm("Accounts.can_view_gamekeeper_button"):
         return HttpResponse("You do not have permission to do this.", status=403)
 
     user = get_object_or_404(User, id=user_id)
-    permission = Permission.objects.get(codename="can_view_admin_button")
+    permission = Permission.objects.get(codename="can_view_gamekeeper_button")
 
     user.user_permissions.add(permission)
 
@@ -333,11 +329,11 @@ def grant_admin(request, user_id):
     if hasattr(user, '_perm_cache'):
         del user._perm_cache
 
-    return redirect("EcoWorld:admin_page")
+    return redirect("EcoWorld:gamekeeper_page")
 
 
 
-@permission_required("Accounts.can_view_admin_button")  # Only allowed admins can add challenges
+@permission_required("Accounts.can_view_gamekeeper_button")  # Only allowed gamekeeper can add challenges
 def add_challenge(request):
     if request.method == 'POST':
         form = ChallengeForm(request.POST)
@@ -345,7 +341,7 @@ def add_challenge(request):
             new_challenge = form.save(commit=False)  # Don't save to DB yet
             new_challenge.created_by = request.user  # Set creator manually
             new_challenge.save()  # Now save
-            return redirect("EcoWorld:admin_page")  # Redirect back to the admin page after saving
+            return redirect("EcoWorld:gamekeeper_page")  # Redirect back to the gamekeeper page after saving
     else:
         form = ChallengeForm()
     return render(request, "EcoWorld/add_challenge.html", {"form": form})
@@ -668,8 +664,6 @@ def mergecards(request):
                 cardToRemove = merge.cardID5
                 merge.cardID5 = None
 
-            print(cardID)
-            print(cardToRemove)
             if cardToRemove:
                 # Update the user's inventory by adding 1 back
                 ownCard = ownsCard.objects.get(user=request.user, card_id=cardID)

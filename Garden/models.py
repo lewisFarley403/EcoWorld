@@ -11,10 +11,13 @@ author:
 """
 '''
 
+from django.conf import settings
 from django.db import models
+
 from Accounts.models import User
 from EcoWorld.models import card
-from django.conf import settings
+
+
 # Create your models here.
 class garden(models.Model):
     """

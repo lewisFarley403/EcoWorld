@@ -1,12 +1,15 @@
+import json
+
+from django.contrib.auth.decorators import login_required, permission_required
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required, permission_required
+
+from forum.models import Post
 from .forms import GuidesForm, DeleteForm
 from .models import ContentQuizPair, UserQuizResult, User
-import json
-from forum.models import Post
 
-@permission_required("Accounts.can_view_admin_button")
+
+@permission_required("Accounts.can_view_gamekeeper_button")
 def remove_guide(request):
     if request.method == 'POST':
         form = DeleteForm(request.POST)
@@ -14,13 +17,13 @@ def remove_guide(request):
             selected_pair_id = form.cleaned_data['pair'].id
             pair = ContentQuizPair.objects.get(id=selected_pair_id)
             pair.delete()
-            return redirect('EcoWorld:admin_page')
+            return redirect('EcoWorld:gamekeeper_page')
     else:
         form = DeleteForm()
 
     return render(request,"guides/remove_guide.html", {"form":form} )
 
-@permission_required("Accounts.can_view_admin_button")
+@permission_required("Accounts.can_view_gamekeeper_button")
 def add_guide(request):
     if request.method == 'POST':
         form = GuidesForm(request.POST)
@@ -72,7 +75,7 @@ def add_guide(request):
             )
             pair.save()
 
-            return redirect('EcoWorld:admin_page')
+            return redirect('EcoWorld:gamekeeper_page')
     else:
         form = GuidesForm()
     return render(request, 'guides/add_guide.html', {'form': form})
@@ -168,9 +171,7 @@ def registerScore_view(request, pair_id):
     result.score = score
     if score > result.best_result:
         result.best_result = score
-    print(pair.quiz_max_marks)
-    print(result.previous_best)
-    print(score)
+
     if result.previous_best < pair.quiz_max_marks and score == pair.quiz_max_marks:
         user = User.objects.get(id=user.id)
         user.profile.number_of_coins += coins_reward

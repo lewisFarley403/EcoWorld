@@ -1,13 +1,15 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
-from EcoWorld.models import ongoingChallenge, card
-from Accounts.models import Friends
-from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.auth.models import User
-from django.db.models import Q, Count, Case, When, IntegerField
-from .models import Post, PostInteraction
-from EcoWorld.views import getUserInfo
 import json
+
+from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import Q, Count, Case, When, IntegerField
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404, redirect
+
+from Accounts.models import Friends
+from EcoWorld.models import ongoingChallenge, card
+from EcoWorld.views import getUserInfo
+from .models import Post, PostInteraction
+
 
 # Create your views here.
 
@@ -201,10 +203,10 @@ def get_post_interactions(request, post_id):
     except Post.DoesNotExist:
         return JsonResponse({"error": "Post not found"}, status=404)
 
-@permission_required("Accounts.can_view_admin_button")
-def admin_page(request):
+@permission_required("Accounts.can_view_gamekeeper_button")
+def gamekeeper_page(request):
     """
-    Admin page for managing forum posts and interactions.
+    gamekeeper page for managing forum posts and interactions.
     Shows posts with high dislike ratios and allows moderation.
     """
     if request.method == "GET":
@@ -236,16 +238,16 @@ def admin_page(request):
                     'ratio': f"{ratio:.2%}"
                 })
 
-    return render(request, "forum/admin_page.html", {
+    return render(request, "forum/gamekeeper_page.html", {
         "posts": posts_with_ratios,
         "userinfo": userinfo[0]
     })
 
-@permission_required("Accounts.can_view_admin_button")
+@permission_required("Accounts.can_view_gamekeeper_button")
 def delete_post(request, post_id):
     """Delete a post and its interactions."""
     if request.method == "POST":
         post = get_object_or_404(Post, id=post_id)
         post.delete()
-        return redirect('forum:admin_page')
-    return redirect('forum:admin_page')
+        return redirect('forum:gamekeeper_page')
+    return redirect('forum:gamekeeper_page')

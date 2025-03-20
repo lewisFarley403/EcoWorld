@@ -55,8 +55,8 @@
                 <a href="/leaderboards" class="navbar-link">Leaderboard</a>
                 <a href="/game/play" class="navbar-link">Minigame</a>
                 <a href="/forum" class="navbar-link">Forum</a>
-                {% if perms.Accounts.can_view_admin_button %}
-                <a href="/ecoworld/admin" class="navbar-link">Admin Page</a>
+                {% if perms.Accounts.can_view_gamekeeper_button %}
+                <a href="/ecoworld/gamekeeper" class="navbar-link">Gamekeeper</a>
                 {% endif %}
             </div>
 

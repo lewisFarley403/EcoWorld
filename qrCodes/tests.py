@@ -2,36 +2,35 @@ import datetime
 from datetime import timedelta
 from unittest.mock import patch
 
+from django.conf import settings
+from django.contrib.auth.models import User, Permission
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-from django.contrib.auth.models import User, Permission
-from django.conf import settings
-
-from qrCodes.models import waterFountain, drinkEvent
-from qrCodes.forms import WaterFountainForm
 
 # Import your actual Profile model from the Accounts app
 from Accounts.models import Profile
+from qrCodes.forms import WaterFountainForm
+from qrCodes.models import waterFountain, drinkEvent
 
 
 class QRCodesViewsTests(TestCase):
     def setUp(self):
-        # Create an admin user and a regular user.
-        self.admin_user = User.objects.create_user(username='admin', password='adminpass')
+        # Create an gamekeeper user and a regular user.
+        self.gamekeeper_user = User.objects.create_user(username='gamekeeper', password='gamekeeperpass')
         self.regular_user = User.objects.create_user(username='user', password='userpass')
 
-        # Give the admin user the required permission.
-        permission = Permission.objects.get(codename="can_view_admin_button")
-        self.admin_user.user_permissions.add(permission)
+        # Give the gamekeeper user the required permission.
+        permission = Permission.objects.get(codename="can_view_gamekeeper_button")
+        self.gamekeeper_user.user_permissions.add(permission)
 
         # Use get_or_create so that if a Profile is already auto-created, we simply retrieve it.
-        self.admin_profile, _ = Profile.objects.get_or_create(user=self.admin_user, defaults={'number_of_coins': 0})
+        self.gamekeeper_profile, _ = Profile.objects.get_or_create(user=self.gamekeeper_user, defaults={'number_of_coins': 0})
         self.regular_profile, _ = Profile.objects.get_or_create(user=self.regular_user, defaults={'number_of_coins': 0})
 
         # Ensure the coin count is 0 at the start.
-        self.admin_profile.number_of_coins = 0
-        self.admin_profile.save()
+        self.gamekeeper_profile.number_of_coins = 0
+        self.gamekeeper_profile.save()
         self.regular_profile.number_of_coins = 0
         self.regular_profile.save()
 
@@ -39,9 +38,9 @@ class QRCodesViewsTests(TestCase):
         self.fountain = waterFountain.objects.create(name="Test Fountain")
 
     # --- Tests for generate_qr_code view ---
-    def test_generate_qr_code_access_by_admin(self):
+    def test_generate_qr_code_access_by_gamekeeper(self):
         """A user with the proper permission should access the QR generation page."""
-        self.client.login(username='admin', password='adminpass')
+        self.client.login(username='gamekeeper', password='gamekeeperpass')
         response = self.client.get(reverse('qrCodes:generate_qr'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'make_qr_code.html')
@@ -154,8 +153,8 @@ class QRCodesViewsTests(TestCase):
 
     # --- Tests for add_water_fountain view ---
     def test_add_water_fountain_get(self):
-        """An admin should see the water fountain form when accessing the page via GET."""
-        self.client.login(username='admin', password='adminpass')
+        """An gamekeeper should see the water fountain form when accessing the page via GET."""
+        self.client.login(username='gamekeeper', password='gamekeeperpass')
         response = self.client.get(reverse('qrCodes:add_water_fountain'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'add_water_fountain.html')
@@ -164,9 +163,9 @@ class QRCodesViewsTests(TestCase):
 
     def test_add_water_fountain_post_valid(self):
         """
-        A valid POST by an admin should create a new waterFountain and redirect.
+        A valid POST by an gamekeeper should create a new waterFountain and redirect.
         """
-        self.client.login(username='admin', password='adminpass')
+        self.client.login(username='gamekeeper', password='gamekeeperpass')
 
         # Ensure all required fields are included
         post_data = {
@@ -181,7 +180,7 @@ class QRCodesViewsTests(TestCase):
 
         # Check if the form validated and the view redirected.
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('EcoWorld:admin_page'))
+        self.assertRedirects(response, reverse('EcoWorld:gamekeeper_page'))
         self.assertEqual(waterFountain.objects.filter(name='New Fountain').count(), 1)
 
 
@@ -189,7 +188,7 @@ class QRCodesViewsTests(TestCase):
         """
         An invalid POST (e.g. missing required fields) should re-render the form with errors.
         """
-        self.client.login(username='admin', password='adminpass')
+        self.client.login(username='gamekeeper', password='gamekeeperpass')
         post_data = {
             'name': '',  # Assuming an empty name is invalid.
         }
@@ -200,7 +199,7 @@ class QRCodesViewsTests(TestCase):
         self.assertTrue(response.context['form'].errors)
 
     def test_add_water_fountain_access_regular_user(self):
-        """A non-admin user should be redirected when trying to access the add water fountain view."""
+        """A non-gamekeeper user should be redirected when trying to access the add water fountain view."""
         self.client.login(username='user', password='userpass')
         response = self.client.get(reverse('qrCodes:add_water_fountain'))
         self.assertEqual(response.status_code, 302)

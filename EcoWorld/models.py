@@ -1,7 +1,6 @@
-from django.db import models
-from django.contrib.auth.models import User
 from django.conf import settings
-from django.utils.timezone import now
+from django.contrib.auth.models import User
+
 """
 This module defines the database models for the EcoWorld app:
     - `challenge` : Model for storing challenge information

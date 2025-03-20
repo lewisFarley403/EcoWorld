@@ -1,15 +1,15 @@
+from django.conf import settings
+from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect
+from django.utils import timezone
 
 from .forms import WaterFountainForm
-from .models import waterFountain,drinkEvent
-from django.contrib.auth.decorators import login_required, permission_required
-from django.utils import timezone
-from django.conf import settings
+from .models import waterFountain, drinkEvent
+
 # Create your views here.
-@permission_required("Accounts.can_view_admin_button")  # Only allowed admins can generate new QR codes
+@permission_required("Accounts.can_view_gamekeeper_button")  # Only allowed gamekeepers can generate new QR codes
 def generate_qr_code(request):
     fountains = waterFountain.objects.all() 
-    print(fountains)
     return render(request, 'make_qr_code.html', {'fountains': fountains,
                                                       'width':settings.QR_CODE_WIDTH,
                                                       'height':settings.QR_CODE_HEIGHT})
@@ -27,21 +27,19 @@ def scan_code(request):
         if time_difference < settings.DRINKING_COOLDOWN:
             return render(request, 'drink_cooldown_page.html')
     # More than 20 minutes have passed
-    print("User drank more than 20 minutes ago")
     drinkEvent.objects.create(user=user,fountain=waterFountain.objects.get(id=fountain_id))
-    print(fountain_id)
     user.profile.number_of_coins += settings.VALUE_OF_DRINK
     user.profile.save()
     
     return render(request, 'drink_registered.html')
 
-@permission_required("Accounts.can_view_admin_button")
+@permission_required("Accounts.can_view_gamekeeper_button")
 def add_water_fountain(request):
     if request.method == "POST":
         form = WaterFountainForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect("EcoWorld:admin_page")
+            return redirect("EcoWorld:gamekeeper_page")
     else:
         form = WaterFountainForm()
 
