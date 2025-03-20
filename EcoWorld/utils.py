@@ -20,7 +20,6 @@ def getUsersChallenges(user):
     challenges = list(ongoingChallenge.objects.filter(user=user))
     if len(challenges) == 0:
         ## there are no challenges for the user, create them
-        print("creating challenges")
         createChallenges(user)
     else:
         # expired = filter(lambda x: datetime.now()-x.created_on> settings.CHALLENGE_EXPIRY, challenges)
@@ -73,8 +72,6 @@ def createItemsInDb():
     epic = cardRarity.objects.get_or_create(title="epic")[0]
     legendary = cardRarity.objects.get_or_create(title="legendary")[0]
     mythic = cardRarity.objects.get_or_create(title="mythic")[0]
-
-    print(f"Created Rarities: {common}, {rare}, {epic}, {legendary}, {mythic}")
 
     cards_data = [
         {"title": "Ancient Tree", "desc": "Mythical Card forged from legendary cards", "rarity": mythic,

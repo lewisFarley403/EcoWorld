@@ -51,8 +51,6 @@ def signup(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user=form.save()
-            print("User: ")
-            print(user)
             # create garden for user
             createGarden(user)
             #creates cards owned by user set default as 0.

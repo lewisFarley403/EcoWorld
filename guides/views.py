@@ -168,9 +168,7 @@ def registerScore_view(request, pair_id):
     result.score = score
     if score > result.best_result:
         result.best_result = score
-    print(pair.quiz_max_marks)
-    print(result.previous_best)
-    print(score)
+
     if result.previous_best < pair.quiz_max_marks and score == pair.quiz_max_marks:
         user = User.objects.get(id=user.id)
         user.profile.number_of_coins += coins_reward

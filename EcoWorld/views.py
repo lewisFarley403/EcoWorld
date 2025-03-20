@@ -181,8 +181,6 @@ def pack_opening_page(request):
 def challenge(request):
     daily_objectives = getUsersChallenges(request.user)
     user = User.objects.get(id=request.user.id)
-    print(type(user.username))
-    print(user.profile.number_of_coins)
 
     # Get the user's last drink event
     last_drink = drinkEvent.objects.filter(user=user).order_by('-drank_on').first()
@@ -246,7 +244,6 @@ def increment_daily_objective(request):
             users_ongoing_challenges = ongoingChallenge.objects.filter(user=request.user)
             completed_objectives_count =0
             for challenge in users_ongoing_challenges:
-                print(challenge.is_complete())
                 if challenge.is_complete():
                     completed_objectives_count +=1
 
@@ -277,14 +274,11 @@ def completeChallenge(request):
 
     if request.method == "POST":
         data = json.loads(request.body)
-        print(request.user.id)
         user = User.objects.get(id=request.user.id)
         onging = ongoingChallenge.objects.filter(user=user)
 
-        print(len(onging))
         onGoingChallenge = data["id"]
-        print(f"User: {user}")
-        print(f"Challenge: {challenge}")
+
         chal = ongoingChallenge.objects.get(id=onGoingChallenge)
         worth = chal.challenge.worth
         chal.submitted_on = datetime.now()
@@ -668,8 +662,6 @@ def mergecards(request):
                 cardToRemove = merge.cardID5
                 merge.cardID5 = None
 
-            print(cardID)
-            print(cardToRemove)
             if cardToRemove:
                 # Update the user's inventory by adding 1 back
                 ownCard = ownsCard.objects.get(user=request.user, card_id=cardID)

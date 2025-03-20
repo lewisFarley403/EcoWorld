@@ -66,7 +66,6 @@ def get_ranked_users(request):
         'rank': current_user_rank
     }
     # Return the data as a JSON response
-    print(settings.MEDIA_URL)
     return JsonResponse({'rankedUsers': ranked_users,'MEDIA_URL': settings.MEDIA_URL,'current_user_data':current_user_data})
 
 
