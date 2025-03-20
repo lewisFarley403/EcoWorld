@@ -169,3 +169,19 @@ def delete_account(request):
     messages.success(request, 'Your account has been deleted successfully.')
     return redirect('/')  # Redirect to login page
 
+
+@login_required
+def logout_view(request):
+    """
+    This view logs out the user and redirects them to the home page.
+
+    Attributes:
+        request : HttpRequest : The HTTP request object
+    Returns:
+        redirect : HttpResponse : The HTTP response redirecting to the home page
+    Author:
+        - Ethan Sweeney (es1052@exeter.ac.uk)
+    """
+    logout(request)
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('/')
