@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="05d3ce4a-8112-4cbb-ad09-03d2255b77d4" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/admin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/apps.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/forms.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/migrations/0002_profile_number_of_coins.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/migrations/0003_alter_profile_profile_picture.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/migrations/0004_alter_profile_options.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/migrations/0004_friends_friendrequests.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/migrations/0005_merge_20250310_0958.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/signals.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/static/Accounts/css/login.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/static/Accounts/css/profile.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/static/Accounts/css/signup.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/static/Accounts/js/profile.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/static/Accounts/pfps/pfp1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/static/Accounts/pfps/pfp2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/static/Accounts/pfps/pfp3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/static/Accounts/pfps/pfp4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/static/Accounts/pfps/pfp5.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/static/Accounts/res/house-icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/static/Accounts/res/login-page-arch.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/static/Accounts/res/logo-placeholder.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/static/Accounts/res/profile-backdrop.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/templates/Accounts/privacy_policy.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/templates/Accounts/profile.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/templates/Accounts/signup.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/templates/registration/login.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/tests.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Accounts/views.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/ECM2434/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/ECM2434/asgi.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/ECM2434/settings.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/ECM2434/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/ECM2434/wsgi.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/admin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/apps.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/forms.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/0002_alter_card_image.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/0003_ownscard_quantity.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/0004_ongoingchallenge_created_on.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/0004_pack.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/0005_alter_ongoingchallenge_submission_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/0005_pack_commonprob_pack_epicprob_pack_legendaryprob_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/0006_challenge_worth.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/0006_pack_color_class.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/0007_alter_ongoingchallenge_created_on.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/0008_merge_20250217_1139.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/0009_waterbottlefill.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/0010_alter_drinkevent_drank_on.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/0011_merge.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/0012_remove_drinkevent_fountain_remove_drinkevent_user_and_more.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/static/EcoWorld/css/admin_page.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/static/EcoWorld/css/dashboard.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/static/EcoWorld/css/friends.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/static/EcoWorld/css/mergecards.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/static/EcoWorld/css/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/static/EcoWorld/images/garden_image.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/static/EcoWorld/res/Challenges.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/static/EcoWorld/res/Guides.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/static/EcoWorld/res/greenery.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/templates/EcoWorld/add_challenge.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/templates/EcoWorld/admin_page.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/templates/EcoWorld/challengePage.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/templates/EcoWorld/dashboard.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/templates/EcoWorld/friends.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/templates/EcoWorld/merge_opening_page.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/templates/EcoWorld/mergecards.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/templates/EcoWorld/pack_opening_page.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/templates/EcoWorld/store.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/tests/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/tests/initialDb.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/tests/test_views.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/tests/tests.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/EcoWorld/views.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Garden/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Garden/admin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Garden/apps.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Garden/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Garden/migrations/0002_alter_gardensquare_cardid.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Garden/migrations/0003_alter_garden_size.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Garden/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Garden/models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Garden/templates/Garden/garden.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Garden/tests.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Garden/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/Garden/views.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/SustainabilityGame/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/SustainabilityGame/admin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/SustainabilityGame/apps.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/SustainabilityGame/models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/SustainabilityGame/static/SustainabilityGame/css/game.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/SustainabilityGame/static/SustainabilityGame/img/coin.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/SustainabilityGame/static/SustainabilityGame/img/trash/glass-bottle.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/SustainabilityGame/static/SustainabilityGame/img/trash/metal-can.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/SustainabilityGame/static/SustainabilityGame/img/trash/paper.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/SustainabilityGame/static/SustainabilityGame/img/trash/plastic-bottle.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/SustainabilityGame/static/SustainabilityGame/js/game.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/SustainabilityGame/templates/SustainabilityGame/game.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/SustainabilityGame/tests.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/SustainabilityGame/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/SustainabilityGame/views.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/admin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/apps.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/forms.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/migrations/0002_contentquizpair_userquizresult_delete_quiz_results.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/static/guides/css/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/static/guides/fonts/JotiOne-Regular.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/static/guides/fonts/Poppins-Medium.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/static/guides/js/fallingLeaves.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/static/guides/js/quiz.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/static/guides/leaves/leaf1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/static/guides/leaves/leaf2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/static/guides/leaves/leaf3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/static/guides/leaves/leaf4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/static/guides/res/background.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/templates/guides/add_guide.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/templates/guides/content.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/templates/guides/menu.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/templates/guides/quiz.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/templates/guides/results.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/tests.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/guides/views.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/initialDb.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/leaderboards/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/leaderboards/admin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/leaderboards/apps.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/leaderboards/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/leaderboards/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/leaderboards/models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/leaderboards/static/css/garden_tool_tip.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/leaderboards/static/css/leaderboard.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/leaderboards/static/css/leaderboard3.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/leaderboards/static/js/leaderboard.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/leaderboards/templates/leaderboard/garden_tool_tip.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/leaderboards/templates/leaderboard/leaderboard.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/leaderboards/tests.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/leaderboards/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/leaderboards/views.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/manage.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/animations/BasicPackvid.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/animations/FinalRare.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/animations/Iconpack.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/animations/finalMerge.mp4" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/ancienttree.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/bush.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/cactus.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/cherryBlossom.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/dandelion.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/dirt.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/goldenTree.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/log.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/mapleTree.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/oakTree.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/olivetree.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/orangeTree.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/rainbowflower.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/scarecrow.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/starryTree.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/statue.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/sunflower.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/cards/tulip.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/misc/friend.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/packs/basicpack.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/packs/iconpack.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/packs/rarepack.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/pfps/crown.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/pfps/pfp1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/pfps/pfp2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/pfps/pfp3.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/media/pfps/pfp4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/admin.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/apps.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/forms.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/migrations/0001_initial.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/migrations/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/models.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/static/qrCodes/css/style.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/static/qrCodes/images/garden_image.jpeg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/templates/add_water_fountain.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/templates/drink_cooldown_page.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/templates/drink_registered.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/templates/make_qr_code.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/templates/qr_scanner.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/tests.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/urls.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/qrCodes/views.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/requirements.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/setup_mac_linux.sh" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/setup_windows.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/static/css/base.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/static/css/navbar.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/static/js/base.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/templates/base.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ECM2434/templates/partials/navbar.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/glassDisposal/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/glassDisposal/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/glassDisposal/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/glassDisposal/forms.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DjangoConsoleOptions" custom-start-script="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)">
+    <option name="myCustomStartScript" value="import sys; print('Python %s on %s' % (sys.version, sys.platform))&#10;import django; print('Django %s' % django.get_version())&#10;sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])&#10;if 'setup' in dir(django): django.setup()&#10;import django_manage_shell; django_manage_shell.run(PROJECT_ROOT)" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="2t8NsYD7c3iuAvBatiSnyPQnfi7" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Django tests.Test: glassDisposal.tests.executor": "Run",
+    "Python.urls.executor": "Run",
+    "RunOnceActivity.OpenDjangoStructureViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.pycharm.django.structure.promotion.once.per.project": "true",
+    "git-widget-placeholder": "glass-disposal",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/charlie/Documents/GitHub/ECM2434/EcoWorld/static/EcoWorld/images",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\charlie\Documents\GitHub\ECM2434\EcoWorld\static\EcoWorld\images" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\charlie\Documents\GitHub\ECM2434\EcoWorld\static\EcoWorld" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Django tests.Test: glassDisposal.tests">
+    <configuration name="Test: glassDisposal.tests" type="DjangoTestsConfigurationType" temporary="true">
+      <module name="ECM2434" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="TARGET" value="glassDisposal.tests" />
+      <option name="SETTINGS_FILE" value="" />
+      <option name="CUSTOM_SETTINGS" value="false" />
+      <option name="USE_OPTIONS" value="false" />
+      <option name="OPTIONS" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="ECM2434" type="Python.DjangoServer" factoryName="Django server">
+      <module name="ECM2434" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="launchJavascriptDebuger" value="false" />
+      <option name="port" value="8000" />
+      <option name="host" value="" />
+      <option name="additionalOptions" value="" />
+      <option name="browserUrl" value="" />
+      <option name="runTestServer" value="false" />
+      <option name="runNoReload" value="false" />
+      <option name="useCustomRunCommand" value="false" />
+      <option name="customRunCommand" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Django tests.Test: glassDisposal.tests" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-76f8388c3a79-JavaScript-PY-243.24978.54" />
+        <option value="bundled-python-sdk-91e3b7efe1d4-466328ff949b-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-243.24978.54" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="05d3ce4a-8112-4cbb-ad09-03d2255b77d4" name="Changes" comment="" />
+      <created>1739729955700</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1739729955700</updated>
+      <workItem from="1739729972323" duration="6311000" />
+      <workItem from="1739820942672" duration="653000" />
+      <workItem from="1740618340453" duration="891000" />
+      <workItem from="1740619268157" duration="1629000" />
+      <workItem from="1741547331852" duration="8436000" />
+      <workItem from="1742131250910" duration="4128000" />
+      <workItem from="1742408090965" duration="8000" />
+      <workItem from="1742578416930" duration="8065000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/ECM2434$Test__glassDisposal_tests.coverage" NAME="Test: glassDisposal.tests Coverage Results" MODIFIED="1742583160092" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/ECM2434$urls.coverage" NAME="urls Coverage Results" MODIFIED="1740618404459" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/EcoWorld" />
+  </component>
+</project>
