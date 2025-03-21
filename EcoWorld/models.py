@@ -1,3 +1,4 @@
+from datetime import date
 from django.conf import settings
 from django.contrib.auth.models import User
 
@@ -22,21 +23,27 @@ from Accounts.models import User
 # Create your models here.
 class challenge(models.Model):
     """
-    Model for storing challenge information.
+    Represents a challenge that users can complete.
+
     Attributes:
-        -name: CharField : The name of the challenge.
-        -description: TextField : The description of the challenge.
-        -created_by: ForeignKey : The user who created the challenge.
-        -created_on: DateField : The date the challenge was created.
+        name (CharField): The name of the challenge.
+        description (TextField): A brief explanation of the challenge.
+        created_by (ForeignKey): The user who created the challenge.
+        created_on (DateField): The date the challenge was created.
+        worth (IntegerField): The number of coins awarded upon completion.
+        goal (IntegerField): The required number of completions to finish the challenge.
+        redirect_url (CharField): An optional URL users may be directed to upon starting the challenge.
+
     Methods:
         __str__(): Returns the name of the challenge.
-    author:
-        -Lewis Farley (lf507@exeter.ac.uk)
+
+    Author:
+        Lewis Farley (lf507@exeter.ac.uk)
     """
     name = models.CharField(max_length=50)
     description = models.TextField()
     created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    created_on = models.DateField()
+    created_on = models.DateField(default=date.today)
     worth = models.IntegerField(default=settings.CHALLENGE_WORTH)
     goal = models.IntegerField(default=1)
     redirect_url = models.CharField(max_length=255, blank=True, null=True)
@@ -46,16 +53,23 @@ class challenge(models.Model):
 
 class ongoingChallenge(models.Model):
     """
-    Model for storing challenges currently assigned to a user.
+    Represents an active challenge assigned to a user.
+
     Attributes:
-        -challenge: ForeignKey : The challenge being attempted.
-        -user: ForeignKey : The user attempting the challenge.
-        -submission: TextField : The submission for the challenge.
-        -submitted_on: DateField : The date the submission was made.
+        challenge (ForeignKey): The challenge being attempted.
+        user (ForeignKey): The user to whom the challenge is assigned.
+        submission (TextField): Stores user-submitted proof of challenge completion.
+        submitted_on (DateTimeField): Timestamp of when the challenge was completed.
+        created_on (DateTimeField): Timestamp of when the challenge was assigned.
+        completion_count (IntegerField): Tracks how many times the challenge has been completed.
+        progress (IntegerField): Tracks current progress toward completing the challenge.
+
     Methods:
-        __str__(): Returns the name of the challenge and the user attempting it.
-    author:
-        -Lewis Farley (lf507@exeter.ac.uk)
+        __str__(): Returns a string representation of the challenge and user.
+        is_complete(): Returns True if the challenge has been submitted.
+
+    Author:
+        Lewis Farley (lf507@exeter.ac.uk)
     """
     challenge = models.ForeignKey(challenge, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

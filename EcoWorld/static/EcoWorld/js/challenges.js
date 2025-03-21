@@ -240,6 +240,7 @@ function getCSRFToken() {
 // Auto-refresh daily objectives and challenges every X milliseconds
 const RESET_INTERVAL = 10000;  // Must match Python interval
 
+//Page Authored by Theodore Armes and Lewis Farley 
 
 
 

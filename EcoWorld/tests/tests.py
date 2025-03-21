@@ -9,6 +9,11 @@ from django.conf import settings
 from datetime import timedelta
 from django.db.models import Q
 
+from django.test import TestCase
+from django.contrib.auth.models import User
+from EcoWorld.models import challenge, ongoingChallenge
+from datetime import date 
+
 """
 Testing class for the packmodels
 Methods:
@@ -461,3 +466,82 @@ class TestFriendPage(TestCase):
         response = self.client.post(reverse("friends"), {"remove": "user2"})
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Friends.objects.filter(Q(userID1=self.user1, userID2=self.user2) | Q(userID1=self.user2, userID2=self.user1)).exists())
+
+class ChallengeTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='testuser', password='password')
+        self.challenge = challenge.objects.create(
+            name='Recycle Glass',
+            description='Recycle a glass bottle to earn points.',
+            created_by=self.user,
+            worth=10,
+            goal=1
+        )
+        self.ongoing_challenge = ongoingChallenge.objects.create(
+            user=self.user, challenge=self.challenge, progress=0
+        )
+
+    def test_challenge_page_access(self):
+        self.client.login(username='testuser', password='password')
+        response = self.client.get(reverse('EcoWorld:challenge'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'EcoWorld/challenge_page.html')
+
+    def test_complete_challenge(self):
+        self.client.login(username='testuser', password='password')
+        response = self.client.post(reverse('EcoWorld:complete_challenge'), {'id': self.ongoing_challenge.id})
+        self.ongoing_challenge.refresh_from_db()
+        self.assertIsNotNone(self.ongoing_challenge.submitted_on)
+        self.assertEqual(response.status_code, 200)
+
+    def test_increment_daily_objective(self):
+        self.client.login(username='testuser', password='password')
+        response = self.client.post(reverse('EcoWorld:increment_objective'), {'objective_id': self.ongoing_challenge.id}, content_type='application/json')
+        self.ongoing_challenge.refresh_from_db()
+        self.assertEqual(self.ongoing_challenge.progress, 1)
+        self.assertEqual(response.status_code, 200)
+
+    def test_add_challenge(self):
+        self.client.login(username='testuser', password='password')
+        response = self.client.post(reverse('EcoWorld:add_challenge'), {'name': 'New Challenge', 'description': 'Test challenge'}, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(challenge.objects.filter(name='New Challenge').exists())
+
+    def test_save_objective_note(self):
+        self.client.login(username='testuser', password='password')
+        response = self.client.post(reverse('EcoWorld:save_objective_note'), {'objective_id': self.ongoing_challenge.id, 'message': 'I recycled today!'}, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_challenge_completion_twice(self):
+        """Ensure a challenge cannot be completed multiple times incorrectly."""
+        self.client.login(username='testuser', password='password')
+        self.client.post(reverse('EcoWorld:complete_challenge'), {'id': self.ongoing_challenge.id})
+        response = self.client.post(reverse('EcoWorld:complete_challenge'), {'id': self.ongoing_challenge.id})
+        self.ongoing_challenge.refresh_from_db()
+        self.assertEqual(self.ongoing_challenge.completion_count, 1)  # Should only be marked once
+        self.assertEqual(response.status_code, 200)
+
+    def test_increment_beyond_goal(self):
+        """Ensure that progress cannot exceed the goal."""
+        self.client.login(username='testuser', password='password')
+        self.ongoing_challenge.progress = self.challenge.goal
+        self.ongoing_challenge.save()
+        response = self.client.post(reverse('EcoWorld:increment_objective'), {'objective_id': self.ongoing_challenge.id}, content_type='application/json')
+        self.ongoing_challenge.refresh_from_db()
+        self.assertEqual(self.ongoing_challenge.progress, self.challenge.goal)  # Should not increase
+        self.assertEqual(response.status_code, 200)
+
+    def test_create_challenge_without_permission(self):
+        """Ensure unauthorized users cannot create challenges."""
+        unauthorized_user = User.objects.create_user(username='unauthorized', password='password')
+        self.client.login(username='unauthorized', password='password')
+        response = self.client.post(reverse('EcoWorld:add_challenge'), {'name': 'Unauthorized Challenge', 'description': 'Should not be allowed'})
+        self.assertEqual(response.status_code, 403)  # Expecting forbidden access
+        self.assertFalse(challenge.objects.filter(name='Unauthorized Challenge').exists())
+
+    def test_save_objective_note_invalid_id(self):
+        """Ensure attempting to save a note to a non-existent objective returns an error."""
+        self.client.login(username='testuser', password='password')
+        response = self.client.post(reverse('EcoWorld:save_objective_note'), {'objective_id': 999, 'message': 'Invalid objective'}, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('error', response.json())
