@@ -7,6 +7,19 @@ import json
 
 @permission_required("Accounts.can_view_admin_button")
 def remove_guide(request):
+    """
+    This view allows an admin to remove a content-quiz pair.
+
+    Attributes:
+        request (HttpRequest): The request object containing form data.
+
+    Returns:
+        HttpResponse: Redirects to the admin page after deleting the
+        content-quiz pair.
+
+    author:
+        Johnny Say (js1687@exeter.ac.uk)
+    """
     if request.method == 'POST':
         form = DeleteForm(request.POST)
         if form.is_valid():
@@ -21,6 +34,19 @@ def remove_guide(request):
 
 @permission_required("Accounts.can_view_admin_button")
 def add_guide(request):
+    """
+    This view allows an admin to add a new content-quiz pair.
+
+    Attributes:
+        request (HttpRequest): The request object containing form data.
+
+    Returns:
+        HttpResponse: Redirects to the admin page after saving the new
+            content-quiz pair.
+
+    author:
+        Johnny Say (js1687@exeter.ac.uk)
+    """
     if request.method == 'POST':
         form = GuidesForm(request.POST)
         if form.is_valid():
@@ -78,6 +104,20 @@ def add_guide(request):
 
 @login_required
 def menu_view(request):
+    """
+    This view displays the menu of available content-quiz pairs and
+    their completion status for the logged-in user.
+
+    Attributes:
+        request (HttpRequest): The request object.
+
+    Returns:
+        HttpResponse: Renders the menu page with the list of
+        content-quiz pairs and user information.
+
+    author:
+        Johnny Say (js1687@exeter.ac.uk)
+    """
     pairs = ContentQuizPair.objects.all()
     completed_pairs = UserQuizResult.objects.filter(user=request.user, is_completed=True).values_list(
         'content_quiz_pair_id', flat=True)
@@ -109,6 +149,20 @@ def menu_view(request):
 
 @login_required
 def content_view(request, pair_id):
+    """
+    This view displays the content of a specific content-quiz pair.
+
+    Attributes:
+        request (HttpRequest): The request object.
+        pair_id (int): The ID of the content-quiz pair to display.
+
+    Returns:
+        HttpResponse: Renders the content page with the content-quiz
+        pair and user information.
+
+    author:
+        Johnny Say (js1687@exeter.ac.uk)
+    """
     pair = get_object_or_404(ContentQuizPair, id=pair_id)
     user = request.user
     user = User.objects.get(id=user.id)
@@ -128,6 +182,22 @@ def content_view(request, pair_id):
 
 @login_required
 def quiz_view(request, pair_id):
+    """
+    This view displays the quiz associated with a specific content-quiz
+    pair.
+
+    Attributes:
+        request (HttpRequest): The request object.
+        pair_id (int): The ID of the content-quiz pair whose quiz is to
+        be displayed.
+
+    Returns:
+        HttpResponse: Renders the quiz page with the quiz questions and
+        user information.
+
+    author:
+        Johnny Say (js1687@exeter.ac.uk)
+    """
     pair = get_object_or_404(ContentQuizPair, id=pair_id)
 
     user = request.user
@@ -152,6 +222,23 @@ def quiz_view(request, pair_id):
 
 @login_required
 def registerScore_view(request, pair_id):
+    """
+    This view registers the score of a user's quiz attempt and updates
+    their best result and coins if applicable.
+
+    Attributes:
+        request (HttpRequest): The request object containing the quiz
+            score.
+        pair_id (int): The ID of the content-quiz pair associated with
+            the quiz.
+
+    Returns:
+        JsonResponse: A JSON response indicating the status and
+            redirect URL.
+
+    author:
+        Johnny Say (js1687@exeter.ac.uk)
+    """
     data = json.loads(request.body)
     score = int(data['score'])
     user = request.user
@@ -181,6 +268,21 @@ def registerScore_view(request, pair_id):
 
 @login_required
 def results_view(request, pair_id):
+    """
+    This view displays the results of a user's quiz attempt.
+
+    Attributes:
+        request (HttpRequest): The request object.
+        pair_id (int): The ID of the content-quiz pair associated with
+            the quiz.
+
+    Returns:
+        HttpResponse: Renders the results page with the user's score,
+            previous best, and maximum marks.
+
+    author:
+        Johnny Say (js1687@exeter.ac.uk)
+    """
     pair = get_object_or_404(ContentQuizPair, id=pair_id)
     result = UserQuizResult.objects.filter(user=request.user, content_quiz_pair=pair).first()
 
