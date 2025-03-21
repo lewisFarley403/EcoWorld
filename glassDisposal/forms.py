@@ -14,3 +14,5 @@ class GlassDisposalForm(forms.ModelForm):
             'image': 'Upload Photo Proof',
             'bottle_count': 'How many bottles are you handing in?',
         }
+
+

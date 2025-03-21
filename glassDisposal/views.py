@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.conf import settings
 from .models import GlassDisposalEntry, RecyclingLocation
 from .forms import GlassDisposalForm
@@ -21,7 +21,7 @@ def haversine(lat1, lon1, lat2, lon2):
     Author:
         Charlie Shortman
     """
-    R = 6371000  #earths radius
+    r = 6371000  #earths radius
     phi1, phi2 = math.radians(lat1), math.radians(lat2)
     delta_phi = math.radians(lat2 - lat1)
     delta_lambda = math.radians(lon2 - lon1)
@@ -29,7 +29,7 @@ def haversine(lat1, lon1, lat2, lon2):
     a = math.sin(delta_phi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(delta_lambda / 2) ** 2
     c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
 
-    return R * c  #distance
+    return r * c  #distance
 
 @login_required
 def submit_disposal(request):
@@ -105,3 +105,20 @@ def thankyou(request, coins_earned):
         Charlie Shortman
     """
     return render(request, 'glassDisposal/thankyou.html', {'coins_earned': coins_earned})
+
+
+@permission_required("Accounts.can_view_gamekeeper_button")
+def add_recycling_point(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        latitude = request.POST.get('latitude')
+        longitude = request.POST.get('longitude')
+
+        if name and latitude and longitude:
+            RecyclingLocation.objects.create(
+                name=name,
+                latitude=float(latitude),
+                longitude=float(longitude)
+            )
+            return redirect('EcoWorld:gamekeeper_page')  # Replace with your success URL or view name
+    return render(request, 'glassDisposal/add_recycling_point.html')
