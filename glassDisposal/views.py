@@ -6,7 +6,21 @@ from .forms import GlassDisposalForm
 import math
 
 def haversine(lat1, lon1, lat2, lon2):
-    """calc distance between 2 GPS coordinates (metres) """
+    """
+    Calculates the distance between two points on the earths surface
+
+    Parameters:
+        lat1 (float): The latitude of the first point
+        lon1 (float): The longitude of the first point
+        lat2 (float): The latitude of the second point
+        lon2 (float): The longitude of the second point
+
+    Returns:
+        float: The distance between the two points
+
+    Author:
+        Charlie Shortman
+    """
     R = 6371000  #earths radius
     phi1, phi2 = math.radians(lat1), math.radians(lat2)
     delta_phi = math.radians(lat2 - lat1)
@@ -19,7 +33,25 @@ def haversine(lat1, lon1, lat2, lon2):
 
 @login_required
 def submit_disposal(request):
-    """handles glass disposal submissions with location validation"""
+    """
+    Handles glass disposal submissions with location validation
+
+    Ensures that users submit their disposal within 100m of a registered recycling location
+    Awards coins based on how many bottles are recycled
+
+    Methods:
+        POST: Processes the form submission, validates location, and awards coins
+        GET: Displays the glass disposal form
+
+    Parameters:
+        request: The request object containing user data and submission details
+
+    Returns:
+        HttpResponse: Renders the disposal form or redirects to the thankyou page if successful
+
+    Author:
+        Charlie Shortman
+    """
     if request.method == 'POST':
         form = GlassDisposalForm(request.POST, request.FILES)
         user_lat = float(request.POST.get('latitude', 0))
@@ -59,5 +91,17 @@ def submit_disposal(request):
 
 
 def thankyou(request, coins_earned):
-    """view to display the thank you page with earned coins."""
+    """
+    Renders the thankyou page displaying the number of coins earned
+
+    Parameters:
+        request: The request object
+        coins_earned (int): Number of coins awarded to the user
+
+    Returns:
+        HttpResponse: Renders the thankyou page template with the earned coins
+
+    Author:
+        Charlie Shortman
+    """
     return render(request, 'glassDisposal/thankyou.html', {'coins_earned': coins_earned})
