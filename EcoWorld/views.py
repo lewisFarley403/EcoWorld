@@ -21,7 +21,7 @@ from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 
 from Accounts.models import Friends, FriendRequests
-from forum.models import Post
+from forum.models import Post, PostInteraction
 from qrCodes.models import drinkEvent
 from .forms import ChallengeForm
 from .models import User, pack, ownsCard, ongoingChallenge, card, Merge
@@ -305,7 +305,27 @@ def gamekeeper_page(request):
 
     users = User.objects.exclude(user_permissions__codename="can_view_gamekeeper_button")
     missing_rows = range(max(0, 3 - users.count()))
-    return render(request, "EcoWorld/gamekeeper_page.html", {"users": users, "missing_rows": missing_rows, "userinfo":userinfo[0]})
+
+    # Get forum posts data
+    posts = Post.objects.all().order_by('-created_at')
+    posts_data = []
+    for post in posts:
+        likes = PostInteraction.objects.filter(post=post, interaction_type='like').count()
+        dislikes = PostInteraction.objects.filter(post=post, interaction_type='dislike').count()
+        ratio = f"{dislikes/(likes + dislikes):.2%}" if (likes + dislikes) > 0 else "N/A"
+        posts_data.append({
+            'post': post,
+            'likes': likes,
+            'dislikes': dislikes,
+            'ratio': ratio
+        })
+
+    return render(request, "EcoWorld/gamekeeper_page.html", {
+        "users": users, 
+        "missing_rows": missing_rows, 
+        "userinfo": userinfo[0],
+        "posts": posts_data
+    })
 
 @permission_required("Accounts.can_view_gamekeeper_button")  # Only gamekeepers can promote others
 def grant_gamekeeper(request, user_id):
