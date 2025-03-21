@@ -480,6 +480,16 @@ def friends(request):
 
 
 def mergecards(request):
+    """
+    Function to handle all the intricacies of merging cards together.
+    It allows users to add and remove cards from the slots in their individual merge area
+    It allows users to merge 5 cards of the same rarity together
+    It renders the page for each POST request to keep updating entries
+    This function uses the merge model in models.py to hold cards entered into the merge slots
+    
+    Author: 
+    Chris Lynch (cl1037@exeter.ac.uk)
+    """
     user = request.user
     userinfo = getUserInfo(request)
 
