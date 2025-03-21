@@ -60,8 +60,8 @@ def get_challenge_info(request):
                 'id': post.id,
                 'name': post.challenge.name,
                 'description': post.challenge.description,
-                'submission': post.challenge.submission if hasattr(post.challenge, 'submission') else None,
-                'completion_count': post.challenge.completion_count if hasattr(post.challenge, 'completion_count') else 1,
+                'submission': post.submission if hasattr(post, 'submission') else None,
+                'completion_count': post.challenge.goal if hasattr(post.challenge, 'goal') else 1,
                 'submitted_on': post.created_at.isoformat(),
                 'username': post.user.username,
                 'redirect_url': post.challenge.redirect_url if hasattr(post.challenge, 'redirect_url') else None
