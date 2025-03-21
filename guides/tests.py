@@ -136,6 +136,10 @@ class GuidesViewsTest(TestCase):
             username='testuser',
             password='password123'
         )
+        self.admin = User.objects.create_superuser(
+            username='testadmin',
+            password='password123'
+        )
         self.guide1 = ContentQuizPair.objects.create(
             title='test guide 1',
             content='test content',
@@ -164,14 +168,14 @@ class GuidesViewsTest(TestCase):
         self.assertContains(response, 'test content')
 
     def test_remove_guides_view(self):
-        self.client.login(username='testuser', password='password123')
+        self.client.login(username='testadmin', password='password123')
         response = self.client.get(reverse('remove guide'))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
     def test_add_guide_view(self):
-        self.client.login(username='testuser', password='password123')
+        self.client.login(username='testadmin', password='password123')
         response = self.client.get(reverse('add guide'))
-        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.status_code, 200)
 
     def test_results_view(self):
         self.client.login(username='testuser', password='password123')
@@ -180,6 +184,7 @@ class GuidesViewsTest(TestCase):
 
     def test_registerScore_view(self):
         self.client.login(username='testuser', password='password123')
+
         data = {'score': 1}
         response = self.client.post(
             reverse('registerScore', args=[self.guide1.id]),
