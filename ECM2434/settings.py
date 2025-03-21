@@ -154,7 +154,9 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = "/ecoworld/"
+
 
 
 MEDIA_URL = '/media/'  # The URL to access media files
