@@ -16,7 +16,10 @@ const CONFIG = {
         { name: 'paper', color: '#ecf0f1', points: 5 },
         { name: 'metal', color: '#7f8c8d', points: 15 },
         { name: 'glass', color: '#2ecc71', points: 20 }
-    ]
+    ],
+    aspectRatio: 1.5, // width/height ratio to maintain
+    minWidth: 100,    // minimum canvas width
+    maxWidth: 800     // maximum canvas width
 };
 
 // Load trash images for each type
@@ -36,26 +39,37 @@ trashImages.glass.src = '/static/SustainabilityGame/img/trash/glass-bottle.png';
 // Main Game class handling game logic and rendering
 class Game {
     constructor() {
-        this.entryCost = 0; // Starting cost to play
-        this.playCount = 0; // Number of times played
-        this.initializeCanvas(); // Set up game canvas
-        this.bindElements(); // Bind UI elements
-        this.setupEventListeners(); // Set up input handlers
-        this.state = new GameState(); // Initialize game state
-        this.renderer = new Renderer(this.ctx); // Create renderer
-        this.lastRender = 0; // Track last render time
-        this.draw(); // Initial draw
+        this.initializeCanvas();
+        this.bindElements();
+        this.setupEventListeners();
+        this.state = new GameState();
+        this.renderer = new Renderer(this.ctx);
+        this.lastRender = 0;
+        this.draw();
     }
 
-    // Initialize canvas with configured dimensions
     initializeCanvas() {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
-        this.canvas.width = CONFIG.canvas.width;
-        this.canvas.height = CONFIG.canvas.height;
+
+        const resizeCanvas = () => {
+            const containerWidth = this.canvas.parentElement.clientWidth;
+            let newWidth = Math.min(Math.max(containerWidth * 0.95, CONFIG.minWidth), CONFIG.maxWidth);
+            let newHeight = newWidth / CONFIG.aspectRatio;
+
+            this.canvas.width = newWidth-(newWidth*0.05);
+
+            // Adjust grid size to maintain similar number of cells
+            CONFIG.grid.size = Math.floor(newWidth / 24); // 24 cells across
+        };
+
+        // Initial resize
+        resizeCanvas();
+
+        // Add resize listener
+        window.addEventListener('resize', resizeCanvas);
     }
 
-    // Bind UI elements for score and controls
     bindElements() {
         this.elements = {
             score: document.getElementById('score'),
@@ -272,3 +286,140 @@ class Game {
         return Math.floor(a * Math.exp(b * (score - 150)));
     }
 }
+
+class GameState {
+    constructor() {
+        this.reset();
+    }
+
+    reset() {
+        this.snake = [
+            {x: 5 * CONFIG.grid.size, y: 10 * CONFIG.grid.size},
+            {x: 4 * CONFIG.grid.size, y: 10 * CONFIG.grid.size},
+            {x: 3 * CONFIG.grid.size, y: 10 * CONFIG.grid.size}
+        ];
+        this.direction = 'right';
+        this.nextDirection = 'right';
+        this.score = 0;
+        this.trashCollected = 0;
+        this.isRunning = false;
+        this.placeNewTrash();
+    }
+
+    getNextPosition() {
+        const head = this.snake[0];
+        const movements = {
+            up: { x: 0, y: -CONFIG.grid.size },
+            down: { x: 0, y: CONFIG.grid.size },
+            left: { x: -CONFIG.grid.size, y: 0 },
+            right: { x: CONFIG.grid.size, y: 0 }
+        };
+        this.direction = this.nextDirection;
+        const move = movements[this.direction];
+        return { x: head.x + move.x, y: head.y + move.y };
+    }
+
+    moveSnake(nextPosition) {
+        this.snake.unshift(nextPosition);
+        // Only remove the tail if we haven't collected trash
+        if (!this.hasCollectedTrash(nextPosition)) {
+            this.snake.pop();
+        }
+    }
+
+
+    placeNewTrash() {
+        const canvas = document.getElementById('gameCanvas');
+        let x, y;
+        let validPosition = false;
+
+        while (!validPosition) {
+            // Limit the placement area by subtracting grid size
+            x = Math.floor(Math.random() * ((canvas.width - CONFIG.grid.size) / CONFIG.grid.size)) * CONFIG.grid.size;
+            y = Math.floor(Math.random() * ((canvas.height - CONFIG.grid.size) / CONFIG.grid.size)) * CONFIG.grid.size;
+
+            validPosition = !this.snake.some(segment =>
+                segment.x === x && segment.y === y
+            );
+        }
+
+        const type = CONFIG.trash[Math.floor(Math.random() * CONFIG.trash.length)];
+        this.trash = { x, y, type };
+    }
+
+    hasCollectedTrash(position) {
+        return position.x === this.trash.x && position.y === this.trash.y;
+    }
+
+    updateScore() {
+        this.score += this.trash.type.points;
+        this.trashCollected++;
+    }
+
+    isOutOfBounds(position) {
+        const canvas = document.getElementById('gameCanvas');
+        return position.x < 0 || position.y < 0 ||
+            position.x + CONFIG.grid.size > canvas.width ||
+            position.y + CONFIG.grid.size > canvas.height;
+    }
+
+    hasHitSelf(position) {
+        return this.snake.some(segment =>
+            segment.x === position.x && segment.y === position.y
+        );
+    }
+}
+
+class Renderer {
+    constructor(ctx) {
+        this.ctx = ctx;
+    }
+
+    clear() {
+        const canvas = document.getElementById('gameCanvas');
+        this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    drawBackground() {
+        const canvas = document.getElementById('gameCanvas');
+        this.ctx.fillStyle = CONFIG.colors.background;
+        this.ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    drawSnake(snake) {
+        snake.forEach((segment, index) => {
+            this.ctx.fillStyle = index === 0 ? CONFIG.colors.snake.head : CONFIG.colors.snake.body;
+            this.ctx.fillRect(segment.x, segment.y, CONFIG.grid.size, CONFIG.grid.size);
+            this.ctx.strokeStyle = CONFIG.colors.snake.border;
+            this.ctx.strokeRect(segment.x, segment.y, CONFIG.grid.size, CONFIG.grid.size);
+        });
+    }
+
+    drawTrash(trash) {
+        this.ctx.drawImage(trashImages[trash.type.name], trash.x, trash.y, CONFIG.grid.size, CONFIG.grid.size);
+    }
+
+    drawGameOver() {
+        const canvas = document.getElementById('gameCanvas');
+        this.ctx.fillStyle = CONFIG.colors.overlay;
+        this.ctx.fillRect(0, 0, canvas.width, canvas.height);
+        this.ctx.fillStyle = 'white';
+        this.ctx.font = '30px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('Game Over!', canvas.width / 2, canvas.height / 2);
+    }
+
+    drawPaused() {
+        const canvas = document.getElementById('gameCanvas');
+        this.ctx.fillStyle = CONFIG.colors.overlay;
+        this.ctx.fillRect(0, 0, canvas.width, canvas.height);
+        this.ctx.fillStyle = 'white';
+        this.ctx.font = '30px Arial';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText('Paused', canvas.width / 2, canvas.height / 2);
+    }
+}
+
+// Initialize game when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => new Game());
+
