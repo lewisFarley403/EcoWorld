@@ -15,7 +15,7 @@ from django.conf import settings
 from django.db import models
 
 from Accounts.models import User
-from EcoWorld.models import card
+from ecoworld.models import card
 
 
 # Create your models here.

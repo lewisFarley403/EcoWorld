@@ -30,7 +30,7 @@ def remove_guide(request):
             selected_pair_id = form.cleaned_data['pair'].id
             pair = ContentQuizPair.objects.get(id=selected_pair_id)
             pair.delete()
-            return redirect('EcoWorld:gamekeeper_page')
+            return redirect('ecoworld:gamekeeper_page')
     else:
         form = DeleteForm()
 
@@ -101,7 +101,7 @@ def add_guide(request):
             )
             pair.save()
 
-            return redirect('EcoWorld:gamekeeper_page')
+            return redirect('ecoworld:gamekeeper_page')
     else:
         form = GuidesForm()
     return render(request, 'guides/add_guide.html', {'form': form})

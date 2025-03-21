@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.db.models import Count, Q
 from django.utils import timezone
-from EcoWorld.models import challenge, card, ongoingChallenge, cardRarity
+from ecoworld.models import challenge, card, ongoingChallenge, cardRarity
 from Accounts.models import Friends
 from .models import Post, PostInteraction
 import json

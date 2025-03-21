@@ -2,12 +2,12 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User, Permission
 
-from EcoWorld.forms import ChallengeForm
-from EcoWorld.models import challenge
+from ecoworld.forms import ChallengeForm
+from ecoworld.models import challenge
 from qrCodes.models import drinkEvent, waterFountain
 import json
 
-class EcoWorldViewsTest(TestCase):
+class ecoworldViewsTest(TestCase):
 
     def setUp(self):
         """ Set up data before each test"""
@@ -20,10 +20,10 @@ class EcoWorldViewsTest(TestCase):
         self.fountain = waterFountain.objects.create(id = 1, location = "Test Location")
 
         #URLS that I want to test
-        self.add_drink_url = reverse("EcoWorld:dashboard")
-        # self.generate_qr_url = reverse("EcoWorld:generate_qr")
-        # self.scan_qr_url = reverse("EcoWorld:scan_qr")
-        # self.upload_photo_url = reverse("EcoWorld:upload_photo")
+        self.add_drink_url = reverse("ecoworld:dashboard")
+        # self.generate_qr_url = reverse("ecoworld:generate_qr")
+        # self.scan_qr_url = reverse("ecoworld:scan_qr")
+        # self.upload_photo_url = reverse("ecoworld:upload_photo")
 
 
     # def test_add_drink_invalid_user(self):
@@ -60,9 +60,9 @@ class GamekeeperViewTests(TestCase):
     def test_gamekeeper_page_access_as_gamekeeper(self):
         """An authorized gamekeeper user should see the gamekeeper page."""
         self.client.login(username="gamekeeper", password="gamekeeperpassword")
-        response = self.client.get(reverse("EcoWorld:gamekeeper_page"))
+        response = self.client.get(reverse("ecoworld:gamekeeper_page"))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "EcoWorld/gamekeeper_page.html")
+        self.assertTemplateUsed(response, "ecoworld/gamekeeper_page.html")
         # Check that expected context data is present.
         self.assertIn("userinfo", response.context)
         self.assertIn("users", response.context)
@@ -71,14 +71,14 @@ class GamekeeperViewTests(TestCase):
     def test_gamekeeper_page_access_as_regular_user(self):
         """A regular user should be redirected (unauthorized) when accessing the gamekeeper page."""
         self.client.login(username="user", password="userpassword")
-        response = self.client.get(reverse("EcoWorld:gamekeeper_page"))
+        response = self.client.get(reverse("ecoworld:gamekeeper_page"))
         # Expecting a 302 redirect to the login page.
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith("/accounts/login/"))
 
     def test_gamekeeper_page_access_unauthenticated(self):
         """An unauthenticated request should redirect to the login page."""
-        response = self.client.get(reverse("EcoWorld:gamekeeper_page"))
+        response = self.client.get(reverse("ecoworld:gamekeeper_page"))
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith("/accounts/login/"))
 
@@ -87,15 +87,15 @@ class GamekeeperViewTests(TestCase):
     def test_grant_gamekeeper_as_gamekeeper(self):
         """An gamekeeper can grant gamekeeper privileges to another user."""
         self.client.login(username="gamekeeper", password="gamekeeperpassword")
-        response = self.client.post(reverse("EcoWorld:grant_gamekeeper", args=[self.regular_user.id]))
+        response = self.client.post(reverse("ecoworld:grant_gamekeeper", args=[self.regular_user.id]))
         self.regular_user.refresh_from_db()
         self.assertTrue(self.regular_user.has_perm("Accounts.can_view_gamekeeper_button"))
-        self.assertRedirects(response, reverse("EcoWorld:gamekeeper_page"))
+        self.assertRedirects(response, reverse("ecoworld:gamekeeper_page"))
 
     def test_grant_gamekeeper_as_regular_user(self):
         """A regular user should be redirected when attempting to grant gamekeeper privileges."""
         self.client.login(username="user", password="userpassword")
-        response = self.client.post(reverse("EcoWorld:grant_gamekeeper", args=[self.gamekeeper_user.id]))
+        response = self.client.post(reverse("ecoworld:grant_gamekeeper", args=[self.gamekeeper_user.id]))
         # By default, @permission_required redirects unauthorized users to login.
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith("/accounts/login/"))
@@ -111,10 +111,10 @@ class GamekeeperViewTests(TestCase):
             "worth": 10,
             "goal": 5,
         }
-        response = self.client.post(reverse("EcoWorld:add_challenge"), post_data)
+        response = self.client.post(reverse("ecoworld:add_challenge"), post_data)
         # On successful submission, the view redirects to the gamekeeper page.
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse("EcoWorld:gamekeeper_page"))
+        self.assertRedirects(response, reverse("ecoworld:gamekeeper_page"))
         # Verify that the challenge was created.
         self.assertEqual(challenge.objects.count(), 1)
 
@@ -127,7 +127,7 @@ class GamekeeperViewTests(TestCase):
             "worth": 10,
             "goal": 5,
         }
-        response = self.client.post(reverse("EcoWorld:add_challenge"), post_data)
+        response = self.client.post(reverse("ecoworld:add_challenge"), post_data)
         # Unauthorized users are redirected to login.
         self.assertEqual(response.status_code, 302)
         self.assertTrue(response.url.startswith("/accounts/login/"))
@@ -137,6 +137,6 @@ class GamekeeperViewTests(TestCase):
     def test_add_challenge_form_display(self):
         """The challenge form should be displayed for an gamekeeper accessing the page via GET."""
         self.client.login(username="gamekeeper", password="gamekeeperpassword")
-        response = self.client.get(reverse("EcoWorld:add_challenge"))
+        response = self.client.get(reverse("ecoworld:add_challenge"))
         self.assertEqual(response.status_code, 200)
         self.assertIsInstance(response.context["form"], ChallengeForm)

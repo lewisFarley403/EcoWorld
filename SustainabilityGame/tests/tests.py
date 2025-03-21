@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 import json
 
-from EcoWorld.models import ongoingChallenge, card, cardRarity, ownsCard
+from ecoworld.models import ongoingChallenge, card, cardRarity, ownsCard
 from Garden.models import garden, gardenSquare
 from forum.models import challenge
 

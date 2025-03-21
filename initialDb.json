@@ -1,6 +1,6 @@
 [
     {
-        "model": "EcoWorld.challenge",
+        "model": "ecoworld.challenge",
         "pk": 1,
         "fields": {
             "name": "Fridge Check",
@@ -10,7 +10,7 @@
         }
     },
     {
-        "model": "EcoWorld.challenge",
+        "model": "ecoworld.challenge",
         "pk": 2,
         "fields": {
             "name": "Inbox Detox",
@@ -20,7 +20,7 @@
         }
     },
     {
-        "model": "EcoWorld.challenge",
+        "model": "ecoworld.challenge",
         "pk": 3,
         "fields": {
             "name": "Light Patrol",
@@ -30,32 +30,32 @@
         }
     },
     {
-        "model": "EcoWorld.cardRarity",
+        "model": "ecoworld.cardRarity",
         "pk": 1,
         "fields": { "title": "common" }
     },
     {
-        "model": "EcoWorld.cardRarity",
+        "model": "ecoworld.cardRarity",
         "pk": 2,
         "fields": { "title": "rare" }
     },
     {
-        "model": "EcoWorld.cardRarity",
+        "model": "ecoworld.cardRarity",
         "pk": 3,
         "fields": { "title": "epic" }
     },
     {
-        "model": "EcoWorld.cardRarity",
+        "model": "ecoworld.cardRarity",
         "pk": 4,
         "fields": { "title": "legendary" }
     },
     {
-        "model": "EcoWorld.cardRarity",
+        "model": "ecoworld.cardRarity",
         "pk": 5,
         "fields": { "title": "mythic" }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 1,
         "fields": {
             "title": "Ancient Tree",
@@ -65,7 +65,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 2,
         "fields": {
             "title": "Bush",
@@ -75,7 +75,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 3,
         "fields": {
             "title": "Cactus",
@@ -85,7 +85,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 4,
         "fields": {
             "title": "Cherry Blossom",
@@ -95,7 +95,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 5,
         "fields": {
             "title": "Dandelion Patch",
@@ -105,7 +105,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 6,
         "fields": {
             "title": "Golden Tree",
@@ -115,7 +115,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 7,
         "fields": {
             "title": "Maple Tree",
@@ -125,7 +125,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 8,
         "fields": {
             "title": "Oak Tree",
@@ -135,7 +135,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 9,
         "fields": {
             "title": "Orange Tree",
@@ -145,7 +145,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 10,
         "fields": {
             "title": "Rainbow Flower",
@@ -155,7 +155,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 11,
         "fields": {
             "title": "Scarecrow",
@@ -165,7 +165,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 12,
         "fields": {
             "title": "Starry Tree",
@@ -175,7 +175,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 13,
         "fields": {
             "title": "Statue",
@@ -185,7 +185,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 14,
         "fields": {
             "title": "Sunflower",
@@ -195,7 +195,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 15,
         "fields": {
             "title": "Tulip Patch",
@@ -205,7 +205,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 16,
         "fields": {
             "title": "Log",
@@ -215,7 +215,7 @@
         }
     },
     {
-        "model": "EcoWorld.card",
+        "model": "ecoworld.card",
         "pk": 17,
         "fields": {
             "title": "Olive Tree",
@@ -225,7 +225,7 @@
         }
     },
     {
-        "model": "EcoWorld.pack",
+        "model": "ecoworld.pack",
         "pk": 1,
         "fields": {
             "title": "Basic Pack",
@@ -238,7 +238,7 @@
         }
     },
     {
-        "model": "EcoWorld.pack",
+        "model": "ecoworld.pack",
         "pk": 2,
         "fields": {
             "title": "Rare Pack",
@@ -251,7 +251,7 @@
         }
     },
     {
-        "model": "EcoWorld.pack",
+        "model": "ecoworld.pack",
         "pk": 3,
         "fields": {
             "title": "Icon Pack",

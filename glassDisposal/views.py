@@ -120,7 +120,7 @@ def add_recycling_point(request):
                 latitude=float(latitude),
                 longitude=float(longitude)
             )
-            return redirect('EcoWorld:gamekeeper_page')  # Replace with your success URL or view name
+            return redirect('ecoworld:gamekeeper_page')  # Replace with your success URL or view name
     return render(request, 'glassDisposal/add_recycling_point.html')
 
 

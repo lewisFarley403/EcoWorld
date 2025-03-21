@@ -1,5 +1,5 @@
 """
-This module defines the endpoints for the EcoWorld app:
+This module defines the endpoints for the ecoworld app:
     - `addDrink` : This view allows the user to add a drink event
     - `testAddDrink` : This view allows the user to test adding a drink event
 Author:
@@ -12,7 +12,7 @@ from .views import merge_opening_page, buy_pack, mergecards,store,pack_opening_p
 
 from . import views
 
-app_name = 'EcoWorld'
+app_name = 'ecoworld'
 urlpatterns = [
     path("", views.dashboard, name='dashboard'),  # URL for the dashboard page
     path("store/", store, name='store'),  # URL for the signup page

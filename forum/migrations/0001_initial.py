@@ -9,7 +9,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ("EcoWorld", "0002_alter_challenge_created_by"),
+        ("ecoworld", "0002_alter_challenge_created_by"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
@@ -60,7 +60,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="EcoWorld.card",
+                        to="ecoworld.card",
                     ),
                 ),
                 (
@@ -69,7 +69,7 @@ class Migration(migrations.Migration):
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="EcoWorld.challenge",
+                        to="ecoworld.challenge",
                     ),
                 ),
                 (

@@ -9,7 +9,7 @@ author:
 
 from django.conf import settings
 
-from EcoWorld.models import card, ownsCard
+from ecoworld.models import card, ownsCard
 from Garden.models import garden, gardenSquare
 
 

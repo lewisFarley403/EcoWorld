@@ -39,7 +39,7 @@ def add_water_fountain(request):
         form = WaterFountainForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect("EcoWorld:gamekeeper_page")
+            return redirect("ecoworld:gamekeeper_page")
     else:
         form = WaterFountainForm()
 

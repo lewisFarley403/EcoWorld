@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 
 """
-This module defines the database models for the EcoWorld app:
+This module defines the database models for the ecoworld app:
     - `challenge` : Model for storing challenge information
     - `ongoingChallenge` : Model for storing ongoing challenge information
     - `waterFountain` : Model for storing water fountain information

@@ -6,8 +6,8 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 
 from Accounts.models import Friends
-from EcoWorld.models import ongoingChallenge, card
-from EcoWorld.views import getUserInfo
+from ecoworld.models import ongoingChallenge, card
+from ecoworld.views import getUserInfo
 from .models import Post, PostInteraction
 
 

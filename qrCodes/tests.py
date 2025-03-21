@@ -180,7 +180,7 @@ class QRCodesViewsTests(TestCase):
 
         # Check if the form validated and the view redirected.
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, reverse('EcoWorld:gamekeeper_page'))
+        self.assertRedirects(response, reverse('ecoworld:gamekeeper_page'))
         self.assertEqual(waterFountain.objects.filter(name='New Fountain').count(), 1)
 
 

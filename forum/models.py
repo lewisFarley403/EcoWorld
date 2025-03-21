@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from EcoWorld.models import challenge, card
+from ecoworld.models import challenge, card
 
 class Post(models.Model):
     """

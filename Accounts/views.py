@@ -16,7 +16,7 @@ from django.core import serializers
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
 
-from EcoWorld.models import ownsCard
+from ecoworld.models import ownsCard
 from Garden.models import garden
 from .forms import SignUpForm
 from .models import Profile

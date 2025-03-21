@@ -65,7 +65,7 @@ def dashboard(request):
     if request.method == "GET":
         userinfo = getUserInfo(request)
 
-        return render(request, "EcoWorld/dashboard.html", {"userinfo":userinfo[0]})
+        return render(request, "ecoworld/dashboard.html", {"userinfo":userinfo[0]})
 
 @login_required
 def store(request):
@@ -103,7 +103,7 @@ def store(request):
         userinfo = getUserInfo(request)
 
         #Sends the info to the page
-        return render(request, "ecoWorld/store.html",{ "packs": pack_list, "userinfo": userinfo[0]})
+        return render(request, "ecoworld/store.html", {"packs": pack_list, "userinfo": userinfo[0]})
 
     return HttpResponse("Invalid request")
 
@@ -177,7 +177,7 @@ def pack_opening_page(request):
 
     #Image of the card won to return to the page
     image_url = card_received.image.url
-    return render(request, "EcoWorld/pack_opening_page.html", {"image": image_url})
+    return render(request, "ecoworld/pack_opening_page.html", {"image": image_url})
 
 @login_required
 def challenge(request):
@@ -215,7 +215,7 @@ def challenge(request):
             "DRINKING_COOLDOWN": settings.DRINKING_COOLDOWN
         }
     }
-    return render(request, "EcoWorld/challenge_page.html", context)
+    return render(request, "ecoworld/challenge_page.html", context)
 
 
 @login_required
@@ -320,7 +320,7 @@ def gamekeeper_page(request):
             'ratio': ratio
         })
 
-    return render(request, "EcoWorld/gamekeeper_page.html", {
+    return render(request, "ecoworld/gamekeeper_page.html", {
         "users": users, 
         "missing_rows": missing_rows, 
         "userinfo": userinfo[0],
@@ -349,7 +349,7 @@ def grant_gamekeeper(request, user_id):
     if hasattr(user, '_perm_cache'):
         del user._perm_cache
 
-    return redirect("EcoWorld:gamekeeper_page")
+    return redirect("ecoworld:gamekeeper_page")
 
 
 
@@ -361,10 +361,10 @@ def add_challenge(request):
             new_challenge = form.save(commit=False)  # Don't save to DB yet
             new_challenge.created_by = request.user  # Set creator manually
             new_challenge.save()  # Now save
-            return redirect("EcoWorld:gamekeeper_page")  # Redirect back to the gamekeeper page after saving
+            return redirect("ecoworld:gamekeeper_page")  # Redirect back to the gamekeeper page after saving
     else:
         form = ChallengeForm()
-    return render(request, "EcoWorld/add_challenge.html", {"form": form})
+    return render(request, "ecoworld/add_challenge.html", {"form": form})
 
 
 
@@ -392,7 +392,7 @@ def friends(request):
 
 
 
-        return render(request, "EcoWorld/friends.html", {"userinfo" : userinfo[0], "friendreqs": friendreqs, "friends" : userFriends})
+        return render(request, "ecoworld/friends.html", {"userinfo" : userinfo[0], "friendreqs": friendreqs, "friends" : userFriends})
 
     elif request.method == "POST":
         userinfo = getUserInfo(request)
@@ -427,12 +427,12 @@ def friends(request):
             #Check for user existing
             if not requestedUser:
                 error = "User Not Found!"
-                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends})
+                return render(request, "ecoworld/friends.html", {"userinfo": userinfo[0], "error" : error, "friendreqs" : friendreqs, "friends" : userFriends})
 
             #Check if user tried to add themselves
             if username == user.username:
                 error = "You cant request yourself"
-                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends})
+                return render(request, "ecoworld/friends.html", {"userinfo": userinfo[0], "error" : error, "friendreqs" : friendreqs, "friends" : userFriends})
 
             requestedUserID = requestedUser.id
             existing_request = FriendRequests.objects.filter(senderID=userID, receiverID=requestedUserID).exists() or FriendRequests.objects.filter(senderID=requestedUserID, receiverID=userID).exists()
@@ -440,20 +440,20 @@ def friends(request):
             #Checks if pending request already made
             if existing_request:
                 error = "Friend request already pending"
-                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends})
+                return render(request, "ecoworld/friends.html", {"userinfo": userinfo[0], "error" : error, "friendreqs" : friendreqs, "friends" : userFriends})
 
 
             #Check if they are already friends
             existing_Friends = Friends.objects.filter(userID1=requestedUserID, userID2= userID).exists() or Friends.objects.filter(userID1=userID, userID2=requestedUserID).exists()
             if existing_Friends:
                 error = "You are already friends with this user!"
-                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends})
+                return render(request, "ecoworld/friends.html", {"userinfo": userinfo[0], "error" : error, "friendreqs" : friendreqs, "friends" : userFriends})
 
 
             #Add request to database
             FriendRequests.objects.create(senderID=request.user, receiverID=requestedUser)
             AddMessage = "Friend request sent!"
-            return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs, "addmessage": AddMessage,"friends" : userFriends})
+            return render(request, "ecoworld/friends.html", {"userinfo":userinfo[0], "friendreqs" : friendreqs, "addmessage": AddMessage, "friends" : userFriends})
 
         #If the user is accepting or rejecting a friend request
         elif friendAccOrRej:
@@ -470,7 +470,7 @@ def friends(request):
                 friendreqs = FriendRequests.objects.filter(receiverID=user)
                 userFriends = Friends.objects.filter(Q(userID1=user) | Q(userID2=user))
 
-                return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs,"friends" : userFriends})
+                return render(request, "ecoworld/friends.html", {"userinfo":userinfo[0], "friendreqs" : friendreqs, "friends" : userFriends})
 
             else:
                 #Deletes friend request info as its a reject
@@ -479,7 +479,7 @@ def friends(request):
                 #Updates data on friend requests
                 friendreqs = FriendRequests.objects.filter(receiverID=user)
 
-                return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs,"friends" : userFriends})
+                return render(request, "ecoworld/friends.html", {"userinfo":userinfo[0], "friendreqs" : friendreqs, "friends" : userFriends})
 
 
 
@@ -496,7 +496,7 @@ def friends(request):
 
 
 
-            return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs,"friends" : userFriends})
+            return render(request, "ecoworld/friends.html", {"userinfo":userinfo[0], "friendreqs" : friendreqs, "friends" : userFriends})
 
 
 def mergecards(request):
@@ -519,7 +519,7 @@ def mergecards(request):
 
 
 
-        return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "merge":cardImages})
+        return render(request, "ecoworld/mergecards.html", {"userinfo" : userinfo[0], "merge":cardImages})
 
     elif request.method == "POST":
         #Gets rarity option chosen if so
@@ -555,7 +555,7 @@ def mergecards(request):
                     cardImages.append({'id': None, 'image' : None})
 
 
-            return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity":rarity,"merge":cardImages},)
+            return render(request, "ecoworld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity":rarity, "merge":cardImages}, )
 
         if addCard:
             #Get rarity and card id
@@ -589,7 +589,7 @@ def mergecards(request):
 
             if merge and (merge.cardID1 and merge.cardID2 and merge.cardID3 and merge.cardID4 and merge.cardID5):
                 error = "There are already 5 cards in the merge slots remove one first!"
-                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error" : error,"merge":cardImages})
+                return render(request, "ecoworld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error" : error, "merge":cardImages})
 
             cardToAdd = card.objects.get(id=cardID)  # Get the card object by ID
             cardRarityID = cardToAdd.rarity.id  # Access the rarity of the card
@@ -600,12 +600,12 @@ def mergecards(request):
                 firstCard = merge.cardID1
                 if firstCard.rarity_id != cardRarityID:
                     error = "The card you tried to add was not of the same rarity as the first card in the merge."
-                    return render(request, "EcoWorld/mergecards.html", {"userinfo": userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error": error,"merge":cardImages})
+                    return render(request, "ecoworld/mergecards.html", {"userinfo": userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error": error, "merge":cardImages})
 
 
             if ownCard.quantity <= 0:
                 error = "You need to get more of this card to add it to the merge or take one out of the merge box"
-                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error" : error,"merge":cardImages})
+                return render(request, "ecoworld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error" : error, "merge":cardImages})
 
 
             if merge:
@@ -647,7 +647,7 @@ def mergecards(request):
                 else:
                     cardImages.append({'id': None, 'image' : None})
 
-            return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton,"merge":cardImages})
+            return render(request, "ecoworld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "merge":cardImages})
 
         if removeCard:
             #Get rarity and card id
@@ -717,7 +717,7 @@ def mergecards(request):
                         cardImages.append({'id': None, 'image' : None})
 
 
-                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton,"merge":cardImages})
+                return render(request, "ecoworld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "merge":cardImages})
 
             else:
                 merge, created = Merge.objects.get_or_create(userID=request.user)
@@ -732,7 +732,7 @@ def mergecards(request):
                     else:
                         cardImages.append({'id': None, 'image' : None})
                 error = "This card is not in a merge slot"
-                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error" : error,"merge":cardImages})
+                return render(request, "ecoworld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity": rarityforbutton, "error" : error, "merge":cardImages})
 
 
 
@@ -764,7 +764,7 @@ def mergecards(request):
 
             if mergeCardsFunc == 5:
                 error = "This card rarity cannot be merged!"
-                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity":rarity,"merge":cardImages, "error":error},)
+                return render(request, "ecoworld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity":rarity, "merge":cardImages, "error":error}, )
 
 
             if merge.cardID1 and merge.cardID2 and merge.cardID3 and merge.cardID4 and merge.cardID5:
@@ -811,14 +811,14 @@ def mergecards(request):
                         cardImages.append({'id': f'cardID{i}', 'image' : None})
 
 
-                return render(request, "EcoWorld/merge_opening_page.html", {"image": cardToReturn.image.url})
+                return render(request, "ecoworld/merge_opening_page.html", {"image": cardToReturn.image.url})
 
 
-        return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0]})
+        return render(request, "ecoworld/mergecards.html", {"userinfo" : userinfo[0]})
 
 
 def merge_opening_page(request):
-    return render(request, "EcoWorld/merge_opening_page.html")
+    return render(request, "ecoworld/merge_opening_page.html")
 
 
 @csrf_exempt

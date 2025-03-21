@@ -70,7 +70,7 @@ class Migration(migrations.Migration):
                     "rarity",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="EcoWorld.cardrarity",
+                        to="ecoworld.cardrarity",
                     ),
                 ),
             ],
@@ -124,7 +124,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="CardID1",
-                        to="EcoWorld.card",
+                        to="ecoworld.card",
                     ),
                 ),
                 (
@@ -134,7 +134,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="CardID2",
-                        to="EcoWorld.card",
+                        to="ecoworld.card",
                     ),
                 ),
                 (
@@ -144,7 +144,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="CardID3",
-                        to="EcoWorld.card",
+                        to="ecoworld.card",
                     ),
                 ),
                 (
@@ -154,7 +154,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="CardID4",
-                        to="EcoWorld.card",
+                        to="ecoworld.card",
                     ),
                 ),
                 (
@@ -164,7 +164,7 @@ class Migration(migrations.Migration):
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="CardID5",
-                        to="EcoWorld.card",
+                        to="ecoworld.card",
                     ),
                 ),
                 (
@@ -198,7 +198,7 @@ class Migration(migrations.Migration):
                     "challenge",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        to="EcoWorld.challenge",
+                        to="ecoworld.challenge",
                     ),
                 ),
                 (
@@ -226,7 +226,7 @@ class Migration(migrations.Migration):
                 (
                     "card",
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="EcoWorld.card"
+                        on_delete=django.db.models.deletion.CASCADE, to="ecoworld.card"
                     ),
                 ),
                 (

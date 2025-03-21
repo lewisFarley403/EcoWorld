@@ -3,7 +3,7 @@ import os
 from django.test import TestCase, Client
 from django.core.management import call_command
 from Accounts.models import Profile, FriendRequests, Friends
-from EcoWorld.models import pack, card, cardRarity, User,ongoingChallenge
+from ecoworld.models import pack, card, cardRarity, User,ongoingChallenge
 from django.urls import reverse
 from django.conf import settings
 from datetime import timedelta
@@ -199,7 +199,7 @@ class TestStore(TestCase):
     #Tests that when the user is logged in they can view the page correctly and if not they cant and checks if the template receives the info given to it
     def testStoreLoadsProperly(self):
         self.client.login(username="testuser1", password="1234")
-        response = self.client.get(reverse('EcoWorld:store'))
+        response = self.client.get(reverse('ecoworld:store'))
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "ecoWorld/store.html")
@@ -229,7 +229,7 @@ class TestStore(TestCase):
 
         #Buys a certain pack from the store and saves the response
         response = self.client.post(
-            reverse('EcoWorld:buyPack'),
+            reverse('ecoworld:buyPack'),
             json.dumps({'pack_id': self.pack1.id}),
             content_type='application/json'
         )
@@ -247,7 +247,7 @@ class TestStore(TestCase):
 
         #Logged in with the user on 0 coins gets response to buying a pack
         response = self.client.post(
-            reverse('EcoWorld:buyPack'),
+            reverse('ecoworld:buyPack'),
             json.dumps({'pack_id': self.pack1.id}),
             content_type='application/json'
         )
@@ -298,7 +298,7 @@ class TestChallenge(TestCase):
         self.client.login(username='testuser', password='P@ssword123')
         ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
         self.assertEqual(len(ongoingChallenges), 0)
-        response = self.client.get(reverse('EcoWorld:challenge'))
+        response = self.client.get(reverse('ecoworld:challenge'))
         ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
         self.assertEqual(len(ongoingChallenges), settings.NUM_CHALLENGES)
     def test_mark_challenge_complete(self):
@@ -308,14 +308,14 @@ class TestChallenge(TestCase):
             Lewis Farley (
         '''
         self.client.login(username='testuser', password='P@ssword123')
-        response = self.client.get(reverse('EcoWorld:challenge'))
+        response = self.client.get(reverse('ecoworld:challenge'))
         ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
         self.assertEqual(len(ongoingChallenges), settings.NUM_CHALLENGES)
         challenge = ongoingChallenges[0]
         self.assertEqual(challenge.submitted_on, None)
         
         response = self.client.post(
-            reverse('EcoWorld:completeChallenge'),  # The URL you're posting to
+            reverse('ecoworld:completeChallenge'),  # The URL you're posting to
             json.dumps({'id': challenge.id}),  # The data you want to send, serialized as JSON
             content_type='application/json'  # The content type must be set to application/json
         )
@@ -335,12 +335,12 @@ class TestChallenge(TestCase):
         ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
         self.assertEqual(len(ongoingChallenges), 0)
         self.client.login(username='testuser', password='P@ssword123')
-        response = self.client.get(reverse('EcoWorld:challenge'))
+        response = self.client.get(reverse('ecoworld:challenge'))
         # mark the challenges as completed
         ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
         i =ongoingChallenges[0].id
         response = self.client.post(
-            reverse('EcoWorld:completeChallenge'),  # The URL you're posting to
+            reverse('ecoworld:completeChallenge'),  # The URL you're posting to
             json.dumps({'id': i}),  # The data you want to send, serialized as JSON
             content_type='application/json'  # The content type must be set to application/json
         )
@@ -349,7 +349,7 @@ class TestChallenge(TestCase):
         time.sleep(settings.CHALLENGE_EXPIRY.total_seconds())
 
         # check that the challenges have been reset
-        self.client.get(reverse('EcoWorld:challenge'))
+        self.client.get(reverse('ecoworld:challenge'))
         ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
         self.assertEqual(ongoingChallenges[0].submitted_on,None)
     def test_coin_reward(self):
@@ -359,11 +359,11 @@ class TestChallenge(TestCase):
             Lewis Farley (
         '''
         self.client.login(username='testuser', password='P@ssword123')
-        response = self.client.get(reverse('EcoWorld:challenge'))
+        response = self.client.get(reverse('ecoworld:challenge'))
         ongoingChallenges = ongoingChallenge.objects.filter(user=User.objects.get(username='testuser'))
         i =ongoingChallenges[0].id
         response = self.client.post(
-            reverse('EcoWorld:completeChallenge'),  # The URL you're posting to
+            reverse('ecoworld:completeChallenge'),  # The URL you're posting to
             json.dumps({'id': i}),  # The data you want to send, serialized as JSON
             content_type='application/json'  # The content type must be set to application/json
         )
@@ -401,7 +401,7 @@ class TestFriendPage(TestCase):
 
     def testGetRequest(self):
         #Test that all things go the page that should on the page loading
-        response = self.client.get(reverse("EcoWorld:friends"))
+        response = self.client.get(reverse("ecoworld:friends"))
         self.assertEqual(response.status_code, 200)
         self.assertIn("userinfo", response.context)
         self.assertIn("friendreqs", response.context)
@@ -409,19 +409,19 @@ class TestFriendPage(TestCase):
 
     def testSendRequest(self):
         #Test sending a friend request
-        response = self.client.post(reverse("EcoWorld:friends"), {"friendUsername": "user2"})
+        response = self.client.post(reverse("ecoworld:friends"), {"friendUsername": "user2"})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(FriendRequests.objects.filter(senderID=self.user1, receiverID=self.user2).exists())
 
     def testRequestToNonExistentPerson(self):
         #Tests sending a request to someone who doesnt exist
-        response = self.client.post(reverse("EcoWorld:friends"), {"friendUsername": "nonexistent"})
+        response = self.client.post(reverse("ecoworld:friends"), {"friendUsername": "nonexistent"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "User Not Found!")
     
     def testSendToSelf(self):
         #Testing that the correct response happens if you send a request to yourself
-        response = self.client.post(reverse("EcoWorld:friends"), {"friendUsername": "user1"})
+        response = self.client.post(reverse("ecoworld:friends"), {"friendUsername": "user1"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "You cant request yourself")
 
@@ -429,21 +429,21 @@ class TestFriendPage(TestCase):
     def testDuplicateRequest(self):
         #Testing that when sending a friend request while one pending it doesnt add another
         FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
-        response = self.client.post(reverse("EcoWorld:friends"), {"friendUsername": "user2"})
+        response = self.client.post(reverse("ecoworld:friends"), {"friendUsername": "user2"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Friend request already pending")
 
     def testExistingFriend(self):
         #Testing that you cant send a request to an existing friend
         Friends.objects.create(userID1=self.user1, userID2=self.user2)
-        response = self.client.post(reverse("EcoWorld:friends"), {"friendUsername": "user2"})
+        response = self.client.post(reverse("ecoworld:friends"), {"friendUsername": "user2"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "You are already friends with this user!")
 
     def testAcceptRequest(self):
         #Testing that accepting a friend request works
         FriendRequests.objects.create(senderID=self.user2, receiverID=self.user1)
-        response = self.client.post(reverse("EcoWorld:friends"), {"friendar": "user2", "friendaction": "accept"})
+        response = self.client.post(reverse("ecoworld:friends"), {"friendar": "user2", "friendaction": "accept"})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(Friends.objects.filter(userID1=self.user1, userID2=self.user2).exists())
         self.assertFalse(FriendRequests.objects.filter(senderID=self.user2, receiverID=self.user1).exists())
@@ -451,13 +451,13 @@ class TestFriendPage(TestCase):
     def testRejectRequest(self):
         #Test that rejecting a friend request works
         FriendRequests.objects.create(senderID=self.user2, receiverID=self.user1)
-        response = self.client.post(reverse("EcoWorld:friends"), {"friendar": "user2", "friendaction": "reject"})
+        response = self.client.post(reverse("ecoworld:friends"), {"friendar": "user2", "friendaction": "reject"})
         self.assertEqual(response.status_code, 200)
         self.assertFalse(FriendRequests.objects.filter(senderID=self.user2, receiverID=self.user1).exists())
 
     def testRemoveFriend(self):
         #Test to remove a friend
         Friends.objects.create(userID1=self.user1, userID2=self.user2)
-        response = self.client.post(reverse("EcoWorld:friends"), {"remove": "user2"})
+        response = self.client.post(reverse("ecoworld:friends"), {"remove": "user2"})
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Friends.objects.filter(Q(userID1=self.user1, userID2=self.user2) | Q(userID1=self.user2, userID2=self.user1)).exists())

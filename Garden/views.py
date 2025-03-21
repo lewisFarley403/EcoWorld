@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
 
-from EcoWorld.models import ownsCard, card, User
+from ecoworld.models import ownsCard, card, User
 from .models import garden, gardenSquare
 
 
