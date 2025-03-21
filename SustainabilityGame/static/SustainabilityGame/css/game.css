@@ -227,4 +227,8 @@ button:hover {
     .mobile-controls {
         display: block;
     }
+
+    .game-container{
+        padding-top: 60px;
+    }
 }

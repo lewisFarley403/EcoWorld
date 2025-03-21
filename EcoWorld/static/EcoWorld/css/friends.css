@@ -234,7 +234,7 @@ body {
         align-items: center;
         justify-content: flex-start;
         height: auto; /* Let it adjust based on content */
-        padding: 20px 0;
+        padding-top: 60px;
     }
 
     /* Override absolute positioning for boxes */
