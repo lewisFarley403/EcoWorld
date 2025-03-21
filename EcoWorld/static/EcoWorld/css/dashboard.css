@@ -128,7 +128,9 @@ body {
     .main-content {
         flex-direction: column;
         overflow: auto;
-        height: auto;
+        padding-top: 60px;
+        height: 100vh;
+        flex: none;
     }
 
     .left-panel, .right-panel {
