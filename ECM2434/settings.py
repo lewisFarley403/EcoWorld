@@ -34,7 +34,12 @@ SECRET_KEY = "django-insecure-kyoddd82$!d_nttqwz9-u%kt8+ql)(@hgpkqm2&&70nf6ri7eu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['whniecm2434.pythonanywhere.com','127.0.0.1','http://192.168.0.33:8000']
+ALLOWED_HOSTS = ['whniecm2434.pythonanywhere.com',
+                 '127.0.0.1',
+                 'http://192.168.0.33:8000',
+                 '10.207.102.152',
+                 "192.168.0.140"
+                 ]
 
 
 
@@ -56,6 +61,8 @@ INSTALLED_APPS = [
     'guides',
     'leaderboards',
     'glassDisposal',
+    'SustainabilityGame',
+    'forum',
 ]
 
 MIDDLEWARE = [
@@ -86,6 +93,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = "ECM2434.wsgi.application"
 
@@ -123,9 +131,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en-gb"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "GMT"
 
 USE_I18N = True
 
@@ -147,7 +155,9 @@ STATICFILES_DIRS = [
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = "/ecoworld/"
+
 
 
 MEDIA_URL = '/media/'  # The URL to access media files
@@ -158,7 +168,7 @@ GARDEN_SIZE=5
 NUM_CHALLENGES=3
 from datetime import datetime, timedelta
 
-CHALLENGE_EXPIRY = timedelta(seconds=10)  # The time in seconds before a challenge expires
+CHALLENGE_EXPIRY = timedelta(minutes=1)  # The time in seconds before a challenge expires
 
 CHALLENGE_WORTH = 10  # The number of coins a challenge is worth
 QR_CODE_WIDTH=128
@@ -166,3 +176,8 @@ QR_CODE_HEIGHT=128
 DRINKING_COOLDOWN = timedelta(seconds=20)  # The time in minutes before a user can drink again
 DRINK_VALUE = 10  # The number of coins a drink is worth
 GLASS_DISPOSAL_REWARD_PER_BOTTLE = 10 #the number of coins gained from handing in a bottle (each)
+DAILY_OBJECTIVE_RESET_INTERVAL = timedelta(seconds=30)
+
+CHALLENGE_RESET_INTERVAL = timedelta(minutes=1)
+
+VALUE_OF_DRINK = 100

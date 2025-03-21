@@ -2,11 +2,13 @@ import json
 import os
 from django.test import TestCase, Client
 from django.core.management import call_command
-from Accounts.models import Profile
-from EcoWorld.models import pack, card, cardRarity, ownsCard, User,ongoingChallenge
+from Accounts.models import Profile, FriendRequests, Friends
+from EcoWorld.models import pack, card, cardRarity, User,ongoingChallenge
 from django.urls import reverse
 from django.conf import settings
 from datetime import timedelta
+from django.db.models import Q
+
 """
 Testing class for the packmodels
 Methods:
@@ -370,4 +372,92 @@ class TestChallenge(TestCase):
 
 
 
+"""
+Test class for the friends page to make sure all things load properly from the GET method and all POST options are dealt
+with correctly
+
+Methods:
+    setUp() : Sets up 3 users for the friends functions
+    testGetRequest(): Test to see that all requests are shown properly
+    testSendRequest(): Test to see what happens when you send a friend request
+    testRequestToNonExistentPerson(): Tests to see what happens if you request a non existent person
+    testSendToSelf():Tests what happens when you try to request yourself as a friend
+    testDuplicateRequest(): Tests what happens when you try to send a request to the same person twice 
+    textExistingFriend(): Test to see what happens if you try to request an existing friend  
+    testAcceptRequest(): Tests accepting a friend request
+    testRejectRequest(): Tests rejecting a friend request
+    testRemoveFriend(): Tests removing a friend using the button
+
+
+"""
+class TestFriendPage(TestCase):
+    def setUp(self):
+        #Set up 3 users for the friends page and login to user1
+        self.user1 = User.objects.create_user(username="user1", password="testpass")
+        self.user2 = User.objects.create_user(username="user2", password="testpass")
+        self.user3 = User.objects.create_user(username="user3", password="testpass")
+
+        self.client.login(username="user1", password="testpass")
+
+    def testGetRequest(self):
+        #Test that all things go the page that should on the page loading
+        response = self.client.get(reverse("EcoWorld:friends"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("userinfo", response.context)
+        self.assertIn("friendreqs", response.context)
+        self.assertIn("friends", response.context)
+
+    def testSendRequest(self):
+        #Test sending a friend request
+        response = self.client.post(reverse("EcoWorld:friends"), {"friendUsername": "user2"})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(FriendRequests.objects.filter(senderID=self.user1, receiverID=self.user2).exists())
+
+    def testRequestToNonExistentPerson(self):
+        #Tests sending a request to someone who doesnt exist
+        response = self.client.post(reverse("EcoWorld:friends"), {"friendUsername": "nonexistent"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "User Not Found!")
     
+    def testSendToSelf(self):
+        #Testing that the correct response happens if you send a request to yourself
+        response = self.client.post(reverse("EcoWorld:friends"), {"friendUsername": "user1"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "You cant request yourself")
+
+
+    def testDuplicateRequest(self):
+        #Testing that when sending a friend request while one pending it doesnt add another
+        FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
+        response = self.client.post(reverse("EcoWorld:friends"), {"friendUsername": "user2"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Friend request already pending")
+
+    def testExistingFriend(self):
+        #Testing that you cant send a request to an existing friend
+        Friends.objects.create(userID1=self.user1, userID2=self.user2)
+        response = self.client.post(reverse("EcoWorld:friends"), {"friendUsername": "user2"})
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "You are already friends with this user!")
+
+    def testAcceptRequest(self):
+        #Testing that accepting a friend request works
+        FriendRequests.objects.create(senderID=self.user2, receiverID=self.user1)
+        response = self.client.post(reverse("EcoWorld:friends"), {"friendar": "user2", "friendaction": "accept"})
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Friends.objects.filter(userID1=self.user1, userID2=self.user2).exists())
+        self.assertFalse(FriendRequests.objects.filter(senderID=self.user2, receiverID=self.user1).exists())
+
+    def testRejectRequest(self):
+        #Test that rejecting a friend request works
+        FriendRequests.objects.create(senderID=self.user2, receiverID=self.user1)
+        response = self.client.post(reverse("EcoWorld:friends"), {"friendar": "user2", "friendaction": "reject"})
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(FriendRequests.objects.filter(senderID=self.user2, receiverID=self.user1).exists())
+
+    def testRemoveFriend(self):
+        #Test to remove a friend
+        Friends.objects.create(userID1=self.user1, userID2=self.user2)
+        response = self.client.post(reverse("EcoWorld:friends"), {"remove": "user2"})
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Friends.objects.filter(Q(userID1=self.user1, userID2=self.user2) | Q(userID1=self.user2, userID2=self.user1)).exists())

@@ -1,11 +1,13 @@
-from django.test import TestCase
-from django.test import TestCase
-from django.contrib.auth.models import User
-from .models import Profile
-from .forms import SignUpForm,ProfileUpdateForm
-from django.urls import reverse
-from Garden.models import garden,gardenSquare
 from django.conf import settings
+from django.contrib.auth.models import User
+from django.test import TestCase
+from django.urls import reverse
+
+from Garden.models import garden, gardenSquare
+from .forms import SignUpForm, ProfileUpdateForm
+from .models import Profile, FriendRequests, Friends
+
+
 # model test
 class ProfileModelTest(TestCase):
     def setUp(self):
@@ -41,7 +43,7 @@ class testSignupForm(TestCase):
         }
         form = SignUpForm(data=form_data)
         self.assertTrue(form.is_valid())
-        
+
     def test_invalid_email_signup_form(self):
         form_data = {
             'first_name': 'John',
@@ -81,9 +83,9 @@ class testSignupForm(TestCase):
         self.assertEqual(user.username, 'testuser')
         self.assertEqual(user.email, 'testuser@gmail.com')
         profile = Profile.objects.get(user=user)
-        print("FIRST NAME : "+profile.first_name)
         self.assertEqual(profile.first_name, 'John')
         self.assertEqual(profile.last_name, 'Doe')
+
     def test_garden_creation(self):
         '''
         Test that a garden is created for a user when they sign up
@@ -242,4 +244,82 @@ class ProfileViewTest(TestCase):
         self.assertEqual(self.profile.bio, 'Updated bio without picture')
         self.assertIsNone(self.profile.profile_picture)  # Should remain None if not updated
 
-# Create your tests here.
+#Test class to test the functionality of creating friends in the DB
+class FriendsTest(TestCase):
+    def setUp(self):
+        #Set up 2 users for the tests
+        self.user1 = User.objects.create_user(username="user1", password="testpass")
+        self.user2 = User.objects.create_user(username="user2", password="testpass")
+
+    #Testing when friendship is created
+    def testCreateFriendship(self):
+        #Creating a friendship between the two users
+        friendship = Friends.objects.create(userID1=self.user1, userID2=self.user2)
+        self.assertEqual(friendship.userID1, self.user1)
+        self.assertEqual(friendship.userID2, self.user2)
+
+    #Testing that a duplicate friendship is not allowed
+    def testDuplicateFriendship(self):
+        Friends.objects.create(userID1=self.user1, userID2=self.user2)
+        with self.assertRaises(Exception):
+            Friends.objects.create(userID1=self.user1, userID2=self.user2)
+
+    #Testing the Str method works properly
+    def testStr(self):
+        friendship = Friends.objects.create(userID1=self.user1, userID2=self.user2)
+        self.assertEqual(str(friendship), "user1 is friends with user2")
+
+
+#Test class for friend request table in the DB
+class FriendRequestsTest(TestCase):
+    #Set up the two users needed for the requests to work
+    def setUp(self):
+        self.user1 = User.objects.create_user(username="user1", password="testpass")
+        self.user2 = User.objects.create_user(username="user2", password="testpass")
+
+    #Create a request and make sure it works
+    def testCreateFriendRequest(self):
+        request = FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
+        self.assertEqual(request.senderID, self.user1)
+        self.assertEqual(request.receiverID, self.user2)
+
+    #Make sure that no duplicate friend requests are allowed
+    def testDuplicateFriendRequest(self):
+        FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
+        with self.assertRaises(Exception):
+            FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
+
+    #Test to make sure the STR method works properly
+    def testStr(self):
+        request = FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
+        self.assertEqual(str(request), "user1 sent a request to user2")
+
+
+class DeleteAccountViewTest(TestCase):
+    def setUp(self):
+        """Create a test user."""
+        self.user = User.objects.create_user(username="testuser", password="testpassword")
+
+    def test_delete_account_authenticated_user(self):
+        """Ensure a logged-in user can delete their account."""
+        self.client.login(username="testuser", password="testpassword")
+        response = self.client.post(reverse("delete_account"))
+
+        # Check user is deleted
+        self.assertFalse(User.objects.filter(username="testuser").exists())
+
+        # Check redirection
+        self.assertRedirects(response, "/")
+
+        # Check success message
+        messages = list(response.wsgi_request._messages)
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), "Your account has been deleted successfully.")
+
+    def test_delete_account_unauthenticated_user(self):
+        """Ensure an unauthenticated user is redirected to login."""
+        response = self.client.post(reverse("delete_account"))
+
+        # Should redirect to login
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith("/accounts/login/"))

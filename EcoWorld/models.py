@@ -1,6 +1,6 @@
-from django.db import models
-from django.contrib.auth.models import User
 from django.conf import settings
+from django.contrib.auth.models import User
+
 """
 This module defines the database models for the EcoWorld app:
     - `challenge` : Model for storing challenge information
@@ -35,11 +35,15 @@ class challenge(models.Model):
     """
     name = models.CharField(max_length=50)
     description = models.TextField()
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     created_on = models.DateField()
     worth = models.IntegerField(default=settings.CHALLENGE_WORTH)
+    goal = models.IntegerField(default=1)
+    redirect_url = models.CharField(max_length=255, blank=True, null=True)
+
     def __str__(self):
         return self.name
+
 class ongoingChallenge(models.Model):
     """
     Model for storing challenges currently assigned to a user.
@@ -56,47 +60,19 @@ class ongoingChallenge(models.Model):
     challenge = models.ForeignKey(challenge, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     submission = models.TextField(null=True)
-    submitted_on = models.DateField(null=True)
+
+    submitted_on = models.DateTimeField(null=True, blank=True)
     created_on = models.DateTimeField( auto_now_add=True) #sets this to the current date when the object is created
+    completion_count = models.IntegerField(default=0)
+    progress = models.IntegerField(default =0)
+
     def __str__(self):
         return self.challenge.name + " by " + self.user.username
+    def is_complete(self):
+        return self.submission is not None
     
 
     
-class waterFountain(models.Model):
-    """
-    Model for storing water fountain information.
-    Attributes:
-        -name: CharField : The name of the water fountain.
-        -location: CharField : The location of the water fountain.
-    Methods:
-        __str__(): Returns the name of the water fountain.
-    author:
-        -Lewis Farley (lf507@exeter.ac.uk)
-    """
-    name = models.CharField(max_length=50)
-    location = models.CharField(max_length=50)
-    def __str__(self):
-        return self.name
-class drinkEvent(models.Model):
-    """
-    Model for storing drink event information.
-    Attributes:
-        -user: ForeignKey : The user who drank from the fountain.
-        -fountain: ForeignKey : The fountain the user drank
-        -drank_on: DateField : The date the user drank.
-    Methods:
-        __str__(): Returns the name of the user and the fountain they drank from.
-    Author:
-        -Lewis Farley (lf507@exeter.ac.uk)
-    """
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    fountain = models.ForeignKey(waterFountain, on_delete=models.CASCADE)
-    drank_on = models.DateTimeField(auto_now_add=True)
-    def __str__(self):
-        return self.user.username + " drank from " + self.fountain.name+" on "+str(self.drank_on)
-    
-
 
 class cardRarity(models.Model):
     """
@@ -111,6 +87,7 @@ class cardRarity(models.Model):
     title = models.CharField(max_length=50)
     def __str__(self):
         return self.title
+
 class card(models.Model):
     """
     Model for storing card information.
@@ -130,6 +107,7 @@ class card(models.Model):
     image = models.ImageField(upload_to='cards/')
     def __str__(self):
         return self.title
+
 class ownsCard(models.Model):
     """
     Model for storing what cards the user owns and how many.
@@ -148,13 +126,6 @@ class ownsCard(models.Model):
     quantity = models.IntegerField(default=0)
     def __str__(self):
         return self.user.username + " owns " + self.card.title
-
-class WaterBottleFill(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='bottle_uploads/')
-    timestamp = models.DateTimeField(auto_now_add=True)
-    def __str__(self):
-        return f"{self.user.username} - {self.timestamp}"
     
 class pack(models.Model):
     """
@@ -204,4 +175,51 @@ class pack(models.Model):
         cards = card.objects.filter(rarity=rarity)
         cardToReturn = random.choice(cards)
         return cardToReturn
+
+
+
+class Merge(models.Model):
+    """
+    Class to create a merge table in the database for merge actions within the mergecards view
     
+    Attributes:
+        userID = Foreign key, is used to tie the user to the merge being made
+        cardID1 = Foreign key, is used to tie the card for slot 1 to a card
+        cardID2 = Foreign key, is used to tie the card for slot 2 to a card
+        cardID3 = Foreign key, is used to tie the card for slot 3 to a card
+        cardID4 = Foreign key, is used to tie the card for slot 4 to a card
+        cardID5 = Foreign key, is used to tie the card for slot 5 to a card
+    
+    Method:
+        __str__: Returns merge operation for the username
+    Author:
+    Chris Lynch (cl1037@exeter.ac.uk)
+    
+    """
+    userID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="UserID")
+    cardID1 = models.ForeignKey(card, null=True, blank=True, on_delete=models.CASCADE, related_name="CardID1")
+    cardID2 = models.ForeignKey(card, null=True, blank=True, on_delete=models.CASCADE, related_name="CardID2")
+    cardID3 = models.ForeignKey(card, null=True, blank=True, on_delete=models.CASCADE, related_name="CardID3")
+    cardID4 = models.ForeignKey(card, null=True, blank=True, on_delete=models.CASCADE, related_name="CardID4")
+    cardID5 = models.ForeignKey(card, null=True, blank=True, on_delete=models.CASCADE, related_name="CardID5")
+
+    def __str__(self):
+        return f"Merge operation for {self.userID.username}"
+
+#
+# class dailyObjective(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     name = models.CharField(max_length=255)
+#     progress = models.IntegerField(default=0)
+#     goal = models.IntegerField(default=10)  # Example: Must recycle 10 items
+#     completed = models.BooleanField(default=False)
+#     date_created = models.DateField(default=now)
+#     last_reset = models.DateTimeField(default=now) #Field for tracking resets
+#     submission = models.TextField(null=True, blank=True)  # Store user's response
+#     coins = models.IntegerField(default=10)  # New field for coin rewards
+#
+#
+#     def __str__(self):
+#         return f"{self.name} - {self.user.username}"
+
+

@@ -1,197 +1,19 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Garden</title>
-    <style>
-        body {
-            background-color: #00dea5;
-            height: auto;
-            font-family: Arial, Helvetica, sans-serif;
-            overflow-y: hidden;
-
-        }
-        .header {
-            background-color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 10px 20px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%; 
-            z-index: 1000;
-        }
-
-
-        .navbar {
-            width: 100%;
-            max-width: 1200px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar .left-links a,
-        .navbar .right-links span {
-            margin-right: 20px;
-            font-size: 16px;
-            text-decoration: none;
-            color: #003c3c;
-        }
-
-        .navbar .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #003c3c;
-        }
-
-        .navbar .right-links {
-            display: flex;
-            align-items: center;
-        }
-
-        .profile-pic {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-left: 10px;
-            border: 2px solid #00dea5;
-        }
-
-
-        .grid-wrapper {
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
-            width: 50%;
-            position: relative;
-            left: 5%;
-            margin-bottom: 20%;
-        }
-
-        .main-container {
-            display: flex;
-            justify-content: space-between; 
-            align-items: flex-start;
-            width: 90%;
-            margin: 0 auto;
-            padding-top: 120px; 
-        }
-
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(5, 2fr);
-            grid-template-rows: repeat(5, 2fr); 
-            width: 350px; 
-            height: 350px; 
-        }
-
-        .grid-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; 
-        }
-
-        .inventory-box {
-            width: 40%;
-            height: 500px; 
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            overflow-y: auto;
-
-        }
-
-        .inventory-box .h1 {
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-        }
-        .inventory-items {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 15px; 
-    padding: 10px;
-}
-
-.inventory-item {
-    display: flex;
-    justify-content: center;
-    transition: 0.5s ease-in-out;
-
-    
-}
-.inventory-item:hover {
-    scale: (1.1);
-    
-    
-}
-
-
-.card-container {
-    position: relative;
-    width: 90px; 
-    height: 150px;
-}
-
-
-.card-container img {
-    width: 100%;
-    height: 100%;
-    border-radius: 5px;
-    object-fit: cover;
-}
-
-.quantity-badge {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-    background-color: black;
-    color: white;
-    font-size: 12px;
-    font-weight: bold;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-    </style>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'Garden/css/garden.css' %}">
 </head>
-<header class="header">
-    <nav class="navbar">
-        <div class="left-links">
-            <a href="/ecoworld/dashboard">Home</a>
-            <a href="/ecoworld/challenge">Challenges</a>
-            <a href="/guides">Guides</a>
-            <a href="/garden">Garden</a>
-            <a href="/ecoworld/store">Store</a>
-        </div>
-        <div class="logo">Eco World - Your Garden</div>
-        <div class="right-links">
-            <span>{{ userinfo.username }}</span>
-            {% load static %}
-            <img src="{{ userinfo.pfp_url }}" alt="Username" class="profile-pic">
-            <span style="padding-left: 20px;">Coins: {{ userinfo.coins }}</span>
-        </div>
-    </nav>
-</header>
 <body>
+{% include "partials/navbar.html" %}
+<style>.navbar{padding:0;}</style>
     <script>
-        
+
 function allowDrop(event) {
-    event.preventDefault(); 
+    event.preventDefault();
 }
 document.addEventListener("DOMContentLoaded", function () {
     let draggableCards = document.querySelectorAll(".card-container");
@@ -203,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 function drag(event) {
-    console.log("Drag started:", event.target); 
+    console.log("Drag started:", event.target);
 
     let draggedElement = event.target.closest(".card-container");
 
@@ -212,7 +34,7 @@ function drag(event) {
         return;
     }
 
-    let cardId = draggedElement.getAttribute("data-card-id");  
+    let cardId = draggedElement.getAttribute("data-card-id");
     let cardImage = draggedElement.getAttribute("data-card-image");
 
     let img = new Image();
@@ -242,7 +64,7 @@ function drop(event, row, col) {
     event.preventDefault();
 
     let cardId = event.dataTransfer.getData("cardId");
-    let cardImage = event.dataTransfer.getData("cardImage"); 
+    let cardImage = event.dataTransfer.getData("cardImage");
     let csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
 
     console.log(`Attempting to place card ID: ${cardId} at Row: ${row}, Col: ${col}`);
@@ -265,31 +87,31 @@ function drop(event, row, col) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log("Server Response:", data); 
+        console.log("Server Response:", data);
         if (data.success) {
             let targetSquare = event.target.closest(".grid-square");
 
-            
+
             let newCardImage = document.createElement("img");
             newCardImage.src = data.card_image;
             newCardImage.alt = "Card Image";
             newCardImage.setAttribute("data-card-id", cardId);
-            console.log("Before appending, card has data-card-id:", newCardImage.getAttribute("data-card-id")); 
+            console.log("Before appending, card has data-card-id:", newCardImage.getAttribute("data-card-id"));
             newCardImage.addEventListener("click", function() {
                 let clickedCardId = this.getAttribute("data-card-id");
-                console.log("Clicked card:", row, col, clickedCardId); 
+                console.log("Clicked card:", row, col, clickedCardId);
                 removeCard(row, col, clickedCardId);
             });
 
-  
+
             targetSquare.innerHTML = "";
             targetSquare.appendChild(newCardImage);
 
             console.log("After appending, checking the DOM directly...");
             console.log("Image element in DOM:", targetSquare.querySelector("img"));
-            console.log("Retrieved from DOM:", targetSquare.querySelector("img").getAttribute("data-card-id")); 
+            console.log("Retrieved from DOM:", targetSquare.querySelector("img").getAttribute("data-card-id"));
 
-            
+
             let inventoryCard = document.querySelector(`.card-container[data-card-id="${cardId}"]`);
             if (inventoryCard) {
                 let quantityBadge = inventoryCard.querySelector(".quantity-badge");
@@ -332,7 +154,7 @@ function removeCard(row, col) {
             let targetSquare = document.querySelector(`.grid-square[data-row="${row}"][data-col="${col}"]`);
             targetSquare.innerHTML = `<img src="{{ MEDIA_URL }}cards/dirt.jpeg" alt="Empty Square">`;
 
-            
+
             let cardId = data.card_id;
 
             console.log(`Returned card ID ${cardId} to inventory`);
@@ -342,7 +164,7 @@ function removeCard(row, col) {
                 let quantityBadge = inventoryCard.querySelector(".quantity-badge");
                 quantityBadge.innerText = parseInt(quantityBadge.innerText) + 1;
             } else {
-               
+
                 let inventoryContainer = document.querySelector(".inventory-items");
                 let newInventoryCard = document.createElement("div");
                 newInventoryCard.classList.add("inventory-item");
@@ -375,14 +197,10 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     });
 });
-
-
-
     </script>
-    
     </div>
     {%csrf_token%}
-    <div class="main-container">
+    <div class="container">
         <div class="grid-wrapper">
             <div class="grid-container">
                 {% for row in squares %}
@@ -401,7 +219,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     {% endfor %}
                 {% endfor %}
             </div>
-            
+
         </div>
         <div class="inventory-box">
             <h3>User Inventory</h3>
@@ -417,13 +235,20 @@ document.addEventListener("DOMContentLoaded", function() {
                             <span class="quantity-badge">{{ item.quantity }}</span>
                         </div>
                     </div>
+
                 {% empty %}
                     <p>No items in inventory.</p>
                 {% endfor %}
+
+            </div>
+            <div class="mergearea">
+                <a href="/ecoworld/mergecards">
+                    <button type="submit" class="mergebutton">Merge your cards for an Upgrade!</button>
+                </a>
             </div>
         </div>
-        
-        
+
+
     </div>
 </body>
 </html>

@@ -1,0 +1,184 @@
+
+function allowDrop(event) {
+    event.preventDefault();
+}
+document.addEventListener("DOMContentLoaded", function () {let draggableCards = document.querySelectorAll(".card-container");
+    draggableCards.forEach(card => {
+        card.addEventListener("dragstart", drag);
+    });
+});
+
+
+function drag(event) {
+    console.log("Drag started:", event.target);
+
+    let draggedElement = event.target.closest(".card-container");
+
+    if (!draggedElement) {
+        console.error("Drag failed: No valid card container found!");
+        return;
+    }
+
+    let cardId = draggedElement.getAttribute("data-card-id");
+    let cardImage = draggedElement.getAttribute("data-card-image");
+
+    let img = new Image();
+    img.src = cardImage;
+    img.style.width = "10px";
+    img.style.height = "10px";
+    event.dataTransfer.setDragImage(img, 40, 40);
+
+    console.log("Dragging - cardId:", cardId, "cardImage:", cardImage);
+
+    if (!cardId) {
+        console.error("No card ID found on drag!");
+        return;
+    }
+
+    event.dataTransfer.setData("cardId", cardId);
+    event.dataTransfer.setData("cardImage", cardImage);
+
+    event.target.addEventListener("dragend", function () {
+        draggedElement.classList.remove("dragging");
+    });
+}
+
+
+
+function drop(event, row, col) {
+    event.preventDefault();
+
+    let cardId = event.dataTransfer.getData("cardId");
+    let cardImage = event.dataTransfer.getData("cardImage");
+    let csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+
+    console.log(`Attempting to place card ID: ${cardId} at Row: ${row}, Col: ${col}`);
+    if (!cardId) {
+        alert("No card ID found!");
+        return;
+    }
+
+    fetch('/garden/addCard/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
+            row: row,
+            col: col,
+            card_id: parseInt(cardId)
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Server Response:", data);
+            if (data.success) {
+                let targetSquare = event.target.closest(".grid-square");
+
+
+                let newCardImage = document.createElement("img");
+                newCardImage.src = data.card_image;
+                newCardImage.alt = "Card Image";
+                newCardImage.setAttribute("data-card-id", cardId);
+                console.log("Before appending, card has data-card-id:", newCardImage.getAttribute("data-card-id"));
+                newCardImage.addEventListener("click", function() {
+                    let clickedCardId = this.getAttribute("data-card-id");
+                    console.log("Clicked card:", row, col, clickedCardId);
+                    removeCard(row, col, clickedCardId);
+                });
+
+
+                targetSquare.innerHTML = "";
+                targetSquare.appendChild(newCardImage);
+
+                console.log("After appending, checking the DOM directly...");
+                console.log("Image element in DOM:", targetSquare.querySelector("img"));
+                console.log("Retrieved from DOM:", targetSquare.querySelector("img").getAttribute("data-card-id"));
+
+
+                let inventoryCard = document.querySelector(`.card-container[data-card-id="${cardId}"]`);
+                if (inventoryCard) {
+                    let quantityBadge = inventoryCard.querySelector(".quantity-badge");
+                    let currentQuantity = parseInt(quantityBadge.innerText);
+
+                    if (currentQuantity > 1) {
+                        quantityBadge.innerText = currentQuantity - 1;
+                    } else {
+                        inventoryCard.parentNode.removeChild(inventoryCard);
+                    }
+                }
+            } else {
+                alert("Error: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+}
+
+function removeCard(row, col) {
+    let csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
+
+    console.log(`Removing card at Row: ${row}, Col: ${col}`);
+
+    fetch('/garden/removeCard/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
+            row: row,
+            col: col
+        })
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                let targetSquare = document.querySelector(`.grid-square[data-row="${row}"][data-col="${col}"]`);
+                targetSquare.innerHTML = `<img src="{{ MEDIA_URL }}cards/dirt.jpeg" alt="Empty Square">`;
+
+
+                let cardId = data.card_id;
+
+                console.log(`Returned card ID ${cardId} to inventory`);
+
+                let inventoryCard = document.querySelector(`.card-container[data-card-id="${cardId}"]`);
+                if (inventoryCard) {
+                    let quantityBadge = inventoryCard.querySelector(".quantity-badge");
+                    quantityBadge.innerText = parseInt(quantityBadge.innerText) + 1;
+                } else {
+
+                    let inventoryContainer = document.querySelector(".inventory-items");
+                    let newInventoryCard = document.createElement("div");
+                    newInventoryCard.classList.add("inventory-item");
+                    newInventoryCard.innerHTML = `
+                    <div class="card-container" draggable="true" ondragstart="drag(event)"
+                        data-card-id="${cardId}" data-card-image="${data.card_image}">
+                        <img src="${data.card_image}" alt="Card Image">
+                        <span class="quantity-badge">1</span>
+                    </div>`;
+                    inventoryContainer.appendChild(newInventoryCard);
+                }
+            } else {
+                alert("Error: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+}
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".grid-square img").forEach(img => {
+        img.addEventListener("click", function() {
+            let row = this.parentNode.getAttribute("data-row");
+            let col = this.parentNode.getAttribute("data-col");
+            let cardId = this.getAttribute("data-card-id");
+            console.log("Clicked card from DOM Load:", row, col, cardId);
+            removeCard(row, col, cardId);
+        });
+    });
+});

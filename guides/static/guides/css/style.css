@@ -1,6 +1,10 @@
 /* General Styles */
+:root {
+    --navbar-height: 60px;
+}
+
 body {
-    font-family: 'poppins', cursive;
+    font-family: Arial, sans-serif;
     background-color: skyblue;
     background-image: url("../res/background.png");
     background-size: cover;
@@ -8,7 +12,15 @@ body {
     padding: 0;
     box-sizing: border-box;
     position: relative;
-    overflow: hidden;
+    min-height: 100vh;
+}
+
+.container {
+    padding-top: calc(var(--navbar-height) + 20px);
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
 }
 
 .leaf {
@@ -32,20 +44,15 @@ body {
     }
 }
 
-
 h1.text-center {
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     color: #00dea5;
-    text-shadow:
-        -2px -2px 0 black,
-         2px -2px 0 black,
-        -2px  2px 0 black,
-         2px  2px 0 black;
+    font-weight:bold;
     font-size: 3vw;
-    margin: 0% ;
+    margin: 0;
 }
 
 .card {
@@ -53,6 +60,8 @@ h1.text-center {
     max-width: 800px;
     margin: 0 auto;
     border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 20px;
 }
 
 .question-box {
@@ -73,7 +82,6 @@ h1.text-center {
 .question-box.slide-in-next {
     transform: translateX(0);
 }
-
 
 .question-box.slide-out-next {
     transform: translateX(-100%);
@@ -148,27 +156,9 @@ button:active {
     transition: width 0.3s ease;
 }
 
-@font-face {
-    font-family: 'jotione';
-    src: url("../fonts/JotiOne-Regular.ttf") format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
 
-@font-face {
-    font-family: 'poppins';
-    src: url("../fonts/Poppins-Medium.ttf") format('truetype');
-    font-weight: normal;
-    font-style: normal;
-}
-
-h1, h2, h3, h4, h5, h6 {
-    font-family: 'jotione', cursive;
-    color: #333;
-}
 
 button {
-    font-family: 'jotione', cursive;
     padding: 10px;
     border: none;
     cursor: pointer;
@@ -195,29 +185,46 @@ button {
     padding: 10px 20px;
 }
 
-.navbar {
+.menu-button {
     width: 100%;
-    max-width: 1200px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-.navbar .left-links a,
-.navbar .right-links span {
-    margin-right: 20px;
+    padding: 10px 20px;
+    text-align: left;
+    background-color: #00dea5;
+    border: none;
+    border-radius: 5px;
     font-size: 16px;
-    text-decoration: none;
-    color: #003c3c;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+.menu-button:hover {
+    background-color: #03c091;
 }
 
-.navbar .logo {
-    font-size: 24px;
-    font-weight: bold;
-    color: #003c3c;
+.menu-button:disabled {
+    cursor: not-allowed;
+    background-color: #03c091;
 }
 
-.navbar .right-links {
-    display: flex;
-    align-items: center;
+.completion-indicator {
+    font-size: 18px;
+    margin-left: 10px;
+}
+
+.menu-list li {
+    width: 100%;
+}
+
+@media(max-width: 768px) {
+   .container{
+       max-width:300px;
+   }
+}
+
+@media(max-width: 400px) {
+   .container{
+       max-width:250px;
+   }
 }

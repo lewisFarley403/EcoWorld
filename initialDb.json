@@ -1,26 +1,11 @@
 [
     {
-        "model": "auth.user",
-        "pk": 1,
-        "fields": {
-            "username": "taskmaster",
-            "first_name": "Test",
-            "last_name": "User",
-            "email": "taskmaster@ecoworld.com",
-            "password": "P@ssword123", 
-            "is_superuser": true,
-            "is_staff": true,
-            "is_active": true,
-            "date_joined": "2025-02-17T12:00:00Z"
-        }
-    },
-    {
         "model": "EcoWorld.challenge",
         "pk": 1,
         "fields": {
             "name": "Fridge Check",
             "description": "Find one food item in your fridge or cupboard that needs to be eaten soon and plan a meal around it to prevent waste.",
-            "created_by": 1,
+            "created_by": null,
             "created_on": "2025-02-16"
         }
     },
@@ -30,7 +15,7 @@
         "fields": {
             "name": "Inbox Detox",
             "description": "Delete at least 50 unnecessary emails or files to reduce digital storage emissions.",
-            "created_by": 1,
+            "created_by": null,
             "created_on": "2025-02-16"
         }
     },
@@ -40,7 +25,7 @@
         "fields": {
             "name": "Light Patrol",
             "description": "Take 5 minutes to check for any unnecessary lights on in the house/area you are in.",
-            "created_by": 1,
+            "created_by": null,
             "created_on": "2025-02-16"
         }
     },
@@ -279,7 +264,7 @@
         }
     },
     {
-        "model":"EcoWorld.waterFountain",
+        "model":"qrCodes.waterFountain",
         "pk": 1,
         "fields": {
             "name": "Forum Library",
@@ -287,7 +272,7 @@
         }
     },
     {
-        "model":"EcoWorld.waterFountain",
+        "model":"qrCodes.waterFountain",
         "pk": 2,
         "fields": {
             "name": "Innovation Cafe",
@@ -295,7 +280,7 @@
         }
     },
     {
-        "model":"EcoWorld.waterFountain",
+        "model":"qrCodes.waterFountain",
         "pk": 3,
         "fields": {
             "name": "The Student Union",

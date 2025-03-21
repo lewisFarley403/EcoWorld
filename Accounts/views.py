@@ -5,22 +5,25 @@ module defines views for the Accounts app:
 author:
     - Ethan Sweeney (es1052@exeter.ac.uk) 
 """
-from django.contrib import messages
-# views.py
+import json
 
-from django.contrib.auth.decorators import login_required
+from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.core import serializers
+from django.http import JsonResponse
 from django.shortcuts import render, redirect
+
+from EcoWorld.models import ownsCard
+from Garden.models import garden
 from .forms import SignUpForm
 from .models import Profile
 from .utils import createGarden, createOwnsDb
-from Garden.models import garden
-from EcoWorld.models import ownsCard
-import json
-from django.core import serializers
-from django.conf import settings
-from django.http import JsonResponse
 
+
+# views.py
 
 
 def privacy_policy(request):
@@ -51,8 +54,6 @@ def signup(request):
         form = SignUpForm(request.POST)
         if form.is_valid():
             user=form.save()
-            print("User: ")
-            print(user)
             # create garden for user
             createGarden(user)
             #creates cards owned by user set default as 0.
@@ -127,6 +128,29 @@ def user_info(request):
     return JsonResponse(user_info)
 
 
+def read_only_profile(request):
+    """
+    This view allows the user to view the profile of another user.
+    Attributes:
+        request : HttpRequest : The HTTP request object
+        username : str : The username of the user whose profile is being viewed
+    Returns:
+        render : HttpResponse : The rendered HTML page
+    Author:
+        - Lewis Farley (lf507@exeter.ac.uk)
+    """
+    username = request.GET.get("username", None)  # Default if no username is provided
+
+    user = User.objects.get(username=username)
+    profile = Profile.objects.get(user=user)
+    print(dir(profile))
+    print()
+    g = garden.objects.get(userID=user)
+    squares = g.gardensquare_set.all()
+    processedSquares = [[squares[i * g.size + j] for j in range(g.size)] for i in range(g.size)]
+    return render(request, 'Accounts/profile.html', {'profile': profile, 'squares': processedSquares, 'MEDIA_URL': settings.MEDIA_URL, 'size': g.size,'is_read_only': True,'username':username})
+
+
 
 @login_required
 def delete_account(request):
@@ -144,3 +168,20 @@ def delete_account(request):
     user.delete()  # Delete the user from the database
     messages.success(request, 'Your account has been deleted successfully.')
     return redirect('/')  # Redirect to login page
+
+
+@login_required
+def logout_view(request):
+    """
+    This view logs out the user and redirects them to the home page.
+
+    Attributes:
+        request : HttpRequest : The HTTP request object
+    Returns:
+        redirect : HttpResponse : The HTTP response redirecting to the home page
+    Author:
+        - Ethan Sweeney (es1052@exeter.ac.uk)
+    """
+    logout(request)
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('/')

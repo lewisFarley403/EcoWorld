@@ -1,0 +1,53 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    max-height: 100vh;
+    background-color: #00dea5;
+
+}
+
+.gamekeeper-page{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid black;
+    text-align: left;
+    color: white;
+}
+th {
+    background-color: #0e4d46;
+}
+button {
+    background-color: #0e4d46;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #218838;
+}
+
+.gamekeeper-page-button-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 100px;
+    gap: 20px;
+}
+

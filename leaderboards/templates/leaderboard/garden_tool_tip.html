@@ -1,0 +1,40 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/garden_tool_tip.css' %}">
+    
+</head>
+<body id = 'body'>
+    {%csrf_token%}
+    <div class="garden-tooltip">
+        <h3 class="garden-title">{{ username }}'s Garden</h3>
+        <div class="grid-wrapper">
+            <div class="grid-container">
+                {% for row in squares %}
+                    <div class="grid-row">
+                        {% for square in row %}
+                            <div class="grid-square">
+                                {% if square.cardID %}
+                                    <img src="{{ square.cardID.image.url }}" 
+                                         alt="{{ square.cardID.title }}"
+                                         class="plant-image"
+                                         title="{{ square.cardID.title }}">
+                                {% else %}
+                                    <img src="{{ MEDIA_URL }}cards/dirt.jpeg" 
+                                         alt="Empty Square"
+                                         class="plant-image"
+                                         title="Empty Plot">
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

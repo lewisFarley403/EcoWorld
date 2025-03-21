@@ -4,36 +4,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="description" content="EcoQuest Leaderboard - See who's leading the eco-friendly gardening challenge!">
+    <title>EcoQuest Leaderboard</title>
     <link rel="stylesheet" href="{% static 'css/leaderboard.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <script src="{% static 'js/leaderboard.js' %}"></script>
+    <div id="tooltip" class="tooltip"></div>
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+    
     <div id="nav">
         {% include "partials/navbar.html" %}
     </div>
 
-    <div id = 'top3'>
-        <div class = 'player-container'>
-            <img id = 'firstPfp' class = 'pfp'/>
-            <p id = 'firstName'>Player 1</p>
+    <div class="root">
+        <h1 class="leaderboard-title">Top Eco Warriors</h1>
+        
+        <div class="top-3-container">
+            <div id="top3" class="podium">
+                <div class="player-container under-container second-place" data-position="2">
+                    <div class="rank-badge">2</div>
+                    <img id="secondPfp" class="pfp" src="{{ userinfo.pfp_url|default:'/media/pfps/default_pfp.png' }}" alt="Second place"/>
+                    <p id="secondName" class="player-name">Loading...</p>
+                    <p id="secondScore" class="score">0</p>
+                </div>
+
+                <div class="player-container champion first-place" data-position="1">
+                    <img src="/media/pfps/crown.png" class="crown" alt="Crown">
+                    <div class="rank-badge">1</div>
+                    <img id="firstPfp" class="pfp" src="{{ userinfo.pfp_url|default:'/media/pfps/default_pfp.png' }}" alt="First place"/>
+                    <p id="firstName" class="player-name">Loading...</p>
+                    <p id="firstScore" class="score">0</p>
+                </div>
+
+                <div class="player-container under-container third-place" data-position="3">
+                    <div class="rank-badge">3</div>
+                    <img id="thirdPfp" class="pfp" src="{{ userinfo.pfp_url|default:'/media/pfps/default_pfp.png' }}" alt="Third place"/>
+                    <p id="thirdName" class="player-name">Loading...</p>
+                    <p id="thirdScore" class="score">0</p>
+                </div>
+            </div>
         </div>
 
-        <div class = 'player-container'>
-            <img id = 'secondPfp'/>
-            <p id = 'secondName'>Player 1</p>
-        </div>
-
-        <div class = 'player-container'>
-            <img id = 'thirdPfp'/>
-            <p id = 'thirdName'>Player 1</p>
+        <div id="leaderboard" class="leaderboard-container">
+            <table id="leaderboard-table">
+                <thead>
+                    <tr>
+                        <th class="title">Rank</th>
+                        <th class="title">Player</th>
+                        <th class="title">Eco Points</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-body">
+                    <!-- Dynamic rows here -->
+                </tbody>
+                <tfoot>
+                    <tr class="current-user-row">
+                        <td id="current-rank"></td>
+                        <td id="current-name"></td>
+                        <td id="current-coins"></td>
+                    </tr>
+                </tfoot>
+            </table>
         </div>
     </div>
-
-    <div id = 'leaderboard'>
-
-    </div>
-    
+    <script src="{% static 'js/leaderboard.js' %}"></script>
 </body>
 </html>
 

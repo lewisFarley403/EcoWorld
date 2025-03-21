@@ -43,7 +43,13 @@ awareness and actionable steps towards environmental sustainability.
    python manage.py migrate
    python manage.py loaddata initialDb.json
    ```
-3. Run the django server ```python manage.py runserver```
+   
+3. Next, create a superuser account to access the gamekeeper panel for the first time:
+   ```sh
+   python manage.py createsuperuser
+   ```
+
+4. Run the django server ```python manage.py runserver```
 
 
 ### 

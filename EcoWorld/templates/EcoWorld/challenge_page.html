@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eco World - Challenges</title>
+    <link rel="stylesheet" href="{% static 'EcoWorld/css/challenges.css' %}">
+    <style>
+        .countdown {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #666;
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+        }
+        .clock-emoji {
+            font-size: 1.4em;
+            display: inline-block;
+            transform-origin: center;
+            transition: transform 0.1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+{% include "partials/navbar.html" %}
+<main class="main-content">
+    <div class="left-panel">
+        <img src={% static "EcoWorld/res/greenery.png" %} alt="greenery">
+    </div>
+
+    <div class="center-content">
+        <div class="tile challenges-section">
+            <h2>Challenges</h2>
+            <div id="challenges-container">
+                <div class="challenge-card {% if not is_drink_available %}completed{% endif %}" id="challenge-{{ challenges.0.id }}">
+                    <span class="challenge-title">Take a drink</span>
+                    {% if is_drink_available %}
+                        <button class="complete-btn" onclick="window.location.href='/qrcode/scanner'">✔</button>
+                    {% else %}
+                        <span class="countdown" id="drink-countdown"></span><span class="clock-emoji" id="clock-animation">🕐</span>
+                    {% endif %}
+                </div>
+                <div class="challenge-card" id="challenge-recycle">
+                    <span class="challenge-title">Recycle Glass</span>
+                    <button class="complete-btn" onclick="window.location.href='#'">✔</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="tile daily-objectives-section">
+            <h2>Daily Objectives</h2>
+            <div id="objectives-container">
+                {% for objective in daily_objectives %}
+                    <div class="objective-card">
+                        <span class="objective-title">{{ objective.challenge.name }}</span>
+                        <button class="progress-btn" onclick="incrementObjective('{{ objective.id }}', this)">+</button>
+                        <span class="progress-count">{{ objective.progress }}/{{ objective.challenge.goal }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="tile progress-tracker-section">
+            <h2>Progress Tracker</h2>
+            <div class="progress-item">
+                <span>Daily Objectives Completed:</span>
+                <progress id="progress-bar" max="{{ total_objectives }}" value="{{ completed_objectives }}"></progress>
+                <span id="daily-objectives-tracker">{{ completed_objectives }}/{{ total_objectives }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="right-panel">
+        <img src="{% static 'EcoWorld/res/greenery.png' %}" alt="greenery">
+    </div>
+</main>
+
+<script src="{% static '/EcoWorld/js/challenges.js' %}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const lastDrinkTime = new Date('{{ last_drink_time|date:"c" }}').getTime();
+    const cooldownSeconds = {{ settings.DRINKING_COOLDOWN.total_seconds }};
+    let clockTick = true;
+    
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const timeSinceLastDrink = (now - lastDrinkTime) / 1000; // Convert to seconds
+        const timeLeft = cooldownSeconds - timeSinceLastDrink;
+        
+        const countdownElement = document.getElementById('drink-countdown');
+        const clockElement = document.getElementById('clock-animation');
+        
+        if (countdownElement && timeLeft > 0) {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = Math.floor(timeLeft % 60);
+            countdownElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Animate clock with more distinct states
+            if (clockElement) {
+                clockElement.textContent = clockTick ? '🕒' : '🕐';
+                clockElement.style.transform = clockTick ? 'scale(1.1)' : 'scale(1)';
+                clockTick = !clockTick;
+            }
+        } else if (timeLeft <= 0) {
+            window.location.reload();
+        }
+    }
+
+    if (!{{ is_drink_available|yesno:"true,false" }}) {
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    }
+});
+</script>
+</body>
+</html>
