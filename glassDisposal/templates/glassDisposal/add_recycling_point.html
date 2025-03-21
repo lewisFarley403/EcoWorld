@@ -1,57 +1,126 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Add Recycling Point</title>
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet"
-        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        crossorigin=""/>
-  <style>
-    #map {
-      width: 100%;
-      max-width: 600px;
-      height: 400px;
-      margin-bottom: 20px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Recycling Point</title>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet"
+          href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          crossorigin=""/>
+    <style>
+        #map {
+            width: 100%;
+            max-width: 600px;
+            height: 400px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        body {
+            padding-top: 60px;
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .postcode-search {
+            margin-bottom: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        #postcode-input {
+            padding: 8px 12px;
+            width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        #postcode-search-btn {
+            padding: 8px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 16px;
+        }
+        #postcode-search-btn:hover {
+            background-color: #45a049;
+        }
+        .coordinate-display {
+            margin: 15px 0;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            width: 300px;
+            margin: 5px 0;
+        }
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-  <h1>Add Recycling Point</h1>
-  <div id="map"></div>
-  <form method="post" action="">
+{% include "partials/navbar.html" %}
+<style>
+    .navbar { padding: 0; }
+</style>
+
+<h1>Add Recycling Point</h1>
+
+<!-- Postcode Search -->
+<div class="postcode-search">
+    <input type="text"
+           id="postcode-input"
+           placeholder="Enter postcode (e.g., SW1A 1AA)">
+    <button type="button" id="postcode-search-btn">Search</button>
+</div>
+
+<!-- Map Container -->
+<div id="map"></div>
+
+<!-- Main Form -->
+<form method="post" action="">
     {% csrf_token %}
-    <label for="name">Recycling Point Name:</label>
-    <input type="text" id="name" name="name" required>
+
+    <!-- Coordinate Display -->
+    <div class="coordinate-display">
+        <strong>Selected Location:</strong><br>
+        <span id="display-latitude">Latitude: Not selected</span><br>
+        <span id="display-longitude">Longitude: Not selected</span><br>
+        <span id="display-postcode">Postcode: Not found</span>
+    </div>
+
+    <!-- Name Input -->
+    <div style="margin: 15px 0;">
+        <label for="name">Recycling Point Name:</label><br>
+        <input type="text" id="name" name="name" required>
+    </div>
+
+    <!-- Hidden Fields -->
     <input type="hidden" id="latitude" name="latitude">
     <input type="hidden" id="longitude" name="longitude">
-    <br><br>
+    <input type="hidden" id="postcode" name="postcode">
+
+    <!-- Submit Button -->
     <button type="submit">Add Recycling Point</button>
-  </form>
+</form>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-          crossorigin=""></script>
-  <script>
-    // Initialize the map
-    const map = L.map('map').setView([20, 0], 2);
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        crossorigin=""></script>
 
-    // Add OpenStreetMap tiles
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
-    // Marker logic (unchanged)
-    let marker;
-    map.on('click', function(e) {
-      const lat = e.latlng.lat;
-      const lng = e.latlng.lng;
-      if (marker) marker.setLatLng(e.latlng);
-      else marker = L.marker(e.latlng).addTo(map);
-      document.getElementById('latitude').value = lat;
-      document.getElementById('longitude').value = lng;
-    });
-  </script>
+{% load static %}
+<script src="{% static 'js/add_recycling_point.js' %}" defer></script>
 </body>
 </html>

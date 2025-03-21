@@ -14,7 +14,7 @@ Author:
 
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Permission
 from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from glassDisposal.models import GlassDisposalEntry, RecyclingLocation
@@ -188,3 +188,101 @@ class GlassDisposalTests(TestCase):
 
         # Ensure the correct number of coins earned is displayed
         self.assertContains(response, f"You have earned <strong>{coins_earned}</strong> coins!", msg_prefix="Thank-you message not found.")
+
+
+class DeleteRecyclingPointTests(TestCase):
+    def setUp(self):
+        # Create test user with permission
+        self.user = User.objects.create_user(
+            username='gamekeeper',
+            password='testpass123'
+        )
+        permission = Permission.objects.get(codename='can_view_gamekeeper_button')
+        self.user.user_permissions.add(permission)
+        self.user.save()
+
+        # Create test data
+        self.location1 = RecyclingLocation.objects.create(
+            name="Test Location 1",
+            latitude=51.5074,
+            longitude=-0.1278
+        )
+        self.location2 = RecyclingLocation.objects.create(
+            name="Test Location 2",
+            latitude=52.4862,
+            longitude=-1.8904
+        )
+
+        self.client = Client()
+        self.client.login(username='gamekeeper', password='testpass123')
+
+    def test_view_url_exists_at_desired_location(self):
+        response = self.client.get('/glass-disposal/delete_recycling_point/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_view_requires_permission(self):
+        # Create unauthorized user
+        unauth_user = User.objects.create_user(
+            username='regularuser',
+            password='testpass123'
+        )
+        client = Client()
+        client.login(username='regularuser', password='testpass123')
+
+        response = client.get(reverse('delete_recycling_point_list'))
+        self.assertEqual(response.status_code, 403)
+
+    def test_list_view_returns_all_locations(self):
+        response = self.client.get(reverse('delete_recycling_point_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Test Location 1")
+        self.assertContains(response, "Test Location 2")
+        self.assertEqual(len(response.context['locations']), 2)
+
+    def test_delete_post_deletes_location(self):
+        url = reverse('delete_recycling_point', kwargs={'pk': self.location1.pk})
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('delete_recycling_point_list'))
+        self.assertEqual(RecyclingLocation.objects.count(), 1)
+
+    def test_delete_nonexistent_location_returns_404(self):
+        url = reverse('delete_recycling_point', kwargs={'pk': 999})
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_request_to_delete_url_does_not_delete(self):
+        url = reverse('delete_recycling_point', kwargs={'pk': self.location1.pk})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(RecyclingLocation.objects.count(), 2)
+
+    def test_context_contains_csrf_token(self):
+        response = self.client.get(reverse('delete_recycling_point_list'))
+        self.assertIn('csrf_token', response.context)
+        self.assertTrue(response.context['csrf_token'])
+
+    def test_post_deletion_updates_list_view(self):
+        # Delete first location
+        self.client.post(reverse('delete_recycling_point', kwargs={'pk': self.location1.pk}))
+
+        # Check list view
+        response = self.client.get(reverse('delete_recycling_point_list'))
+        self.assertEqual(len(response.context['locations']), 1)
+        self.assertNotContains(response, "Test Location 1")
+        self.assertContains(response, "Test Location 2")
+
+    def test_template_used(self):
+        response = self.client.get(reverse('delete_recycling_point_list'))
+        self.assertTemplateUsed(response, 'glassDisposal/delete_recycling_point.html')
+
+    def test_view_handles_zero_locations(self):
+        # Delete all locations
+        RecyclingLocation.objects.all().delete()
+
+        response = self.client.get(reverse('delete_recycling_point_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['locations']), 0)
+        self.assertContains(response, "No recycling points found")

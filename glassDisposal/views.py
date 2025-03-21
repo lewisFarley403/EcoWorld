@@ -124,6 +124,7 @@ def add_recycling_point(request):
     return render(request, 'glassDisposal/add_recycling_point.html')
 
 
+@permission_required("Accounts.can_view_gamekeeper_button")
 def delete_recycling_point(request, pk=None):
     if pk:
         location = get_object_or_404(RecyclingLocation, pk=pk)
