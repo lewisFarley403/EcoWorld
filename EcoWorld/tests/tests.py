@@ -3,7 +3,7 @@ import os
 from django.test import TestCase, Client
 from django.core.management import call_command
 from Accounts.models import Profile, FriendRequests, Friends
-from EcoWorld.models import pack, card, cardRarity, User,ongoingChallenge
+from EcoWorld.models import Merge, ownsCard, pack, card, cardRarity, User,ongoingChallenge
 from django.urls import reverse
 from django.conf import settings
 from datetime import timedelta
@@ -401,7 +401,7 @@ class TestFriendPage(TestCase):
 
     def testGetRequest(self):
         #Test that all things go the page that should on the page loading
-        response = self.client.get(reverse("friends"))
+        response = self.client.get(reverse("EcoWorld:friends"))
         self.assertEqual(response.status_code, 200)
         self.assertIn("userinfo", response.context)
         self.assertIn("friendreqs", response.context)
@@ -409,19 +409,19 @@ class TestFriendPage(TestCase):
 
     def testSendRequest(self):
         #Test sending a friend request
-        response = self.client.post(reverse("friends"), {"friendUsername": "user2"})
+        response = self.client.post(reverse("EcoWorld:friends"), {"friendUsername": "user2"})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(FriendRequests.objects.filter(senderID=self.user1, receiverID=self.user2).exists())
 
     def testRequestToNonExistentPerson(self):
         #Tests sending a request to someone who doesnt exist
-        response = self.client.post(reverse("friends"), {"friendUsername": "nonexistent"})
+        response = self.client.post(reverse("EcoWorld:friends"), {"friendUsername": "nonexistent"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "User Not Found!")
     
     def testSendToSelf(self):
         #Testing that the correct response happens if you send a request to yourself
-        response = self.client.post(reverse("friends"), {"friendUsername": "user1"})
+        response = self.client.post(reverse("EcoWorld:friends"), {"friendUsername": "user1"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "You cant request yourself")
 
@@ -429,21 +429,21 @@ class TestFriendPage(TestCase):
     def testDuplicateRequest(self):
         #Testing that when sending a friend request while one pending it doesnt add another
         FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
-        response = self.client.post(reverse("friends"), {"friendUsername": "user2"})
+        response = self.client.post(reverse("EcoWorld:friends"), {"friendUsername": "user2"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Friend request already pending")
 
     def testExistingFriend(self):
         #Testing that you cant send a request to an existing friend
         Friends.objects.create(userID1=self.user1, userID2=self.user2)
-        response = self.client.post(reverse("friends"), {"friendUsername": "user2"})
+        response = self.client.post(reverse("EcoWorld:friends"), {"friendUsername": "user2"})
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "You are already friends with this user!")
 
     def testAcceptRequest(self):
         #Testing that accepting a friend request works
         FriendRequests.objects.create(senderID=self.user2, receiverID=self.user1)
-        response = self.client.post(reverse("friends"), {"friendar": "user2", "friendaction": "accept"})
+        response = self.client.post(reverse("EcoWorld:friends"), {"friendar": "user2", "friendaction": "accept"})
         self.assertEqual(response.status_code, 200)
         self.assertTrue(Friends.objects.filter(userID1=self.user1, userID2=self.user2).exists())
         self.assertFalse(FriendRequests.objects.filter(senderID=self.user2, receiverID=self.user1).exists())
@@ -451,13 +451,106 @@ class TestFriendPage(TestCase):
     def testRejectRequest(self):
         #Test that rejecting a friend request works
         FriendRequests.objects.create(senderID=self.user2, receiverID=self.user1)
-        response = self.client.post(reverse("friends"), {"friendar": "user2", "friendaction": "reject"})
+        response = self.client.post(reverse("EcoWorld:friends"), {"friendar": "user2", "friendaction": "reject"})
         self.assertEqual(response.status_code, 200)
         self.assertFalse(FriendRequests.objects.filter(senderID=self.user2, receiverID=self.user1).exists())
 
     def testRemoveFriend(self):
         #Test to remove a friend
         Friends.objects.create(userID1=self.user1, userID2=self.user2)
-        response = self.client.post(reverse("friends"), {"remove": "user2"})
+        response = self.client.post(reverse("EcoWorld:friends"), {"remove": "user2"})
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Friends.objects.filter(Q(userID1=self.user1, userID2=self.user2) | Q(userID1=self.user2, userID2=self.user1)).exists())
+
+
+"""
+Test class for the merge page to merge cards together for an upgrade. Tests that it loads properly and the functions in the page work
+correctly
+
+Methods:
+    setUp(): Sets up cards for the merging functions and a user to be logged in
+    testGetRequest(): Tests that on loadup the page functons correctly with the correct items in
+    testRarityPost(): When selecting rarity checks correct features are added to page
+    testAddCard(): Tests that when adding card to table it works correctly
+    testRemoveCard(): Tests when removing card from table it works correctly
+
+    Author:
+    Chris Lynch (cl1037@exeter.ac.uk)
+"""
+class TestMergeCards(TestCase):
+    def setUp(self):
+        #Creates user and logs in
+        self.user = User.objects.create_user(username="testuser", password="testpass")
+        self.client.login(username="testuser", password="testpass")
+        
+        #Creates rarities for tests
+        self.rarity_common = cardRarity.objects.create(id=1, title="Common")
+        self.rarity_uncommon = cardRarity.objects.create(id=2, title="Uncommon")
+        
+        #Creates two cards of same rarity
+        self.card1 = card.objects.create(title="Card 1", rarity_id=self.rarity_common.id, image="cards/card1.jpg")
+        self.card2 = card.objects.create(title="Card 2", rarity_id=self.rarity_common.id, image="cards/card2.jpg")
+        
+        #Gives user card for placements
+        self.ownCard1 = ownsCard.objects.create(user=self.user, card=self.card1, quantity=5)
+
+    #Test that correct things are returned when page is loaded
+    def testGetRequest(self):
+        response = self.client.get(reverse("EcoWorld:mergecards"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("userinfo", response.context)
+        self.assertIn("merge", response.context)
+
+    #Tests when selecting a rarity the table works correctly
+    def testRarityPost(self):
+        response = self.client.post(reverse("EcoWorld:mergecards"), {"rarity": self.rarity_common.id})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("playerItems", response.context)
+        self.assertIn("rarity", response.context)
+        self.assertIn("merge", response.context)
+
+    #Tests when adding a card to the merge slot it works correctly
+    def testAddCard(self):
+        #Add card to merge slot 1
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "addCard": self.card1.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        #Checks that the card actually went into a slot
+        merge_instance = Merge.objects.get(userID=self.user)
+        merge_slots = [
+            merge_instance.cardID1,
+            merge_instance.cardID2,
+            merge_instance.cardID3,
+            merge_instance.cardID4,
+            merge_instance.cardID5,
+        ]
+        self.assertTrue(self.card1 in merge_slots)
+        #Makes sure inventory decreased when adding to slot
+        own = ownsCard.objects.get(user=self.user, card=self.card1)
+        self.assertEqual(own.quantity, 4)
+
+    #Test to check when removing a card from a slot it works correctly
+    def testRemoveCard(self):
+        #Adds a card to merge slot
+        merge_instance, created = Merge.objects.get_or_create(userID=self.user)
+        merge_instance.cardID1 = self.card1
+        merge_instance.save()
+        #Checks it got removed from inventory properly
+        own = ownsCard.objects.get(user=self.user, card=self.card1)
+        own.quantity -= 1
+        own.save()
+
+        #Send POST request to remove that card from the slot
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "removeCard": self.card1.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        #Checks that the card was removed from the slot
+        merge_instance.refresh_from_db()
+        self.assertIsNone(merge_instance.cardID1)
+        #Checks that the card was added back to the inventory
+        own.refresh_from_db()
+        self.assertEqual(own.quantity, 5)
