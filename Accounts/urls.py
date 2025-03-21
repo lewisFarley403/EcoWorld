@@ -16,7 +16,7 @@ from . import views
 urlpatterns = [
     path('signup/', views.signup, name='signup'),
     path('', auth_views.LoginView.as_view(), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
+    path('logout/', views.logout_view, name='logout'),  # Use your custom logout view
     path('profile/', views.profile, name='profile'),
     path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
     path('api/userinfo/', views.user_info, name='user_info'),
