@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Define character encoding and ensure proper scaling on different devices -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Set the title of the page -->
+    <title>Thank You</title>
+
+    <!-- Link to the external CSS file for styling -->
+    <link rel="stylesheet" href="{% static 'EcoWorld/css/style.css' %}">
+</head>
+<body>
+    <!-- Main container for the thank you message and related content -->
+    <div class="thankyou-container">
+        <!-- Header message -->
+        <h2>Thank You!</h2>
+        <!-- Confirmation message for the recorded glass disposal -->
+        <p>Your glass disposal has been recorded.</p>
+
+        <!-- Section displaying the number of coins earned -->
+        <p>You have earned <strong>{{ coins_earned }}</strong> coins!</p>
+
+        <!-- Link to allow the user to submit another disposal entry -->
+        <a href="{% url 'submit_disposal' %}" class="btn">Submit Another Entry</a>
+    </div>
+</body>
+</html>

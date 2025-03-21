@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "qrCodes",
     'guides',
     'leaderboards',
+    'glassDisposal',
     'SustainabilityGame',
     'forum',
 ]
@@ -174,6 +175,7 @@ QR_CODE_WIDTH=128
 QR_CODE_HEIGHT=128
 DRINKING_COOLDOWN = timedelta(seconds=20)  # The time in minutes before a user can drink again
 DRINK_VALUE = 10  # The number of coins a drink is worth
+GLASS_DISPOSAL_REWARD_PER_BOTTLE = 10 #the number of coins gained from handing in a bottle (each)
 DAILY_OBJECTIVE_RESET_INTERVAL = timedelta(seconds=30)
 
 CHALLENGE_RESET_INTERVAL = timedelta(minutes=1)
