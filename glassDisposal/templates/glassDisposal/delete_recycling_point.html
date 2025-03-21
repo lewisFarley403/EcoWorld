@@ -18,22 +18,22 @@
     </style>
 </head>
 <body>
-    <h1>Delete Recycling Points</h1>
-    <div id="map"></div>
+<h1>Delete Recycling Points</h1>
+<div id="map"></div>
 
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
-    <!-- Recycling points data -->
-        {{ locations|json_script:"locations-data" }}
-    <script>
-        // Initialize map
+<!-- Recycling points data -->
+{{ locations|json_script:"locations-data" }}
+<script>
+    // Initialize map
 
 
-        // Get locations data from Django template
-        const locations = JSON.parse(document.getElementById('locations-data').textContent);
+    // Get locations data from Django template
+    const locations = JSON.parse(document.getElementById('locations-data').textContent);
 
-            // Set initial map coordinates
+    // Set initial map coordinates
     let initialCoords = [51.505, -0.09];  // Default coordinates
     let initialZoom = 2;  // Default zoom
 
@@ -42,13 +42,13 @@
         initialCoords = [locations[0].latitude, locations[0].longitude];
         initialZoom = 13;  // Closer zoom for individual locations
     }
-        const map = L.map('map').setView(initialCoords, initialZoom);
-    
-     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+    const map = L.map('map').setView(initialCoords, initialZoom);
 
-        // Add markers with popups
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Add markers with popups
     locations.forEach(location => {
         const marker = L.marker([location.latitude, location.longitude]).addTo(map);
 
@@ -69,6 +69,6 @@
 
         marker.bindPopup(popupContent);
     });
-    </script>
+</script>
 </body>
 </html>
