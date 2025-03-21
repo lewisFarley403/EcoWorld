@@ -28,6 +28,13 @@
 
 <h1>Delete Recycling Points</h1>
 <div id="map"></div>
+<script id="locations-data" type="application/json">[]</script>
+<script>
+    const locations = JSON.parse(document.getElementById('locations-data').textContent);
+    if (locations.length === 0) {
+        document.write("<p>No recycling points found</p>");
+    }
+</script>
 
 <!-- Leaflet JS -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
