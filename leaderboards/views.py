@@ -1,10 +1,13 @@
-from django.shortcuts import render
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from .models import UserEarntCoins
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from django.conf import settings
+from django.shortcuts import render
+
 from Garden.models import garden
+from .models import UserEarntCoins
+
+
 # Create your views here.
 @login_required
 def leaderboard(request):
@@ -66,7 +69,6 @@ def get_ranked_users(request):
         'rank': current_user_rank
     }
     # Return the data as a JSON response
-    print(settings.MEDIA_URL)
     return JsonResponse({'rankedUsers': ranked_users,'MEDIA_URL': settings.MEDIA_URL,'current_user_data':current_user_data})
 
 

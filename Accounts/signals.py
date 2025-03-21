@@ -9,11 +9,13 @@ usage:
 author:
     - Ethan Sweeney (es1052@exeter.ac.uk)
 """
-from leaderboards.models import UserEarntCoins
-from django.db.models.signals import post_save,pre_save
-from django.dispatch import receiver
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save, pre_save
+from django.dispatch import receiver
+
+from leaderboards.models import UserEarntCoins
 from .models import Profile
+
 
 @receiver(post_save, sender=User)
 def create_or_update_profile(sender, instance, created, **kwargs):

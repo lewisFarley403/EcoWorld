@@ -7,28 +7,10 @@
     <title>EcoWorld - MergeCards</title>
     <link rel="stylesheet" href="{% static 'EcoWorld/css/mergecards.css' %}">
 </head>
-<header class="header">
-    <nav class="navbar">
-        <div class="left-links">
-            <a href="/ecoworld/dashboard">Home</a>
-            <a href="/ecoworld/challenge">Challenges</a>
-            <a href="/guides">Guides</a>
-            <a href="/garden">Garden</a>
-            <a href="/ecoworld/store">Store</a>
-        </div>
-        <div class="logo">Eco World - Merge Cards</div>
-        <div class="right-links">
-            <span>{{ userinfo.username }}</span>
-            {% load static %}
-            <img src="{{ userinfo.pfp_url }}" alt="Username" class="profile-pic">
-            <span style="padding-left: 20px;">Coins: {{ userinfo.coins }}</span>
-            <a href = "/ecoworld/friends">
-                <img src="/media/misc/friend.png" class="profile-pic">
-            </a>
-        </div>
-    </nav>
-</header>
 <body>
+{% include "partials/navbar.html" %}
+    <style>.navbar{padding:0;}</style>
+
     <div class="mainContainer">
         <div class="mergebox">
             <div class="mergeSection">

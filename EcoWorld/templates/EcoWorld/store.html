@@ -5,53 +5,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>EcoWorld - Store </title>
         <style>
-
-        .header {
-            background-color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 10px 20px;
-            top: 0;
-            width: 100%;
-            position: fixed;
-        }
-
-        .navbar {
-            width: 100%;
-            max-width: 1200px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar .left-links a,
-        .navbar .right-links span {
-            margin-right: 20px;
-            font-size: 16px;
-            text-decoration: none;
-            color: #003c3c;
-        }
-
-        .navbar .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #003c3c;
-        }
-
-        .navbar .right-links {
-            display: flex;
-            align-items: center;
-        }
-
-        .profile-pic {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-left: 10px;
-            border: 2px solid #00dea5;
-        }
             body {
                 background: linear-gradient(to bottom, #0e4d46, rgb(13, 143, 13));
                 color: white; 
@@ -59,10 +12,17 @@
                 display: flex;
                 flex-direction: column;
                 align-items: center;
-                justify-content: center;
-                height: 100vh;
-                overflow-y: hidden;
+                min-height: 100vh;
                 overflow-x: hidden;
+            }
+
+            .container {
+                width: 100%;
+                max-width: 1200px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 80px;
             }
 
             .h1 {
@@ -106,7 +66,6 @@
                 height: 350px;
                 width: 240px;
                 outline: 1px solid white;
-
             }
 
             .packBox:hover .packInfo {
@@ -149,35 +108,13 @@
             .buy-btn:hover {
                 background-color: #2d3748;
             }
-
-            
         </style>
     </head>
-       <header class="header">
-            <nav class="navbar">
-                <div class="left-links">
-                    <a href="/ecoworld/dashboard">Home</a>
-                    <a href="/ecoworld/challenge">Challenges</a>
-                    <a href="/guides">Guides</a>
-                    <a href="/garden">Garden</a>
-                    <a href="/ecoworld/store">Store</a>
-                </div>
-                <div class="logo">Eco World</div>
-                <div class="right-links">
-                    <span>{{ userinfo.username }}</span>
-                    {% load static %}
-                    <img src="{{ userinfo.pfp_url }}" alt="Username" class="profile-pic">
-                    <span style="padding-left: 20px;">Coins: {{ userinfo.coins }}</span>
-                    <a href = "/ecoworld/friends">
-                        <img src="/media/misc/friend.png" class="profile-pic">
-                    </a>
-                </div>
-            </nav>
-    </header>
     <body>
+    {% include "partials/navbar.html" %}
+    <style>.navbar{padding:0;}</style>
+    <div class="container">
         <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-        
-
 
         <div class="h1">Welcome to the Store!</div>
         <div class="packSection">
@@ -186,7 +123,7 @@
                     <img class="img" src="{{ pack.image_url}}"><br>
                     <div class="packInfo">
                         <h2>{{ pack.title }}</h2>
-                        <h4>This is a basic pack which has the following chances: </h4>
+                        <h4>This is a {{ pack.title}} which has the following chances: </h4>
                         <p>Common: {{ pack.common_prob }} chance</p>
                         <p>Rare: {{ pack.rare_prob }} chance</p>
                         <p>Epic: {{ pack.epic_prob }} chance</p>
@@ -231,5 +168,6 @@
     }
 
     </script>     
+    </div>
     </body>
 </html>

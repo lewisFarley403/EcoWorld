@@ -1,6 +1,6 @@
-from django.db import models
-from django.contrib.auth.models import User
 from django.conf import settings
+from django.contrib.auth.models import User
+
 """
 This module defines the database models for the EcoWorld app:
     - `challenge` : Model for storing challenge information
@@ -35,11 +35,15 @@ class challenge(models.Model):
     """
     name = models.CharField(max_length=50)
     description = models.TextField()
-    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     created_on = models.DateField()
     worth = models.IntegerField(default=settings.CHALLENGE_WORTH)
+    goal = models.IntegerField(default=1)
+    redirect_url = models.CharField(max_length=255, blank=True, null=True)
+
     def __str__(self):
         return self.name
+
 class ongoingChallenge(models.Model):
     """
     Model for storing challenges currently assigned to a user.
@@ -56,10 +60,19 @@ class ongoingChallenge(models.Model):
     challenge = models.ForeignKey(challenge, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     submission = models.TextField(null=True)
-    submitted_on = models.DateField(null=True)
+
+    submitted_on = models.DateTimeField(null=True, blank=True)
     created_on = models.DateTimeField( auto_now_add=True) #sets this to the current date when the object is created
+    completion_count = models.IntegerField(default=0)
+    progress = models.IntegerField(default =0)
+
     def __str__(self):
         return self.challenge.name + " by " + self.user.username
+    def is_complete(self):
+        return self.submission is not None
+    
+
+    
 
 class cardRarity(models.Model):
     """
@@ -192,3 +205,21 @@ class Merge(models.Model):
 
     def __str__(self):
         return f"Merge operation for {self.userID.username}"
+
+#
+# class dailyObjective(models.Model):
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     name = models.CharField(max_length=255)
+#     progress = models.IntegerField(default=0)
+#     goal = models.IntegerField(default=10)  # Example: Must recycle 10 items
+#     completed = models.BooleanField(default=False)
+#     date_created = models.DateField(default=now)
+#     last_reset = models.DateTimeField(default=now) #Field for tracking resets
+#     submission = models.TextField(null=True, blank=True)  # Store user's response
+#     coins = models.IntegerField(default=10)  # New field for coin rewards
+#
+#
+#     def __str__(self):
+#         return f"{self.name} - {self.user.username}"
+
+

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eco Snake Game{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'SustainabilityGame/css/game.css' %}">
+{% endblock %}
+
+{% block content %}
+    {% csrf_token %}
+    {% include "partials/navbar.html" %}
+    <style>.navbar{padding:0;}</style>
+    <div class="game-container">
+        <h1>Eco Snake</h1>
+        <p>Clean up the environment by collecting waste!</p>
+
+        <div class="game-stats">
+            <div class="stat">Score: <span id="score">0</span></div>
+            <div class="stat">Trash Collected: <span id="trash-collected">0</span></div>
+        </div>
+
+        <canvas id="gameCanvas" width="600" height="400"></canvas>
+
+        <div class="game-instructions">
+            <p>Use arrow keys to move. Collect waste to grow and earn points!</p>
+            <button id="start-btn">Start Game</button>
+            <button id="pause-btn">Pause</button>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'SustainabilityGame/js/game.js' %}"></script>
+{% endblock %}

@@ -5,36 +5,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz</title>
+    <title>{{ pair.title }} Quiz</title>
     <link rel="stylesheet" href="{% static 'guides/css/style.css' %}">
 </head>
 <body>
-
-    <header class="header">
-        <nav class="navbar">
-            <div class="left-links">
-                <a href="/ecoworld/dashboard/">Home</a>
-            </div>
-            <div class="logo">Eco World</div>
-            <div class="right-links">
-                <span>Username</span>
-                <img src="{% static 'EcoWorld/res/Username.png' %}" alt="Username" class="card-image">
-            </div>
-        </nav>
-    </header>
+{% include "partials/navbar.html" %}
 
     <div class="container mt-5">
         <div class="card shadow p-4">
-            <h1 class="text-center text-success">Sustainability Quiz</h1>
+            <h1 class="text-center text-success">{{ pair.title }} Quiz</h1>
 
-            <!-- Progress Bar -->
             <div id="progress-bar-container">
                 <div id="progress-bar"></div>
             </div>
 
             <form id="quiz-form">
                 {% csrf_token %}
-                <!-- Questions will be dynamically inserted here -->
                 <div id="questions-container"></div>
 
                 <!-- Navigation Buttons -->
@@ -46,8 +32,11 @@
     </div>
 
     <!-- JavaScript Files -->
+    <script>
+        const quizQuestions = JSON.parse('{{ quiz_questions_json|escapejs }}') || [];
+        const pair_id = JSON.parse('{{ pair.id|escapejs }}');
+    </script>
     <script src="{% static 'guides/js/quiz.js' %}"></script>
     <script src="{% static 'guides/js/fallingLeaves.js' %}"></script>
-
 </body>
 </html>

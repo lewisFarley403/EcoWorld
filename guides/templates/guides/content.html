@@ -1,68 +1,29 @@
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
-    {% load static %}
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sustainability Information</title>
-    {% load static %}
-
+    <title>{{ pair.title }}</title>
     <link rel="stylesheet" href="{% static 'guides/css/style.css' %}">
 </head>
 <body>
-
-    <header class="header">
-        <nav class="navbar">
-            <div class="left-links">
-                <a href="/ecoworld/dashboard/">Home</a>
-            </div>
-            <div class="logo">Eco World</div>
-            <div class="right-links">
-                <span>Username</span>
-                <img src="{% static 'EcoWorld/res/Username.png' %}" alt="Username" class="card-image">
-            </div>
-        </nav>
-    </header>
+{% include "partials/navbar.html" %}
 
     <div class="container mt-5">
         <div class="card shadow p-4">
-            <h1 class="text-center text-success">Sustainability Information</h1>
-
-            <!-- Progress Bar -->
-            <div id="progress-bar-container">
-                <div id="progress-bar"></div>
-            </div>
-
-            <!-- Paragraph Display -->
+            <h1 class="text-center text-success">{{ pair.title }}</h1>
             <div id="paragraph-display" class="paragraph-box">
-                {{ paragraphs.0 }}
+                {{ pair.content }}
             </div>
-
-            <!-- Navigation Buttons -->
-            <div class="text-center">
-                <button type="button" id="prev-button" class="nav-button">Previous</button>
-                <button type="button" id="next-button" class="nav-button">Next</button>
-            </div>
-
-            <!-- Take the Quiz Button -->
             <div class="text-center mt-4">
-                <a href="{% url 'quiz' %}">
+                <a href="{% url 'quiz' pair.id %}">
                     <button type="button" class="nav-button">Take the Quiz</button>
                 </a>
             </div>
         </div>
     </div>
-
-    <!-- JavaScript Files -->
-    {% load static %}
-
     <script src="{% static 'guides/js/fallingLeaves.js' %}"></script>
-    <script src="{% static 'guides/js/content.js' %}"></script>
-    <script>
-        const paragraphs = {{ paragraphs|safe }};
-    </script>
-
 </body>
 </html>
