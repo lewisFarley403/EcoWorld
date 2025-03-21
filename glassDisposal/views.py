@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from django.conf import settings
 from .models import GlassDisposalEntry, RecyclingLocation
@@ -122,3 +122,18 @@ def add_recycling_point(request):
             )
             return redirect('EcoWorld:gamekeeper_page')  # Replace with your success URL or view name
     return render(request, 'glassDisposal/add_recycling_point.html')
+
+
+def delete_recycling_point(request, pk=None):
+    if pk:
+        location = get_object_or_404(RecyclingLocation, pk=pk)
+        if request.method == 'POST':
+            location.delete()
+            return redirect('delete_recycling_point_list')
+
+    # Convert to list of dicts including id
+    locations = RecyclingLocation.objects.all().values('id', 'name', 'latitude', 'longitude')
+    return render(request, 'glassDisposal/delete_recycling_point.html', {
+        'locations': list(locations),
+        'csrf_token': request.COOKIES.get('csrftoken', '')  # Pass CSRF token
+    })
