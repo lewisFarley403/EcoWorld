@@ -1,3 +1,5 @@
+import json
+from http.client import responses
 from importlib.resources import contents
 
 from django.template.defaultfilters import title
@@ -11,29 +13,32 @@ from Accounts.models import Profile
 
 class ContentQuizPairModelTest(TestCase):
     def setUp(self):
-        self.guide1 = ContentQuizPair.objects.create(title='test1',
-                                                     content= 'test content',
-                                                     quiz_questions='',
-                                                     )
+        self.guide1 = ContentQuizPair.objects.create(
+            title='test1',
+            content= 'test content',
+            quiz_questions='',
+            )
 
     def test_contentQuizPair_str_method(self):
         self.assertEqual(str(self.guide1),'test1')
 
 
     def test_contentQuizPair_defaults(self):
-        contentQuizPair2 = ContentQuizPair.objects.create(title='title',
-                                                          content='content',
-                                                          quiz_questions = ''
-                                                          )
+        contentQuizPair2 = ContentQuizPair.objects.create(
+            title='title',
+            content='content',
+            quiz_questions = ''
+            )
         self.assertEqual(contentQuizPair2.quiz_max_marks,-1)
         self.assertEqual(contentQuizPair2.reward,50)
 
     def test_contentQuizPair_custom_values(self):
-        contentQuizPair3 = ContentQuizPair.objects.create(title='custom_title',
-                                                          content='custom_content',
-                                                          quiz_questions='',
-                                                          quiz_max_marks=10,
-                                                          reward=100
+        contentQuizPair3 = ContentQuizPair.objects.create(
+            title='custom_title',
+            content='custom_content',
+            quiz_questions='',
+            quiz_max_marks=10,
+            reward=100
         )
         self.assertEqual(contentQuizPair3.quiz_max_marks, 10)
         self.assertEqual(contentQuizPair3.reward, 100)
@@ -138,6 +143,13 @@ class GuidesViewsTest(TestCase):
             quiz_max_marks=1,
             reward=50
         )
+        self.users_results = UserQuizResult.objects.create(
+            user=self.user,
+            content_quiz_pair=self.guide1,
+            score=1,
+            best_result=1,
+            previous_best=0
+        )
 
     def test_menu_view(self):
         self.client.login(username='testuser', password='password123')
@@ -150,3 +162,28 @@ class GuidesViewsTest(TestCase):
         response = self.client.get(reverse('content', args=[self.guide1.id]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'test content')
+
+    def test_remove_guides_view(self):
+        self.client.login(username='testuser', password='password123')
+        response = self.client.get(reverse('remove guide'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_add_guide_view(self):
+        self.client.login(username='testuser', password='password123')
+        response = self.client.get(reverse('add guide'))
+        self.assertEqual(response.status_code, 302)
+
+    def test_results_view(self):
+        self.client.login(username='testuser', password='password123')
+        response = self.client.get(reverse('results',args=[self.guide1.id]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_registerScore_view(self):
+        self.client.login(username='testuser', password='password123')
+        data = {'score': 1}
+        response = self.client.post(
+            reverse('registerScore', args=[self.guide1.id]),
+            data=json.dumps(data),
+            content_type = 'application/json'
+        )
+        self.assertEqual(response.status_code, 200)
