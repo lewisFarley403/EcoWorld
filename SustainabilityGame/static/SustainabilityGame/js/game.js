@@ -1,13 +1,17 @@
-// Game Configuration
+// Game Configuration object containing all game settings
 const CONFIG = {
-    grid: { size: 25, speed: 100 },
-    canvas: { width: 600, height: 400 },
+    grid: { size: 25, speed: 100 }, // Grid cell size and game speed
+    canvas: { width: 600, height: 400 }, // Canvas dimensions
     colors: {
-        background: '#f5f5f5',
-        snake: { head: '#4CAF50', body: '#81C784', border: '#388E3C' },
-        overlay: 'rgba(0, 0, 0, 0.7)'
+        background: '#f5f5f5', // Light gray background
+        snake: {
+            head: '#4CAF50', // Green head
+            body: '#81C784', // Lighter green body
+            border: '#388E3C' // Dark green border
+        },
+        overlay: 'rgba(0, 0, 0, 0.7)' // Semi-transparent black overlay
     },
-    trash: [
+    trash: [ // Different types of collectible trash with points
         { name: 'plastic', color: '#3498db', points: 10 },
         { name: 'paper', color: '#ecf0f1', points: 5 },
         { name: 'metal', color: '#7f8c8d', points: 15 },
@@ -18,6 +22,7 @@ const CONFIG = {
     maxWidth: 800     // maximum canvas width
 };
 
+// Load trash images for each type
 const trashImages = {
     'plastic': new Image(),
     'paper': new Image(),
@@ -25,11 +30,13 @@ const trashImages = {
     'glass': new Image()
 };
 
+// Set image sources for each trash type
 trashImages.plastic.src = '/static/SustainabilityGame/img/trash/plastic-bottle.png';
 trashImages.paper.src = '/static/SustainabilityGame/img/trash/paper.png';
 trashImages.metal.src = '/static/SustainabilityGame/img/trash/metal-can.png';
 trashImages.glass.src = '/static/SustainabilityGame/img/trash/glass-bottle.png';
 
+// Main Game class handling game logic and rendering
 class Game {
     constructor() {
         this.initializeCanvas();
@@ -63,7 +70,6 @@ class Game {
         window.addEventListener('resize', resizeCanvas);
     }
 
-
     bindElements() {
         this.elements = {
             score: document.getElementById('score'),
@@ -73,33 +79,36 @@ class Game {
         };
     }
 
+    // Set up keyboard and touch input handlers
     setupEventListeners() {
         document.addEventListener('keydown', this.handleInput.bind(this));
         this.elements.startBtn.addEventListener('click', () => this.start());
         this.elements.pauseBtn.addEventListener('click', () => this.togglePause());
-        
-        // Add touch controls
+
+        // Touch controls for mobile play
         let touchStart = { x: 0, y: 0 };
         this.canvas.addEventListener('touchstart', (e) => {
             touchStart.x = e.touches[0].clientX;
             touchStart.y = e.touches[0].clientY;
         });
-        
+
         this.canvas.addEventListener('touchmove', (e) => {
             if (!this.state.isRunning) return;
-            const touchEnd = { 
-                x: e.touches[0].clientX, 
-                y: e.touches[0].clientY 
+            const touchEnd = {
+                x: e.touches[0].clientX,
+                y: e.touches[0].clientY
             };
             this.handleSwipe(touchStart, touchEnd);
             e.preventDefault();
         });
     }
 
+    // Process swipe gestures for mobile controls
     handleSwipe(start, end) {
         const dx = end.x - start.x;
         const dy = end.y - start.y;
-        
+
+        // Determine swipe direction and update snake movement
         if (Math.abs(dx) > Math.abs(dy)) {
             if (dx > 0 && this.state.direction !== 'left') this.state.nextDirection = 'right';
             else if (dx < 0 && this.state.direction !== 'right') this.state.nextDirection = 'left';
@@ -109,6 +118,7 @@ class Game {
         }
     }
 
+    // Handle keyboard input for snake control
     handleInput(event) {
         const keyActions = {
             'ArrowUp': () => this.state.direction !== 'down' && (this.state.nextDirection = 'up'),
@@ -124,14 +134,15 @@ class Game {
         }
     }
 
+    // Start new game
     start() {
         if (this.state.isRunning) return;
-
         this.state.reset();
         this.state.isRunning = true;
         requestAnimationFrame(this.gameLoop.bind(this));
     }
 
+    // Main game loop
     gameLoop(timestamp) {
         if (!this.state.isRunning) return;
 
@@ -144,6 +155,7 @@ class Game {
         requestAnimationFrame(this.gameLoop.bind(this));
     }
 
+    // Update game state each frame
     update() {
         const nextPosition = this.state.getNextPosition();
 
@@ -152,44 +164,42 @@ class Game {
             return;
         }
 
-        // Move snake
+        // Move snake and check for trash collection
         this.state.moveSnake(nextPosition);
-
-        // Check for trash collection
         if (this.state.hasCollectedTrash(nextPosition)) {
             this.handleTrashCollection();
         }
     }
 
-
+    // Check for collisions with walls or self
     checkCollision(position) {
-        return this.state.isOutOfBounds(position) || 
-               this.state.hasHitSelf(position);
+        return this.state.isOutOfBounds(position) ||
+            this.state.hasHitSelf(position);
     }
 
+    // Handle trash collection and scoring
     handleTrashCollection() {
         this.state.updateScore();
         this.updateUI();
-        // Don't remove tail when collecting trash
         this.state.snake.push(this.state.snake[this.state.snake.length - 1]);
         this.state.placeNewTrash();
     }
 
+    // End game and save score
     end() {
         this.state.isRunning = false;
-        // Make sure score is properly calculated before saving
         const finalScore = {
             score: this.state.score,
             trashCollected: this.state.trashCollected
         };
-        // Force immediate score save
         this.saveScore(finalScore);
     }
 
+    // Toggle game pause state
     togglePause() {
         this.state.isRunning = !this.state.isRunning;
         this.elements.pauseBtn.textContent = this.state.isRunning ? 'Pause' : 'Resume';
-        
+
         if (!this.state.isRunning) {
             this.renderer.drawPaused();
         } else {
@@ -197,6 +207,7 @@ class Game {
         }
     }
 
+    // Draw current game state
     draw() {
         this.renderer.clear();
         this.renderer.drawBackground();
@@ -204,11 +215,13 @@ class Game {
         this.renderer.drawTrash(this.state.trash);
     }
 
+    // Update score display
     updateUI() {
         this.elements.score.textContent = this.state.score;
         this.elements.trashCount.textContent = this.state.trashCollected;
     }
 
+    // Display game over popup with score
     showGameOverPopup(coinsEarned) {
         const overlay = document.createElement('div');
         overlay.className = 'game-over-overlay';
@@ -232,13 +245,10 @@ class Game {
         document.querySelector('.game-container').appendChild(overlay);
     }
 
-
+    // Save score to server
     async saveScore() {
         try {
-            // Get CSRF token from meta tag
             const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-            // Make sure CSRF token exists
             if (!csrftoken) {
                 console.error('CSRF token not found');
                 return;
@@ -264,11 +274,11 @@ class Game {
             }
         } catch (error) {
             console.error('Error saving score:', error);
-            // Show popup even if save fails
             this.showGameOverPopup(0);
         }
     }
 
+    // Calculate coins earned based on score
     calculateCoins(score) {
         if (score < 150) return 0;
         let a = 4;
@@ -412,3 +422,4 @@ class Renderer {
 
 // Initialize game when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => new Game());
+
