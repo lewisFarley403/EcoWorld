@@ -1,8 +1,10 @@
 import json
+import markdown
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils.safestring import mark_safe
 
 from forum.models import Post
 from .forms import GuidesForm, DeleteForm
@@ -40,6 +42,8 @@ def remove_guide(request):
 def add_guide(request):
     """
     This view allows an admin to add a new content-quiz pair.
+    The content field supports Markdown formatting which will be rendered
+    in the content view.
 
     Attributes:
         request (HttpRequest): The request object containing form data.
@@ -168,6 +172,10 @@ def content_view(request, pair_id):
         Johnny Say (js1687@exeter.ac.uk)
     """
     pair = get_object_or_404(ContentQuizPair, id=pair_id)
+    
+    # Convert markdown content to HTML and mark as safe
+    pair.html_content = mark_safe(markdown.markdown(pair.content))
+    
     user = request.user
     user = User.objects.get(id=user.id)
     pfp_url = user.profile.profile_picture
@@ -265,7 +273,10 @@ def registerScore_view(request, pair_id):
         user.save()
 
     result.save()
+    
+    # Create a post about guide completion using the original markdown content
     Post.create_from_guide(pair.title, pair.content, user, score)
+    
     return JsonResponse({'status': 'success', 'redirect_url': f'/guides/results/{pair_id}/'})
 
 @login_required
