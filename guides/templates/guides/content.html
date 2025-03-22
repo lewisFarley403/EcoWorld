@@ -15,7 +15,7 @@
         <div class="card shadow p-4">
             <h1 class="text-center text-success">{{ pair.title }}</h1>
             <div id="paragraph-display" class="paragraph-box">
-                {{ pair.content }}
+                {{ pair.html_content }}
             </div>
             <div class="text-center mt-4">
                 <a href="{% url 'quiz' pair.id %}">

@@ -15,7 +15,7 @@
 }
 
 body {
-   background: url('../images/garden_image.jpeg') no-repeat center center/cover;
+    background: #00dea5;
     height: 100vh;
     display: flex;
     align-items: center;
@@ -35,6 +35,7 @@ body::before {
     background: inherit;
     filter: blur(8px);
     z-index: -1;
+    display: none;
 }
 
 
@@ -166,3 +167,162 @@ body::before {
 .btn-submit:hover {
     background-color: var(--dark-green);
 }
+
+/* glass disposal page */
+.glass-disposal-container {
+    background-image: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #00dea5; /* light green background */
+    padding: 20px;
+}
+
+.glass-disposal-form {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    width: 50%;
+    text-align: center;
+}
+
+.glass-disposal-form label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+}
+
+.glass-disposal-form input,
+.glass-disposal-form textarea {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.glass-disposal-form button {
+    background-color: #003c3c;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 15px;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.glass-disposal-form button:hover {
+    background-color: #0e4d46; /* lighter green on hover */
+}
+
+/* thank You Page */
+.thankyou-container {
+    background-color: white;
+    padding: 30px;
+    width: 350px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.thankyou-container h2 {
+    font-size: 24px;
+    color: #003c3c;
+    margin-bottom: 10px;
+}
+
+.thankyou-container p {
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.thankyou-container .btn {
+    display: inline-block;
+    padding: 10px 15px;
+    background-color: #004d4d;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+.thankyou-container .btn:hover {
+    background-color: #003c3c;
+}
+
+/*centers the form in the middle */
+.form-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #00dea5;
+}
+
+.form-container {
+    background: white;
+    padding: 25px;
+    width: 350px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.form-container label {
+    font-weight: bold;
+    margin-top: 10px;
+    display: block;
+    text-align: left;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+    width: 100%;
+}
+
+/* input fields styling */
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 5px;
+}
+
+.form-container .btn-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* buttons */
+.btn-location {
+    width: 48%; /* Ensures both buttons are equal size */
+    padding: 10px;
+    background-color: #004d4d;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-align: center;
+}
+
+.btn-location:hover {
+    background-color: #003c3c;
+}
+
+
+

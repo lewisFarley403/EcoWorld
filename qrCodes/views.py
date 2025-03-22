@@ -25,7 +25,7 @@ def scan_code(request):
     if last_drink:
         time_difference = timezone.now() - last_drink.drank_on
         if time_difference < settings.DRINKING_COOLDOWN:
-            return render(request, 'drink_cooldown_page.html')
+            return redirect( "EcoWorld:challenge")
     # More than 20 minutes have passed
     drinkEvent.objects.create(user=user,fountain=waterFountain.objects.get(id=fountain_id))
     user.profile.number_of_coins += settings.VALUE_OF_DRINK

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forum Management</title>
+    <link rel="stylesheet" href="{% static 'EcoWorld/css/gamekeeper_page.css' %}">
+    <style>
+        .ratio-high {
+            color: #ff4444;
+        }
+        .ratio-medium {
+            color: #ffbb33;
+        }
+        .ratio-low {
+            color: #00C851;
+        }
+        .post-content {
+            max-width: 500px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+{% include "partials/navbar.html" %}
+<div class="gamekeeper-page">
+    <h2>Forum Management</h2>
+    <table>
+        <tr>
+            <th>User</th>
+            <th>Post Type</th>
+            <th>Content</th>
+            <th>Created At</th>
+            <th>Likes</th>
+            <th>Dislikes</th>
+            <th>Dislike Ratio</th>
+            <th>Actions</th>
+        </tr>
+        {% for post_data in posts %}
+            <tr>
+                <td>{{ post_data.post.user.username }}</td>
+                <td>{{ post_data.post.post_type }}</td>
+                <td class="post-content">
+                    {% if post_data.post.post_type == 'guide' %}
+                        {{ post_data.post.title }}
+                    {% elif post_data.post.post_type == 'challenge' %}
+                        {{ post_data.post.submission }}
+                    {% else %}
+                        {{ post_data.post.card_achievement.title }}
+                    {% endif %}
+                </td>
+                <td>{{ post_data.post.created_at|date:"Y-m-d H:i" }}</td>
+                <td>{{ post_data.likes }}</td>
+                <td>{{ post_data.dislikes }}</td>
+                <td class="{% if post_data.ratio != 'N/A' %}
+                    {% if post_data.ratio|slice:':-1'|add:'0' > 50 %}ratio-high
+                    {% elif post_data.ratio|slice:':-1'|add:'0' > 25 %}ratio-medium
+                    {% else %}ratio-low{% endif %}
+                {% endif %}">
+                    {{ post_data.ratio }}
+                </td>
+                <td>
+                    <form action="{% url 'forum:delete_post' post_data.post.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-button">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="8" class="no-posts">No posts require moderation at this time.</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+</body>
+</html> 

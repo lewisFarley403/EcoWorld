@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (profilePicInput && profilePic) {
                 profilePicInput.value = randomPfp;
-                profilePic.src = `/static/Accounts/pfps/${randomPfp}?v=${timestamp}`;
+                profilePic.src = `/media/pfps/${randomPfp}?v=${timestamp}`;
             }
         }
     }

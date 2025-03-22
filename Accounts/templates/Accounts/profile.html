@@ -50,7 +50,7 @@
         <div class="profile-sidebar">
             <h2>{{ profile.username }}</h2>
             <div class="profile-picture-container">
-                <img src="{% static 'Accounts/pfps/' %}{{ profile.profile_picture }}" alt="Profile Picture" class="profile-picture">
+                <img src="/media/pfps/{{ profile.profile_picture }}" alt="Profile Picture" class="profile-picture">
             </div>
             {% if not is_read_only %}
                 <button type="button" id="selectProfilePictureBtn">Change Profile Picture</button>
