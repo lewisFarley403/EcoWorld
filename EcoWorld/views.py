@@ -488,8 +488,9 @@ def friends(request):
         #If removing a friend
         else:
             removeUser = User.objects.filter(username=removeUser).first()
-            removeUserID = removeUser.id
-            Friends.objects.filter(Q(userID1=user, userID2=removeUserID) | Q(userID1=removeUserID, userID2=user)).delete()
+            if removeUser:
+                removeUserID = removeUser.id
+                Friends.objects.filter(Q(userID1=user, userID2=removeUserID) | Q(userID1=removeUserID, userID2=user)).delete()
 
             #Updates data on friend requests
             friendreqs = FriendRequests.objects.filter(receiverID=user)
