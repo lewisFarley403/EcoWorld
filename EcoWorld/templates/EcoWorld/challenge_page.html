@@ -37,14 +37,14 @@
                 <div class="challenge-card {% if not is_drink_available %}completed{% endif %}" id="challenge-{{ challenges.0.id }}">
                     <span class="challenge-title">Take a drink</span>
                     {% if is_drink_available %}
-                        <button class="complete-btn" onclick="window.location.href='/qrcode/scanner'">✔</button>
+                        <button class="complete-btn" onclick="window.location.href='/qrcode/scanner'; setTimeout(function() { window.location.reload(); }, 3000);">✔</button>
                     {% else %}
                         <span class="countdown" id="drink-countdown"></span><span class="clock-emoji" id="clock-animation">🕐</span>
                     {% endif %}
                 </div>
                 <div class="challenge-card" id="challenge-recycle">
                     <span class="challenge-title">Recycle Glass</span>
-                    <button class="complete-btn" onclick="window.location.href='/glass-disposal/submit/'">✔</button>
+                    <button class="complete-btn" onclick="window.location.href='/glass-disposal/submit/'; setTimeout(function() { window.location.reload(); }, 3000);">✔</button>
                 </div>
             </div>
         </div>
