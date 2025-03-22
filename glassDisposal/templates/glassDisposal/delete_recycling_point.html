@@ -1,14 +1,10 @@
-<!-- delete_recycling_point.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delete Recycling Points</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
-</head>
-<body>
-{% include "partials/navbar.html" %}
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
     <style>
         #map {
             width: 100%;
@@ -18,72 +14,72 @@
         .delete-form {
             padding: 10px;
         }
-        body{
-            padding-top: 60px;
-            font-family: Arial, sans-serif;
+        .delete-btn {
+            margin-top: 10px;
+            color: white;
+            background-color: #ff4444;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
         }
-        .navbar{padding:0;}
-
     </style>
+</head>
+<body>
+{% include "partials/navbar.html" %}
+<style>
+    .navbar { padding: 0; }
+</style>
 
-<h1>Delete Recycling Points</h1>
-<div id="map"></div>
-<script id="locations-data" type="application/json">[]</script>
-<script>
-    const locations = JSON.parse(document.getElementById('locations-data').textContent);
-    if (locations.length === 0) {
-        document.write("<p>No recycling points found</p>");
-    }
-</script>
+    <h1>Delete Recycling Points</h1>
+    <div id="map"></div>
 
-<!-- Leaflet JS -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
 
-<!-- Recycling points data -->
-{{ locations|json_script:"locations-data" }}
-<script>
-    // Initialize map
+    <!-- Recycling points data -->
+    {{ locations|json_script:"locations-data" }}
 
+    <script>
+        // Get locations data from Django template
+        const locations = JSON.parse(document.getElementById('locations-data').textContent);
 
-    // Get locations data from Django template
-    const locations = JSON.parse(document.getElementById('locations-data').textContent);
+        // Set initial map coordinates
+        let initialCoords = [51.505, -0.09];  // Default to London
+        let initialZoom = 2;                   // Default zoom (whole world)
 
-    // Set initial map coordinates
-    let initialCoords = [51.505, -0.09];  // Default coordinates
-    let initialZoom = 2;  // Default zoom
+        if (locations.length > 0) {
+            // Use first location's coordinates if available
+            initialCoords = [locations[0].latitude, locations[0].longitude];
+            initialZoom = 13;  // Zoom closer when locations exist
+        }
 
-    if (locations.length > 0) {
-        // Use first location's coordinates
-        initialCoords = [locations[0].latitude, locations[0].longitude];
-        initialZoom = 13;  // Closer zoom for individual locations
-    }
-    const map = L.map('map').setView(initialCoords, initialZoom);
+        // Initialize map
+        const map = L.map('map').setView(initialCoords, initialZoom);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+        // Add markers with popups
+        locations.forEach(location => {
+            const marker = L.marker([location.latitude, location.longitude]).addTo(map);
 
-    // Add markers with popups
-    locations.forEach(location => {
-        const marker = L.marker([location.latitude, location.longitude]).addTo(map);
+            // Create popup content with delete form
+            const popupContent = `
+                <div class="delete-form">
+                    <h3>${location.name}</h3>
+                    <p>Latitude: ${location.latitude.toFixed(4)}</p>
+                    <p>Longitude: ${location.longitude.toFixed(4)}</p>
+                    <form method="post" action="/glass-disposal/delete_recycling_point/${location.id}/">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                        <button type="submit" class="delete-btn">
+                            Delete Point
+                        </button>
+                    </form>
+                </div>
+            `;
 
-        // Create popup content with delete form
-        const popupContent = `
-            <div class="delete-form">
-                <h3>${location.name}</h3>
-                <p>Latitude: ${location.latitude.toFixed(4)}</p>
-                <p>Longitude: ${location.longitude.toFixed(4)}</p>
-                <form method="post" action="/glass-disposal/delete_recycling_point/${location.id}/">
-                    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
-                    <button type="submit" class="delete-btn">
-                        Delete Point
-                    </button>
-                </form>
-            </div>
-        `;
-
-        marker.bindPopup(popupContent);
-    });
-</script>
+            marker.bindPopup(popupContent);
+        });
+    </script>
 </body>
 </html>
