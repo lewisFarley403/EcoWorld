@@ -89,7 +89,7 @@ body::before {
             // Get input value
             const input = document.getElementById('qr-input').value;
             const baseUrl = window.location.origin; // Gets the current domain
-            const qrCodeUrl = `${baseUrl}/qrcode/scanCode?id=${encodeURIComponent(input)}`;
+            const qrCodeUrl = `${baseUrl}/qrcode/scan_code?id=${encodeURIComponent(input)}`;
             // Clear previous QR code
             console.log(qrCodeUrl)
             document.getElementById('qrcode').innerHTML = '';

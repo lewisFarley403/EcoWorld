@@ -60,8 +60,8 @@ def get_challenge_info(request):
                 'id': post.id,
                 'name': post.challenge.name,
                 'description': post.challenge.description,
-                'submission': post.challenge.submission if hasattr(post.challenge, 'submission') else None,
-                'completion_count': post.challenge.completion_count if hasattr(post.challenge, 'completion_count') else 1,
+                'submission': post.submission if hasattr(post, 'submission') else None,
+                'completion_count': post.challenge.goal if hasattr(post.challenge, 'goal') else 1,
                 'submitted_on': post.created_at.isoformat(),
                 'username': post.user.username,
                 'redirect_url': post.challenge.redirect_url if hasattr(post.challenge, 'redirect_url') else None
@@ -204,50 +204,47 @@ def get_post_interactions(request, post_id):
         return JsonResponse({"error": "Post not found"}, status=404)
 
 @permission_required("Accounts.can_view_gamekeeper_button")
-def gamekeeper_page(request):
-    """
-    gamekeeper page for managing forum posts and interactions.
-    Shows posts with high dislike ratios and allows moderation.
-    """
-    if request.method == "GET":
-        userinfo = getUserInfo(request)
-
-    # Get posts with high dislike ratios
-    posts = Post.objects.annotate(
-        like_count=Count(Case(
-            When(interactions__interaction_type='like', then=1),
-            output_field=IntegerField(),
-        )),
-        dislike_count=Count(Case(
-            When(interactions__interaction_type='dislike', then=1),
-            output_field=IntegerField(),
-        ))
-    ).order_by('-dislike_count', '-created_at')
-
-    # Calculate dislike ratio and filter posts
-    posts_with_ratios = []
-    for post in posts:
-        total = post.like_count + post.dislike_count
-        if total > 0:  # Only include posts with interactions
-            ratio = post.dislike_count / total
-            if ratio > 0.5:  # Posts with more dislikes than likes
-                posts_with_ratios.append({
-                    'post': post,
-                    'likes': post.like_count,
-                    'dislikes': post.dislike_count,
-                    'ratio': f"{ratio:.2%}"
-                })
-
-    return render(request, "forum/gamekeeper_page.html", {
-        "posts": posts_with_ratios,
-        "userinfo": userinfo[0]
-    })
-
-@permission_required("Accounts.can_view_gamekeeper_button")
 def delete_post(request, post_id):
     """Delete a post and its interactions."""
+    print('deleting post')
     if request.method == "POST":
+        print('deleting post')
+        print(post_id)
         post = get_object_or_404(Post, id=post_id)
+        print('post : ',post)
         post.delete()
-        return redirect('forum:gamekeeper_page')
-    return redirect('forum:gamekeeper_page')
+        print('post deleted')
+        # post.save()
+        print('post saved')
+        return redirect('forum:forum_gamekeeper')
+    else:
+        print('not a post')
+        return redirect('forum:forum_gamekeeper')
+
+@permission_required("Accounts.can_view_gamekeeper_button")
+def forum_gamekeeper(request):
+    """
+    View for the forum gamekeeper page that allows gamekeepers to manage forum posts.
+    Shows all posts with their interaction statistics and allows deletion of posts.
+    
+    Author:
+        Lewis Farley (lf507@exeter.ac.uk)
+    """
+    # Get all posts ordered by creation date
+    posts = Post.objects.all().order_by('-created_at')
+    posts_data = []
+    
+    for post in posts:
+        likes = PostInteraction.objects.filter(post=post, interaction_type='like').count()
+        dislikes = PostInteraction.objects.filter(post=post, interaction_type='dislike').count()
+        ratio = f"{dislikes/(likes + dislikes):.2%}" if (likes + dislikes) > 0 else "N/A"
+        posts_data.append({
+            'post': post,
+            'likes': likes,
+            'dislikes': dislikes,
+            'ratio': ratio
+        })
+    
+    return render(request, 'forum/forum_gamekeeper.html', {
+        'posts': posts_data
+    })
