@@ -36,34 +36,38 @@ function onPageLoad() {
         // If there are fewer than 3 players, we just take whatever is available
         let top3 = data.rankedUsers.length < 3 ? data.rankedUsers : data.rankedUsers.slice(0, 3);
 
+        // Clear all positions first
+        document.getElementById('firstPfp').src = '';
+        document.getElementById('firstName').innerText = '';
+        document.getElementById('firstScore').innerText = '0';
+        
+        document.getElementById('secondPfp').src = '';
+        document.getElementById('secondName').innerText = '';
+        document.getElementById('secondScore').innerText = '0';
+        
+        document.getElementById('thirdPfp').src = '';
+        document.getElementById('thirdName').innerText = '';
+        document.getElementById('thirdScore').innerText = '0';
+
         // First place goes in the middle
         if (top3.length >= 1) {
-            document.getElementById('firstPfp').src = top3[1].pfp_url; 
-            document.getElementById('firstName').innerText = top3[1].username;
+            document.getElementById('firstPfp').src = top3[0].pfp_url; 
+            document.getElementById('firstName').innerText = top3[0].username;
+            document.getElementById('firstScore').innerText = top3[0].score;
         }
 
-        // Second place goes in the left container
+        // Second place
         if (top3.length >= 2) {
-            document.getElementById('secondPfp').src = top3[0].pfp_url;
-            document.getElementById('secondName').innerText = top3[0].username;
+            document.getElementById('secondPfp').src = top3[1].pfp_url;
+            document.getElementById('secondName').innerText = top3[1].username;
+            document.getElementById('secondScore').innerText = top3[1].score;
         }
 
-        // Third place goes in the right container
+        // Third place
         if (top3.length >= 3) {
             document.getElementById('thirdPfp').src = top3[2].pfp_url;
             document.getElementById('thirdName').innerText = top3[2].username;
-        }
-
-        // If there are fewer than 3 players, we can clear the unused places
-        if (top3.length < 3) {
-            if (top3.length < 2) {
-                document.getElementById('secondPfp').src = '';
-                document.getElementById('secondName').innerText = '';
-            }
-            if (top3.length < 1) {
-                document.getElementById('thirdPfp').src = '';
-                document.getElementById('thirdName').innerText = '';
-            }
+            document.getElementById('thirdScore').innerText = top3[2].score;
         }
 
         var table = document.getElementById("leaderboard-body");
