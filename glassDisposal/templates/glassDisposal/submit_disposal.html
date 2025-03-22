@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Set character encoding and viewport settings for responsive design -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Page title -->
+    <title>Submit Glass Disposal</title>
+
+    <!-- Link to the external CSS file for styling -->
+    <link rel="stylesheet" href="{% static 'EcoWorld/css/style.css' %}">
+
+    <!-- Include the JavaScript file for handling location; defer ensures it loads after HTML parsing -->
+    <script src="{% static 'js/location.js' %}" defer></script>
+</head>
+<body>
+{% include "partials/navbar.html" %}
+<style>
+    .navbar{padding:0;}
+</style>
+    <!-- Main container for the form, styled with CSS classes -->
+    <div class="form-wrapper">
+        <div class="form-container">
+            <!-- Page header -->
+            <h2>Submit Glass Disposal</h2>
+
+            <!-- Display a general error message if one exists (e.g., location error) -->
+            {% if error %}
+                <p style="color: red;">{{ error }}</p>
+            {% endif %}
+
+            <!-- Render form field-specific error messages -->
+            {% if form.errors %}
+                <ul class="errorlist">
+                    <!-- Loop through each field in the form -->
+                    {% for field in form %}
+                        <!-- Loop through each error for the current field -->
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <!-- The form for submitting glass disposal -->
+            <form method="POST" enctype="multipart/form-data">
+                <!-- CSRF token for security (protects against cross-site request forgery) -->
+                {% csrf_token %}
+
+                <!-- Hidden input fields to store latitude and longitude from the user's browser -->
+                <input type="hidden" id="latitude" name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
+
+                <!-- Form group for the image upload field -->
+                <div class="form-group">
+                    <label for="id_image">Upload Photo Proof:</label>
+                    <!-- Render the image field widget from the form -->
+                    {{ form.image }}
+                </div>
+
+                <!-- Form group for entering the number of bottles -->
+                <div class="form-group">
+                    <label for="id_bottle_count">How many bottles?</label>
+                    <!-- Render the bottle count field widget from the form -->
+                    {{ form.bottle_count }}
+                </div>
+
+                <!-- Container for the form buttons -->
+                <div class="btn-container">
+                    <!-- Button to trigger the JavaScript to fetch the user's location -->
+                    <button type="button" id="get-location-btn" class="btn">Use My Location</button>
+                    <!-- Submit button to send the form data -->
+                    <button type="submit" class="btn">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

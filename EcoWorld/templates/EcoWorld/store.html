@@ -3,11 +3,11 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>EcoWorld - Store </title>
+        <title>EcoWorld - Store</title>
         <style>
             body {
                 background: linear-gradient(to bottom, #0e4d46, rgb(13, 143, 13));
-                color: white; 
+                color: white;
                 font-family: Arial, sans-serif;
                 display: flex;
                 flex-direction: column;
@@ -37,7 +37,7 @@
 
             .packSection {
                 width: 80%;
-                height: 450px; 
+                height: 450px;
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -83,7 +83,7 @@
                 padding: 10px;
                 font-weight: bold;
                 border-radius: 3px;
-                width: 300px;
+                width: 150px;
                 box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
                 font-size: 12px;
                 font-family: Arial, sans-serif;
@@ -91,7 +91,6 @@
                 visibility: hidden;
                 transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
                 z-index: 10;
-                width: 150px;
             }
 
             .buy-btn {
@@ -108,66 +107,73 @@
             .buy-btn:hover {
                 background-color: #2d3748;
             }
+
+            /* Media Query for Mobile View */
+            @media only screen and (max-width: 768px) {
+                .packSection {
+                    flex-direction: column;
+                    height: auto; /* Allow height to adjust based on content */
+                }
+                .packBox {
+                    margin-bottom: 20px; /* Optional: adds spacing between boxes */
+                }
+            }
         </style>
     </head>
     <body>
-    {% include "partials/navbar.html" %}
-    <style>.navbar{padding:0;}</style>
-    <div class="container">
-        <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+        {% include "partials/navbar.html" %}
+        <style>.navbar{padding:0;}</style>
+        <div class="container">
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
 
-        <div class="h1">Welcome to the Store!</div>
-        <div class="packSection">
-            {% for pack in packs %}
-                <div class="packBox">
-                    <img class="img" src="{{ pack.image_url}}"><br>
-                    <div class="packInfo">
-                        <h2>{{ pack.title }}</h2>
-                        <h4>This is a {{ pack.title}} which has the following chances: </h4>
-                        <p>Common: {{ pack.common_prob }} chance</p>
-                        <p>Rare: {{ pack.rare_prob }} chance</p>
-                        <p>Epic: {{ pack.epic_prob }} chance</p>
-                        <p>Legendary: {{ pack.legendary_prob }} chance</p>
-
+            <div class="h1">Welcome to the Store!</div>
+            <div class="packSection">
+                {% for pack in packs %}
+                    <div class="packBox">
+                        <img class="img" src="{{ pack.image_url }}"><br>
+                        <div class="packInfo">
+                            <h2>{{ pack.title }}</h2>
+                            <h4>This is a {{ pack.title }} which has the following chances: </h4>
+                            <p>Common: {{ pack.common_prob }} chance</p>
+                            <p>Rare: {{ pack.rare_prob }} chance</p>
+                            <p>Epic: {{ pack.epic_prob }} chance</p>
+                            <p>Legendary: {{ pack.legendary_prob }} chance</p>
+                        </div>
+                        <button class="buy-btn" onclick="handleBuy('{{ pack.id }}')">Buy Now!</button>
                     </div>
-                    <button class="buy-btn" onclick="handleBuy('{{pack.id}}')">Buy Now!</button>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
+
+            <script>
+                function handleBuy(packId) {
+                    console.log(`Attempting to buy pack: ${packId}`);
+
+                    fetch("/ecoworld/buyPack/", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRFToken": document.querySelector('input[name="csrfmiddlewaretoken"]').value,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            pack_id: packId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log("Server Response:", data);
+
+                        if (data.error) {
+                            alert(data.error);
+                            return;
+                        }
+                        window.location.href = `/ecoworld/packopening/?pack_id=${packId}`;
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                        alert("An error occurred while processing your purchase.");
+                    });
+                }
+            </script>
         </div>
-
-
-        
-    <script>
-        function handleBuy(packId) {
-        console.log(`Attempting to buy pack: ${packId}`);
-
-        fetch("/ecoworld/buyPack/", {
-            method: "POST",
-            headers: {
-                "X-CSRFToken": document.querySelector('input[name="csrfmiddlewaretoken"]').value,
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                pack_id: packId 
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log("Server Response:", data);
-
-            if (data.error) {
-                alert(data.error);
-                return;
-            }
-            window.location.href = `/ecoworld/packopening/?pack_id=${packId}`;
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert("An error occurred while processing your purchase.");
-        });
-    }
-
-    </script>     
-    </div>
     </body>
 </html>

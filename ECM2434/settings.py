@@ -34,7 +34,12 @@ SECRET_KEY = "django-insecure-kyoddd82$!d_nttqwz9-u%kt8+ql)(@hgpkqm2&&70nf6ri7eu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['whniecm2434.pythonanywhere.com','127.0.0.1','http://192.168.0.33:8000','10.207.102.152']
+ALLOWED_HOSTS = ['whniecm2434.pythonanywhere.com',
+                 '127.0.0.1',
+                 'http://192.168.0.33:8000',
+                 '10.207.102.152',
+                 "192.168.0.140"
+                 ]
 
 
 
@@ -55,6 +60,7 @@ INSTALLED_APPS = [
     "qrCodes",
     'guides',
     'leaderboards',
+    'glassDisposal',
     'SustainabilityGame',
     'forum',
 ]
@@ -138,18 +144,23 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+
 # Ensure Django knows where to find static files (only needed for local development)
 # STATICFILES_DIRS = [
 #     os.path.join(BASE_DIR, "static"),
 # ]
-STATIC_ROOT = BASE_DIR / 'static' #deployment only
+
+
+STATIC_ROOT = BASE_DIR / 'static'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = "/ecoworld/"
+
 
 
 MEDIA_URL = '/media/'  # The URL to access media files
@@ -167,6 +178,7 @@ QR_CODE_WIDTH=128
 QR_CODE_HEIGHT=128
 DRINKING_COOLDOWN = timedelta(seconds=20)  # The time in minutes before a user can drink again
 DRINK_VALUE = 10  # The number of coins a drink is worth
+GLASS_DISPOSAL_REWARD_PER_BOTTLE = 10 #the number of coins gained from handing in a bottle (each)
 DAILY_OBJECTIVE_RESET_INTERVAL = timedelta(seconds=30)
 
 CHALLENGE_RESET_INTERVAL = timedelta(minutes=1)
