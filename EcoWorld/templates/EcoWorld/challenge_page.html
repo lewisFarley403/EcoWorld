@@ -55,6 +55,7 @@
                 {% for objective in daily_objectives %}
                     <div class="objective-card">
                         <span class="objective-title">{{ objective.challenge.name }}</span>
+                        <p class="objective-description">{{ objective.challenge.description }}</p>
                         <button class="progress-btn" onclick="incrementObjective('{{ objective.id }}', this)">+</button>
                         <span class="progress-count">{{ objective.progress }}/{{ objective.challenge.goal }}</span>
                     </div>

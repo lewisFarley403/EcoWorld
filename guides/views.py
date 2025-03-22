@@ -273,10 +273,8 @@ def registerScore_view(request, pair_id):
         user.save()
 
     result.save()
-    
-    # Create a post about guide completion using the original markdown content
-    Post.create_from_guide(pair.title, pair.content, user, score)
-    
+    Post.create_from_guide(pair.title, pair.content, user, score/pair.quiz_max_marks *100)
+
     return JsonResponse({'status': 'success', 'redirect_url': f'/guides/results/{pair_id}/'})
 
 @login_required
