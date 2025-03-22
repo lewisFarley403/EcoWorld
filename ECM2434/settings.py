@@ -182,4 +182,5 @@ DAILY_OBJECTIVE_RESET_INTERVAL = timedelta(seconds=30)
 
 CHALLENGE_RESET_INTERVAL = timedelta(minutes=1)
 
+
 VALUE_OF_DRINK = 100
