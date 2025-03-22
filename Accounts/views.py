@@ -119,10 +119,9 @@ def user_info(request):
     Author:
         - Lewis Farley (lf507@exeter.ac.uk)
     """
-    # pfp_url = "/media/pfps/" + pfp_url
     user_info = {
         'username': request.user.username,
-        'pfp_url': "/media/pfps/" +request.user.profile.profile_picture if request.user.profile.profile_picture else '',
+        'pfp_url': "/media/pfps/" + request.user.profile.profile_picture if request.user.profile.profile_picture else '',
         'coins': request.user.profile.number_of_coins,
     }
     return JsonResponse(user_info)
