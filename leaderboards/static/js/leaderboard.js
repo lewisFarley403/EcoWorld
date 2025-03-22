@@ -22,6 +22,8 @@ function onPageLoad() {
         }
     });
 
+    
+
     // Handle visibility changes
     document.addEventListener('visibilitychange', function() {
         if (!document.hidden) {
