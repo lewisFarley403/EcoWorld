@@ -139,10 +139,10 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 # Ensure Django knows where to find static files (only needed for local development)
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
-# STATIC_ROOT = BASE_DIR / 'static' deployment only
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, "static"),
+# ]
+STATIC_ROOT = BASE_DIR / 'static' #deployment only
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
