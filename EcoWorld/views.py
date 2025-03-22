@@ -103,7 +103,7 @@ def store(request):
         userinfo = getUserInfo(request)
 
         #Sends the info to the page
-        return render(request, "ecoWorld/store.html",{ "packs": pack_list, "userinfo": userinfo[0]})
+        return render(request, "EcoWorld/store.html",{ "packs": pack_list, "userinfo": userinfo[0]})
 
     return HttpResponse("Invalid request")
 
