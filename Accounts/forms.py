@@ -34,7 +34,6 @@ class SignUpForm(UserCreationForm):
         Ethan Sweeney (es1052@exeter.ac.uk)
     '''
     email = forms.EmailField(required=True)
-
     #pylint: disable=too-few-public-methods
     class Meta:
         """
