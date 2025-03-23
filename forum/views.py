@@ -206,19 +206,12 @@ def get_post_interactions(request, post_id):
 @permission_required("Accounts.can_view_gamekeeper_button")
 def delete_post(request, post_id):
     """Delete a post and its interactions."""
-    print('deleting post')
     if request.method == "POST":
-        print('deleting post')
-        print(post_id)
         post = get_object_or_404(Post, id=post_id)
-        print('post : ',post)
         post.delete()
-        print('post deleted')
         # post.save()
-        print('post saved')
         return redirect('forum:forum_gamekeeper')
     else:
-        print('not a post')
         return redirect('forum:forum_gamekeeper')
 
 @permission_required("Accounts.can_view_gamekeeper_button")

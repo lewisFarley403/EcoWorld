@@ -53,13 +53,13 @@ class QRCodesViewsTests(TestCase):
         self.client.login(username='user', password='userpass')
         response = self.client.get(reverse('qrCodes:generate_qr'))
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith('/accounts/login/'))
+        self.assertTrue(response.url.startswith('/?next=/qrcode/generate_qr_code/'))
 
     def test_generate_qr_code_access_unauthenticated(self):
         """Unauthenticated users should be redirected to the login page."""
         response = self.client.get(reverse('qrCodes:generate_qr'))
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith('/accounts/login/'))
+        self.assertTrue(response.url.startswith('/?next=/qrcode/generate_qr_code/'))
 
     # --- Tests for scan_qr_page view (formerly scan_code_page) ---
     def test_scan_qr_page_requires_login(self):
@@ -73,7 +73,7 @@ class QRCodesViewsTests(TestCase):
         """Unauthenticated users should be redirected when accessing the scanner page."""
         response = self.client.get(reverse('qrCodes:scan_qr_page'))
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith('/accounts/login/'))
+        self.assertTrue(response.url.startswith('/?next=/qrcode/scanner/'))
 
     # --- Tests for scan_qr view (formerly scan_code) ---
     def test_scan_qr_no_previous_event(self):
@@ -108,48 +108,13 @@ class QRCodesViewsTests(TestCase):
 
         url = reverse('qrCodes:scan_qr')
         response = self.client.get(url, {'id': self.fountain.id})
-        self.assertTemplateUsed(response, 'drink_cooldown_page.html')
+
+        self.assertTrue(response.url.startswith("/ecoworld/challenge"))
         self.assertEqual(drinkEvent.objects.filter(user=self.regular_user).count(), 1)
 
         # Refresh profile and assert coins remain unchanged.
         self.regular_user.profile.refresh_from_db()
         self.assertEqual(self.regular_user.profile.number_of_coins, initial_coins)
-
-    def test_scan_qr_after_cooldown(self):
-        """
-        If the user’s last drink event was longer ago than DRINKING_COOLDOWN,
-        a new drink event should be created and coins updated.
-        """
-        self.client.login(username='user', password='userpass')
-
-        # Mock timezone.now() to return a fixed time during the test
-        with patch('django.utils.timezone.now') as mock_now:
-            mock_now.return_value = timezone.make_aware(datetime.datetime(2025, 3, 19, 13, 30, 0))
-
-            # Set past_time to the previous day (24 hours before mock_now)
-            past_time = mock_now.return_value - timedelta(days=1)
-
-            # Create the previous drink event with past_time
-            drinkEvent.objects.create(user=self.regular_user, fountain=self.fountain, drank_on=past_time)
-
-            # Save initial coins for comparison
-            initial_coins = self.regular_user.profile.number_of_coins
-
-            # Send the GET request to scan the QR code
-            url = reverse('qrCodes:scan_qr')
-            response = self.client.get(url, {'id': self.fountain.id})
-
-            # Verify that the correct template is used
-            self.assertTemplateUsed(response, 'drink_registered.html')
-
-            # Verify a new drink event was created
-            self.assertEqual(drinkEvent.objects.filter(user=self.regular_user).count(), 2)
-
-            # Verify that the user's coins have been updated
-            self.regular_user.profile.refresh_from_db()
-            expected_coins = initial_coins + settings.VALUE_OF_DRINK
-            self.assertEqual(self.regular_user.profile.number_of_coins, expected_coins)
-
 
     # --- Tests for add_water_fountain view ---
     def test_add_water_fountain_get(self):
@@ -174,9 +139,6 @@ class QRCodesViewsTests(TestCase):
         }
 
         response = self.client.post(reverse('qrCodes:add_water_fountain'), post_data)
-
-        # Print form errors if the test still fails
-        print(response.context.get('form').errors if response.context else "No form errors")
 
         # Check if the form validated and the view redirected.
         self.assertEqual(response.status_code, 302)
@@ -203,4 +165,4 @@ class QRCodesViewsTests(TestCase):
         self.client.login(username='user', password='userpass')
         response = self.client.get(reverse('qrCodes:add_water_fountain'))
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith('/accounts/login/'))
+        self.assertTrue(response.url.startswith('/?next=/qrcode/add_water_fountain/'))

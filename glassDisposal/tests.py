@@ -88,9 +88,6 @@ class GlassDisposalTests(TestCase):
                 'image': test_image
             }, follow=True)
 
-        # Debugging: Print response content if the test fails
-        if response.status_code != 200 or response.redirect_chain:
-            print(response.content.decode())
 
         # Check if the user is redirected after successful submission
         self.assertContains(response, "Thank You")
@@ -135,9 +132,6 @@ class GlassDisposalTests(TestCase):
                 'image': test_image
             })
 
-        # Debugging: Print response content
-        print(response.content.decode())
-
         self.assertEqual(response.status_code, 200)
         # Use assertIn to check for the error message in the response content.
         self.assertIn("You are not near a valid recycling location!", response.content.decode(), msg="Error message not found.")
@@ -179,9 +173,6 @@ class GlassDisposalTests(TestCase):
         """
         coins_earned = 10
         response = self.client.get(reverse('thankyou', args=[coins_earned]))
-
-        # Debugging: Print response content
-        print(response.content.decode())
 
         # Check if the thank-you page loads correctly
         self.assertEqual(response.status_code, 200)

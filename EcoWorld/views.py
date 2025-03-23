@@ -611,7 +611,14 @@ def mergecards(request):
                     cardImages.append({'id': None, 'image' : None})
 
 
-            return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity":rarity,"merge":cardImages},)
+            try:
+                if int(mergeCardsFunc) == 5:
+                    error = "This card rarity cannot be merged!"
+                    return render(request, "EcoWorld/mergecards.html",
+                                  {"userinfo": userinfo[0], "playerItems": playerItems, "rarity": rarity,
+                                   "merge": cardImages, "error": error})
+            except TypeError:
+                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity":rarity,"merge":cardImages},)
 
         if addCard:
             #Get rarity and card id
@@ -817,10 +824,9 @@ def mergecards(request):
                 else:
                     cardImages.append({'id': None, 'image' : None})
 
-
             if mergeCardsFunc == 5:
                 error = "This card rarity cannot be merged!"
-                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity":rarity,"merge":cardImages, "error":error},)
+                return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "playerItems": playerItems, "rarity":rarity,"merge":cardImages, "error":error})
 
 
             if merge.cardID1 and merge.cardID2 and merge.cardID3 and merge.cardID4 and merge.cardID5:

@@ -212,7 +212,7 @@ class TestStore(TestCase):
         response = self.client.get(reverse('EcoWorld:store'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "ecoWorld/store.html")
+        self.assertTemplateUsed(response, "EcoWorld/store.html")
 
         #User info tests to make sure the page has what it needs from the user
         self.assertIn("userinfo", response.context)
@@ -280,7 +280,6 @@ class TestChallenge(TestCase):
         # Get the absolute path to the initialDb.json file in the root directory
         fixture_path = os.path.join(os.path.dirname(__file__), 'initialDb.json')
 
-        print(fixture_path)
         # Load initialDb.json into the test database
         call_command("loaddata", fixture_path)
         # create user
