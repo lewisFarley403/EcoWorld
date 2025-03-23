@@ -8,6 +8,11 @@ from django.urls import reverse
 from django.conf import settings
 from datetime import timedelta
 from django.db.models import Q
+from django.test import TestCase
+from django.contrib.auth.models import User
+from EcoWorld.models import challenge, ongoingChallenge
+from datetime import date 
+from django.utils import timezone
 
 """
 Testing class for the packmodels
@@ -461,3 +466,128 @@ class TestFriendPage(TestCase):
         response = self.client.post(reverse("EcoWorld:friends"), {"remove": "user2"})
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Friends.objects.filter(Q(userID1=self.user1, userID2=self.user2) | Q(userID1=self.user2, userID2=self.user1)).exists())
+
+class ChallengesTest(TestCase):
+    """
+    Comprehensive test suite for the Challenges page including:
+    - Initial challenge assignment
+    - Drink cooldown logic
+    - Daily objective incrementing
+    - Challenge completion and reward
+    """
+
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username="testuser", password="testpass")
+        profile = self.user.profile
+        profile.number_of_coins = 0
+        profile.profile_picture = "test.png"
+        profile.save()
+        self.client.login(username="testuser", password="testpass")
+
+        self.challenge = challenge.objects.create(
+            name="Test Challenge",
+            description="Test Description",
+            worth=10,
+            goal=3
+        )
+        self.ongoing = ongoingChallenge.objects.create(
+            user=self.user,
+            challenge=self.challenge
+        )
+
+    def test_challenge_page_context(self):
+        """
+        Verify that the challenge page renders with the correct context for a logged-in user.
+        """
+        response = self.client.get(reverse("EcoWorld:challenge"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("daily_objectives", response.context)
+        self.assertIn("coins", response.context)
+        self.assertEqual(response.context["coins"], 0)
+        self.assertIn("is_drink_available", response.context)
+
+    def test_drink_cooldown_logic(self):
+        """
+        Confirm that the drink button availability logic is correct based on cooldown setting.
+        """
+        from qrCodes.models import drinkEvent, waterFountain
+
+        fountain = waterFountain.objects.create(name="F1", location="Test")
+        drinkEvent.objects.create(user=self.user, drank_on=timezone.now(), fountain=fountain)
+        response = self.client.get(reverse("EcoWorld:challenge"))
+        self.assertFalse(response.context["is_drink_available"])
+
+        # simulate cooldown passed
+        drinkEvent.objects.update(drank_on=timezone.now() - settings.DRINKING_COOLDOWN - timedelta(seconds=10))
+        response = self.client.get(reverse("EcoWorld:challenge"))
+        self.assertTrue(response.context["is_drink_available"])
+
+    def test_increment_daily_objective(self):
+        """
+        Test that a daily objective can be incremented up to its goal.
+        """
+        url = reverse("EcoWorld:increment_objective")
+        for _ in range(self.challenge.goal):
+            response = self.client.post(url, json.dumps({"objective_id": self.ongoing.id}), content_type='application/json')
+            self.assertEqual(response.status_code, 200)
+            data = response.json()
+            self.assertTrue(data["success"])
+            self.ongoing.refresh_from_db()
+
+        self.assertEqual(self.ongoing.progress, self.challenge.goal)
+
+    def test_complete_challenge(self):
+        """
+        Test that completing a challenge sets submitted_on and adds coin reward.
+        """
+        url = reverse("EcoWorld:completeChallenge")
+        response = self.client.post(url, json.dumps({"id": self.ongoing.id}), content_type="application/json")
+        self.assertEqual(response.status_code, 200)
+
+        self.ongoing.refresh_from_db()
+        self.user.refresh_from_db()
+
+        self.assertIsNotNone(self.ongoing.submitted_on)
+        self.assertEqual(self.user.profile.number_of_coins, self.challenge.worth)
+
+    def test_prevent_increment_beyond_goal(self):
+        """
+        Test that progress does not exceed the challenge goal even if the endpoint is hit multiple times.
+        """
+        url = reverse("EcoWorld:increment_objective")
+        for _ in range(self.challenge.goal + 3):  # over-increment
+            response = self.client.post(url, json.dumps({"objective_id": self.ongoing.id}), content_type='application/json')
+            self.assertEqual(response.status_code, 200)
+            self.ongoing.refresh_from_db()
+
+        self.assertLessEqual(self.ongoing.progress, self.challenge.goal)
+
+    def test_multiple_objectives_progress_sum(self):
+        """
+        Ensure multiple objectives aggregate correctly and progress is tracked individually.
+        """
+        # Add a second challenge & objective
+        ch2 = challenge.objects.create(name="Second", description="2", worth=5, goal=2)
+        obj2 = ongoingChallenge.objects.create(user=self.user, challenge=ch2)
+
+        url = reverse("EcoWorld:increment_objective")
+
+        self.client.post(url, json.dumps({"objective_id": self.ongoing.id}), content_type='application/json')
+        self.client.post(url, json.dumps({"objective_id": obj2.id}), content_type='application/json')
+        self.ongoing.refresh_from_db()
+        obj2.refresh_from_db()
+
+        self.assertEqual(self.ongoing.progress, 1)
+        self.assertEqual(obj2.progress, 1)
+
+    def test_challenge_submission_sets_timestamp(self):
+        """
+        Confirm submitted_on is a valid datetime after completing a challenge.
+        """
+        url = reverse("EcoWorld:completeChallenge")
+        self.client.post(url, json.dumps({"id": self.ongoing.id}), content_type='application/json')
+
+        self.ongoing.refresh_from_db()
+        self.assertIsNotNone(self.ongoing.submitted_on)
+        self.assertTrue(timezone.is_aware(self.ongoing.submitted_on))

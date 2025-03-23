@@ -181,6 +181,20 @@ def pack_opening_page(request):
 
 @login_required
 def challenge(request):
+    """
+    Renders the Challenges page for the logged-in user, showing active daily objectives and tracking drinking cooldown.
+
+    - Fetches all current ongoing challenges (daily objectives) for the user.
+    - Checks the user's last drink time to determine drink button availability.
+    - Calculates completed and total challenge progress.
+    - Passes context data such as coins, cooldown, and challenge progress to the template.
+
+    Returns:
+        HttpResponse: Renders the 'challenge_page.html' template with user-specific challenge data.
+
+    Author:
+        Lewis Farley (lf507@exeter.ac.uk), Theodore Armes (tesa201@exeter.ac.uk)
+    """
     daily_objectives = getUsersChallenges(request.user)
     user = User.objects.get(id=request.user.id)
 
@@ -221,8 +235,18 @@ def challenge(request):
 @login_required
 def increment_daily_objective(request):
     """
-    Increments the progress of a daily objective by 1.
-    Grants coins when an objective is completed.
+    Increments the progress of a daily objective by 1 and rewards coins when completed.
+
+    - Retrieves the objective ID from the POST request.
+    - Increases the progress counter if it hasn't reached the goal.
+    - Marks the objective as completed and rewards the user with coins if fully completed.
+    - Returns updated progress and total completion data.
+
+    Returns:
+        JsonResponse: Contains success status, progress updates, and reward information.
+
+    Author:
+        Lewis Farley (lf507@exeter.ac.uk), Theodore Armes (tesa201@exeter.ac.uk)
     """
     if request.method == "POST":
         data = json.loads(request.body)
@@ -273,7 +297,20 @@ def increment_daily_objective(request):
 
 @login_required
 def completeChallenge(request):
+    """
+    Marks a challenge as completed for the logged-in user and updates their reward.
 
+    - Retrieves the challenge ID from the POST request.
+    - Updates the user's profile by adding reward coins.
+    - Sets the completion timestamp for the challenge.
+    - Saves the updated challenge status in the database.
+
+    Returns:
+        HttpResponse: Success or failure message.
+
+    Author:
+        Lewis Farley (lf507@exeter.ac.uk), Theodore Armes (tesa201@exeter.ac.uk)
+    """
     if request.method == "POST":
         data = json.loads(request.body)
         user = User.objects.get(id=request.user.id)
@@ -825,6 +862,19 @@ def merge_opening_page(request):
 @csrf_exempt
 @login_required
 def save_objective_note(request):
+    """
+    Saves a user-provided note upon completing a daily objective.
+
+    - Expects a POST request with `objective_id` and `message` in the JSON payload.
+    - Updates the submission field of the corresponding ongoing challenge.
+    - Saves the updated challenge object.
+
+    Returns:
+        JsonResponse: Success or failure status.
+
+    Author:
+        Theodore Armes (tesa201@exeter.ac.uk)
+    """
     if request.method == "POST":
         data = json.loads(request.body)
         objective_id = data.get("objective_id")
