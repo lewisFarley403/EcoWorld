@@ -13,24 +13,6 @@ from .models import UserEarntCoins
 def leaderboard(request):
     return render(request, 'leaderboard/leaderboard.html')
 
-# def get_ranked_users(request):
-#     """
-#     Function to return the top 10 users in the leaderboard
-#     Returns:
-#         (users,scores) : QuerySet,{User:Int} : users, a sorted list of user objects, scores, a dictionary of user objects to their scores
-#     Author: Lewis Farley ()
-#     """
-#     users = User.objects.all()
-#     coin_map = {}
-#     for user in users:
-#         coins_earnt = sum([i.score for i in UserEarntCoins.objects.filter(user=user)])
-#         coin_map[user.username] = coins_earnt
-#     users = sorted(coin_map, key=coin_map.get, reverse=True)
-#     print(users)
-#     print(coin_map)
-#     # return as json
-#     d ={'rankedUsers':users,'userPointMap':coin_map}
-#     return JsonResponse(d)
 @login_required
 def get_ranked_users(request):
     """

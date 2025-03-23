@@ -280,7 +280,6 @@ class TestChallenge(TestCase):
         # Get the absolute path to the initialDb.json file in the root directory
         fixture_path = os.path.join(os.path.dirname(__file__), 'initialDb.json')
 
-        print(fixture_path)
         # Load initialDb.json into the test database
         call_command("loaddata", fixture_path)
         # create user

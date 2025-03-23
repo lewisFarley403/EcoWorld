@@ -635,7 +635,6 @@ class GamekeeperTest(TestCase):
         
         # Delete a post
         response = self.client.post(reverse('forum:delete_post', args=[self.post1.id]))
-        print('response : ',response)
         self.assertEqual(response.status_code, 302) # Redirects to gamekeeper page
         
         # Verify post is deleted
