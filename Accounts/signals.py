@@ -21,9 +21,10 @@ from .models import Profile
 
 #pylint: disable=too-few-public-methods
 # pylint: disable=no-member
+# pylint: disable=unused-argument
 
 @receiver(post_save, sender=User)
-def create_or_update_profile(instance, created):
+def create_or_update_profile(sender, instance, created, **kwargs):
     """
 
     This function creates or updates the user profile when the user is created or updated.
@@ -40,7 +41,7 @@ def create_or_update_profile(instance, created):
         instance.profile.save()
 
 @receiver(pre_save, sender=Profile)
-def track_coin_addition(instance):
+def track_coin_addition(sender, instance, **kwargs):
     """Detects when number_of_coins increases and creates a new instance of 
     UserEarntCoins for the benefit of the leaderboard.
     Author: Lewis Farley (lf507@exeter.ac.uk)
