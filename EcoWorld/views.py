@@ -355,6 +355,14 @@ def grant_gamekeeper(request, user_id):
 
 @permission_required("Accounts.can_view_gamekeeper_button")  # Only allowed gamekeeper can add challenges
 def add_challenge(request):
+    """
+    This view allows gamekeepers to add challenges to the system.
+
+    Returns: Render request and a form to add a challenge.
+
+    Author:
+    Ethan Sweeney (es1052@exeter.ac.uk)
+    """
     if request.method == 'POST':
         form = ChallengeForm(request.POST)
         if form.is_valid():
