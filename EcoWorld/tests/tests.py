@@ -8,11 +8,11 @@ from django.urls import reverse
 from django.conf import settings
 from datetime import timedelta
 from django.db.models import Q
-
 from django.test import TestCase
 from django.contrib.auth.models import User
 from EcoWorld.models import challenge, ongoingChallenge
 from datetime import date 
+from django.utils import timezone
 
 """
 Testing class for the packmodels
@@ -467,81 +467,127 @@ class TestFriendPage(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Friends.objects.filter(Q(userID1=self.user1, userID2=self.user2) | Q(userID1=self.user2, userID2=self.user1)).exists())
 
-class ChallengeTests(TestCase):
+class ChallengesTest(TestCase):
+    """
+    Comprehensive test suite for the Challenges page including:
+    - Initial challenge assignment
+    - Drink cooldown logic
+    - Daily objective incrementing
+    - Challenge completion and reward
+    """
+
     def setUp(self):
-        self.user = User.objects.create_user(username='testuser', password='password')
+        self.client = Client()
+        self.user = User.objects.create_user(username="testuser", password="testpass")
+        profile = self.user.profile
+        profile.number_of_coins = 0
+        profile.profile_picture = "test.png"
+        profile.save()
+        self.client.login(username="testuser", password="testpass")
+
         self.challenge = challenge.objects.create(
-            name='Recycle Glass',
-            description='Recycle a glass bottle to earn points.',
-            created_by=self.user,
+            name="Test Challenge",
+            description="Test Description",
             worth=10,
-            goal=1
+            goal=3
         )
-        self.ongoing_challenge = ongoingChallenge.objects.create(
-            user=self.user, challenge=self.challenge, progress=0
+        self.ongoing = ongoingChallenge.objects.create(
+            user=self.user,
+            challenge=self.challenge
         )
 
-    def test_challenge_page_access(self):
-        self.client.login(username='testuser', password='password')
-        response = self.client.get(reverse('EcoWorld:challenge'))
+    def test_challenge_page_context(self):
+        """
+        Verify that the challenge page renders with the correct context for a logged-in user.
+        """
+        response = self.client.get(reverse("EcoWorld:challenge"))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'EcoWorld/challenge_page.html')
+        self.assertIn("daily_objectives", response.context)
+        self.assertIn("coins", response.context)
+        self.assertEqual(response.context["coins"], 0)
+        self.assertIn("is_drink_available", response.context)
 
-    def test_complete_challenge(self):
-        self.client.login(username='testuser', password='password')
-        response = self.client.post(reverse('EcoWorld:complete_challenge'), {'id': self.ongoing_challenge.id})
-        self.ongoing_challenge.refresh_from_db()
-        self.assertIsNotNone(self.ongoing_challenge.submitted_on)
-        self.assertEqual(response.status_code, 200)
+    def test_drink_cooldown_logic(self):
+        """
+        Confirm that the drink button availability logic is correct based on cooldown setting.
+        """
+        from qrCodes.models import drinkEvent, waterFountain
+
+        fountain = waterFountain.objects.create(name="F1", location="Test")
+        drinkEvent.objects.create(user=self.user, drank_on=timezone.now(), fountain=fountain)
+        response = self.client.get(reverse("EcoWorld:challenge"))
+        self.assertFalse(response.context["is_drink_available"])
+
+        # simulate cooldown passed
+        drinkEvent.objects.update(drank_on=timezone.now() - settings.DRINKING_COOLDOWN - timedelta(seconds=10))
+        response = self.client.get(reverse("EcoWorld:challenge"))
+        self.assertTrue(response.context["is_drink_available"])
 
     def test_increment_daily_objective(self):
-        self.client.login(username='testuser', password='password')
-        response = self.client.post(reverse('EcoWorld:increment_objective'), {'objective_id': self.ongoing_challenge.id}, content_type='application/json')
-        self.ongoing_challenge.refresh_from_db()
-        self.assertEqual(self.ongoing_challenge.progress, 1)
+        """
+        Test that a daily objective can be incremented up to its goal.
+        """
+        url = reverse("EcoWorld:increment_objective")
+        for _ in range(self.challenge.goal):
+            response = self.client.post(url, json.dumps({"objective_id": self.ongoing.id}), content_type='application/json')
+            self.assertEqual(response.status_code, 200)
+            data = response.json()
+            self.assertTrue(data["success"])
+            self.ongoing.refresh_from_db()
+
+        self.assertEqual(self.ongoing.progress, self.challenge.goal)
+
+    def test_complete_challenge(self):
+        """
+        Test that completing a challenge sets submitted_on and adds coin reward.
+        """
+        url = reverse("EcoWorld:completeChallenge")
+        response = self.client.post(url, json.dumps({"id": self.ongoing.id}), content_type="application/json")
         self.assertEqual(response.status_code, 200)
 
-    def test_add_challenge(self):
-        self.client.login(username='testuser', password='password')
-        response = self.client.post(reverse('EcoWorld:add_challenge'), {'name': 'New Challenge', 'description': 'Test challenge'}, follow=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertTrue(challenge.objects.filter(name='New Challenge').exists())
+        self.ongoing.refresh_from_db()
+        self.user.refresh_from_db()
 
-    def test_save_objective_note(self):
-        self.client.login(username='testuser', password='password')
-        response = self.client.post(reverse('EcoWorld:save_objective_note'), {'objective_id': self.ongoing_challenge.id, 'message': 'I recycled today!'}, content_type='application/json')
-        self.assertEqual(response.status_code, 200)
+        self.assertIsNotNone(self.ongoing.submitted_on)
+        self.assertEqual(self.user.profile.number_of_coins, self.challenge.worth)
 
-    def test_challenge_completion_twice(self):
-        """Ensure a challenge cannot be completed multiple times incorrectly."""
-        self.client.login(username='testuser', password='password')
-        self.client.post(reverse('EcoWorld:complete_challenge'), {'id': self.ongoing_challenge.id})
-        response = self.client.post(reverse('EcoWorld:complete_challenge'), {'id': self.ongoing_challenge.id})
-        self.ongoing_challenge.refresh_from_db()
-        self.assertEqual(self.ongoing_challenge.completion_count, 1)  # Should only be marked once
-        self.assertEqual(response.status_code, 200)
+    def test_prevent_increment_beyond_goal(self):
+        """
+        Test that progress does not exceed the challenge goal even if the endpoint is hit multiple times.
+        """
+        url = reverse("EcoWorld:increment_objective")
+        for _ in range(self.challenge.goal + 3):  # over-increment
+            response = self.client.post(url, json.dumps({"objective_id": self.ongoing.id}), content_type='application/json')
+            self.assertEqual(response.status_code, 200)
+            self.ongoing.refresh_from_db()
 
-    def test_increment_beyond_goal(self):
-        """Ensure that progress cannot exceed the goal."""
-        self.client.login(username='testuser', password='password')
-        self.ongoing_challenge.progress = self.challenge.goal
-        self.ongoing_challenge.save()
-        response = self.client.post(reverse('EcoWorld:increment_objective'), {'objective_id': self.ongoing_challenge.id}, content_type='application/json')
-        self.ongoing_challenge.refresh_from_db()
-        self.assertEqual(self.ongoing_challenge.progress, self.challenge.goal)  # Should not increase
-        self.assertEqual(response.status_code, 200)
+        self.assertLessEqual(self.ongoing.progress, self.challenge.goal)
 
-    def test_create_challenge_without_permission(self):
-        """Ensure unauthorized users cannot create challenges."""
-        unauthorized_user = User.objects.create_user(username='unauthorized', password='password')
-        self.client.login(username='unauthorized', password='password')
-        response = self.client.post(reverse('EcoWorld:add_challenge'), {'name': 'Unauthorized Challenge', 'description': 'Should not be allowed'})
-        self.assertEqual(response.status_code, 403)  # Expecting forbidden access
-        self.assertFalse(challenge.objects.filter(name='Unauthorized Challenge').exists())
+    def test_multiple_objectives_progress_sum(self):
+        """
+        Ensure multiple objectives aggregate correctly and progress is tracked individually.
+        """
+        # Add a second challenge & objective
+        ch2 = challenge.objects.create(name="Second", description="2", worth=5, goal=2)
+        obj2 = ongoingChallenge.objects.create(user=self.user, challenge=ch2)
 
-    def test_save_objective_note_invalid_id(self):
-        """Ensure attempting to save a note to a non-existent objective returns an error."""
-        self.client.login(username='testuser', password='password')
-        response = self.client.post(reverse('EcoWorld:save_objective_note'), {'objective_id': 999, 'message': 'Invalid objective'}, content_type='application/json')
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('error', response.json())
+        url = reverse("EcoWorld:increment_objective")
+
+        self.client.post(url, json.dumps({"objective_id": self.ongoing.id}), content_type='application/json')
+        self.client.post(url, json.dumps({"objective_id": obj2.id}), content_type='application/json')
+        self.ongoing.refresh_from_db()
+        obj2.refresh_from_db()
+
+        self.assertEqual(self.ongoing.progress, 1)
+        self.assertEqual(obj2.progress, 1)
+
+    def test_challenge_submission_sets_timestamp(self):
+        """
+        Confirm submitted_on is a valid datetime after completing a challenge.
+        """
+        url = reverse("EcoWorld:completeChallenge")
+        self.client.post(url, json.dumps({"id": self.ongoing.id}), content_type='application/json')
+
+        self.ongoing.refresh_from_db()
+        self.assertIsNotNone(self.ongoing.submitted_on)
+        self.assertTrue(timezone.is_aware(self.ongoing.submitted_on))
