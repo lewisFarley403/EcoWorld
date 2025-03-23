@@ -29,6 +29,10 @@ class ProfileModelTest(TestCase):
         self.assertEqual(profile2.last_name, "")
         self.assertIsNone(profile2.profile_picture)
 
+    def test_str_method(self):
+        """Test Str method works"""
+        self.assertEqual(str(self.profile), self.user.username)
+
 # forms tests
 
 class testSignupForm(TestCase):
@@ -253,19 +257,21 @@ class FriendsTest(TestCase):
 
     #Testing when friendship is created
     def testCreateFriendship(self):
-        #Creating a friendship between the two users
+        """#Creating a friendship between the two users"""
         friendship = Friends.objects.create(userID1=self.user1, userID2=self.user2)
         self.assertEqual(friendship.userID1, self.user1)
         self.assertEqual(friendship.userID2, self.user2)
 
     #Testing that a duplicate friendship is not allowed
     def testDuplicateFriendship(self):
+        """Test duplicate friendship"""
         Friends.objects.create(userID1=self.user1, userID2=self.user2)
         with self.assertRaises(Exception):
             Friends.objects.create(userID1=self.user1, userID2=self.user2)
 
     #Testing the Str method works properly
     def testStr(self):
+        """Test string method"""
         friendship = Friends.objects.create(userID1=self.user1, userID2=self.user2)
         self.assertEqual(str(friendship), "user1 is friends with user2")
 

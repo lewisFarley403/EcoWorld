@@ -1,9 +1,12 @@
 import json
 import os
-from django.test import TestCase, Client
+from unittest.mock import patch
+from django.http import QueryDict
+from django.test import TestCase, Client, RequestFactory
 from django.core.management import call_command
+from Accounts import models
 from Accounts.models import Profile, FriendRequests, Friends
-from EcoWorld.models import pack, card, cardRarity, User,ongoingChallenge
+from EcoWorld.models import Merge, ownsCard, pack, card, cardRarity, User,ongoingChallenge, Merge
 from django.urls import reverse
 from django.conf import settings
 from datetime import timedelta
@@ -13,6 +16,8 @@ from django.contrib.auth.models import User
 from EcoWorld.models import challenge, ongoingChallenge
 from datetime import date 
 from django.utils import timezone
+
+from EcoWorld.views import mergecards
 
 """
 Testing class for the packmodels
@@ -33,7 +38,7 @@ class TestPackModels(TestCase):
         self.epic = cardRarity.objects.create(title="Epic")
         self.legendary = cardRarity.objects.create(title="Legendary")
         self.mythic = cardRarity.objects.create(title="Mythic")
-        pack.objects.create(title="TestPack", cost=50, packimage="packs/basicpack.png", commonProb=0.5, rareProb=0.3, epicProb=0.15, legendaryProb=0.05,color_class="blue")
+        self.TestPack = pack.objects.create(title="TestPack", cost=50, packimage="packs/basicpack.png", commonProb=0.5, rareProb=0.3, epicProb=0.15, legendaryProb=0.05,color_class="blue")
 
 
     #Tests that when the item is created it is properly implemented with the correct values
@@ -263,6 +268,7 @@ class TestStore(TestCase):
         self.assertEqual(response.json(), {"error": "Insufficient coins"})
         self.assertEqual(self.profile1.number_of_coins, 0)
 
+
 class TestChallenge(TestCase):
     '''
     test the functionality to do with challenges
@@ -467,6 +473,648 @@ class TestFriendPage(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertFalse(Friends.objects.filter(Q(userID1=self.user1, userID2=self.user2) | Q(userID1=self.user2, userID2=self.user1)).exists())
 
+
+"""
+Test class for the merge page to merge cards together for an upgrade. Tests that it loads properly and the functions in the page work
+correctly
+
+Methods:
+    setUp(): Sets up cards for the merging functions and a user to be logged in
+    testGetRequest(): Tests that on loadup the page functons correctly with the correct items in
+    testRarityPost(): When selecting rarity checks correct features are added to page
+    testAddCard(): Tests that when adding card to table it works correctly
+    testRemoveCard(): Tests when removing card from table it works correctly
+
+    Author:
+    Chris Lynch (cl1037@exeter.ac.uk)
+"""
+class TestMergeCards(TestCase):
+    def setUp(self):
+        #Creates user and logs in
+        self.user = User.objects.create_user(username="testuser", password="testpass")
+        self.client.login(username="testuser", password="testpass")
+        
+
+        self.factory = RequestFactory()
+        #Creates rarities for tests
+        self.rarity_common = cardRarity.objects.create(id=1, title="Common")
+        self.rarity_uncommon = cardRarity.objects.create(id=2, title="Uncommon")
+        
+        #Creates two cards of same rarity
+        self.card1 = card.objects.create(title="Card 1", rarity_id=self.rarity_common.id, image="cards/card1.jpg")
+        self.card2 = card.objects.create(title="Card 2", rarity_id=self.rarity_common.id, image="cards/card2.jpg")
+        
+        #Gives user card for placements
+        self.ownCard1 = ownsCard.objects.create(user=self.user, card=self.card1, quantity=5)
+
+    #Test that correct things are returned when page is loaded
+    def testGetRequest(self):
+        """ Tests the correct things are returned for get request """
+        response = self.client.get(reverse("EcoWorld:mergecards"))
+        self.assertEqual(response.status_code, 200)
+        #Check that the context contains the expected keys
+        self.assertIn("userinfo", response.context)
+        self.assertIn("merge", response.context)
+        
+        #Verify that merge (which holds the card images list) is a list with 5 items
+        merge_context = response.context["merge"]
+        self.assertEqual(len(merge_context), 5)
+        
+        #check that each item is a dict with 'id' and 'image' keys
+        for item in merge_context:
+            self.assertIn("id", item)
+            self.assertIn("image", item)
+
+
+    #Tests when selecting a rarity the table works correctly
+    def testRarityPost(self):
+        """Tests the post request for rarity works"""
+        response = self.client.post(reverse("EcoWorld:mergecards"), {"rarity": self.rarity_common.id})
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("playerItems", response.context)
+        self.assertIn("rarity", response.context)
+        self.assertIn("merge", response.context)
+
+    #Tests when adding a card to the merge slot it works correctly
+    def testAddCard(self):
+        """Tests the add card method works"""
+        #Add card to merge slot 1
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "addCard": self.card1.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        #Checks that the card actually went into a slot
+        merge_instance = Merge.objects.get(userID=self.user)
+        merge_slots = [
+            merge_instance.cardID1,
+            merge_instance.cardID2,
+            merge_instance.cardID3,
+            merge_instance.cardID4,
+            merge_instance.cardID5,
+        ]
+        self.assertTrue(self.card1 in merge_slots)
+        #Makes sure inventory decreased when adding to slot
+        own = ownsCard.objects.get(user=self.user, card=self.card1)
+        self.assertEqual(own.quantity, 4)
+
+    #Test to check when removing a card from a slot it works correctly
+    def testRemoveCard(self):
+        """Tests the remove card method works"""
+        #Adds a card to merge slot
+        merge_instance, created = Merge.objects.get_or_create(userID=self.user)
+        merge_instance.cardID1 = self.card1
+        merge_instance.save()
+        #Checks it got removed from inventory properly
+        own = ownsCard.objects.get(user=self.user, card=self.card1)
+        own.quantity -= 1
+        own.save()
+
+        #Send POST request to remove that card from the slot
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "removeCard": self.card1.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        #Checks that the card was removed from the slot
+        merge_instance.refresh_from_db()
+        self.assertIsNone(merge_instance.cardID1)
+        #Checks that the card was added back to the inventory
+        own.refresh_from_db()
+        self.assertEqual(own.quantity, 5)
+
+
+
+    def testAddCardError(self):
+        """Tests that trying to add a card when all merge slots are full returns an error."""
+        #Populate the merge instance with a card in all 5 slots.
+        merge_instance, _ = Merge.objects.get_or_create(userID=self.user)
+        merge_instance.cardID1 = self.card1
+        merge_instance.cardID2 = self.card1
+        merge_instance.cardID3 = self.card1
+        merge_instance.cardID4 = self.card1
+        merge_instance.cardID5 = self.card1
+        merge_instance.save()
+
+        #Ensure the user owns enough copies of the card
+        own = ownsCard.objects.get(user=self.user, card=self.card1)
+        own.quantity = 5
+        own.save()
+
+        #Attempt to add the same card again
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "addCard": self.card1.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        #Check that the error message is in the response context
+        self.assertIn("error", response.context)
+        self.assertEqual(
+            response.context["error"],
+            "There are already 5 cards in the merge slots remove one first!"
+        )
+
+    def testAddCardDifferentRarityError(self):
+        """Tests that adding a card of a different rarity than the first card returns an error"""
+        #Create an uncommon card and give the user ownership of it
+        card_uncommon = card.objects.create(title="Card Uncommon", rarity_id=self.rarity_uncommon.id, image="cards/card_uncommon.jpg")
+        ownsCard.objects.create(user=self.user, card=card_uncommon, quantity=5)
+
+        #Populate the merge instance with a common card in slot 1
+        merge_instance, _ = Merge.objects.get_or_create(userID=self.user)
+        merge_instance.cardID1 = self.card1  #self.card1 is a common rarity
+        merge_instance.save()
+
+        #Attempt to add the uncommon card while merge already has a common card
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "addCard": card_uncommon.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        #Verify that the error message is returned
+        self.assertIn("error", response.context)
+        self.assertEqual(
+            response.context["error"],
+            "The card you tried to add was not of the same rarity as the first card in the merge."
+        )
+
+    def testAddCardFillsSlot2(self):
+        """Tests that if slot1 is already filled, the new card is added to slot2"""
+        #Populate merge slot 1 with card
+        merge_instance, _ = Merge.objects.get_or_create(userID=self.user)
+        merge_instance.cardID1 = self.card1
+        merge_instance.save()
+
+        #Create an ownership for card 2
+        ownsCard.objects.create(user=self.user, card=self.card2, quantity=5)
+
+        #Post request to add card2
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "addCard": self.card2.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        merge_instance.refresh_from_db()
+        #Since slot1 is taken, card2 should be added to slot2
+        self.assertEqual(merge_instance.cardID2, self.card2)
+
+        #Check that the inventory for card2 decreased
+        own_card2 = ownsCard.objects.get(user=self.user, card=self.card2)
+        self.assertEqual(own_card2.quantity, 4)
+
+    def testAddCardFillsSlot3(self):
+        """Tests that if slots 1 and 2 are filled, the new card is added to slot3"""
+        # Pre-populate merge with card1 in slot1 and card2 in slot2.
+        merge_instance, _ = Merge.objects.get_or_create(userID=self.user)
+        merge_instance.cardID1 = self.card1
+        merge_instance.cardID2 = self.card2
+        merge_instance.save()
+
+        #Create a new card (card3) of the same rarity and give the user ownership
+        card3 = card.objects.create(title="Card 3", rarity_id=self.rarity_common.id, image="cards/card3.jpg")
+        ownsCard.objects.create(user=self.user, card=card3, quantity=5)
+
+        #Post request to add card3
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "addCard": card3.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        merge_instance.refresh_from_db()
+        #Since slots 1 and 2 are taken, card3 should be added to slot3
+        self.assertEqual(merge_instance.cardID3, card3)
+
+        #Check that the inventory for card3 decreased
+        own_card3 = ownsCard.objects.get(user=self.user, card=card3)
+        self.assertEqual(own_card3.quantity, 4)
+
+
+
+    def testAddCardFillsSlot4(self):
+        """Tests that if slots 1, 2, and 3 are filled, the new card is added to slot4"""
+        # Pre-populate merge with card1 in slot1, card2 in slot2, and a new card in slot3.
+        merge_instance, _ = Merge.objects.get_or_create(userID=self.user)
+        merge_instance.cardID1 = self.card1
+        merge_instance.cardID2 = self.card2
+        #Create card3 and give the user ownership
+        card3 = card.objects.create(title="Card 3", rarity_id=self.rarity_common.id, image="cards/card3.jpg")
+        ownsCard.objects.create(user=self.user, card=card3, quantity=5)
+        merge_instance.cardID3 = card3
+        merge_instance.save()
+
+        #Create card4 and give the user ownership
+        card4 = card.objects.create(title="Card 4", rarity_id=self.rarity_common.id, image="cards/card4.jpg")
+        ownsCard.objects.create(user=self.user, card=card4, quantity=5)
+
+        #Post request to add card4
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "addCard": card4.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        merge_instance.refresh_from_db()
+        #Since slots 1-3 are taken, card4 should be added to slot4
+        self.assertEqual(merge_instance.cardID4, card4)
+
+        #Check that the inventory for card4 decreased
+        own_card4 = ownsCard.objects.get(user=self.user, card=card4)
+        self.assertEqual(own_card4.quantity, 4)
+
+    def testAddCardFillsSlot5(self):
+        """Tests that if slots 1 through 4 are filled, the new card is added to slot5"""
+        #Pre-populate merge with card1 in slot1, card2 in slot2, card3 in slot3, and card4 in slot4
+        merge_instance, _ = Merge.objects.get_or_create(userID=self.user)
+        merge_instance.cardID1 = self.card1
+        merge_instance.cardID2 = self.card2
+
+        card3 = card.objects.create(title="Card 3", rarity_id=self.rarity_common.id, image="cards/card3.jpg")
+        ownsCard.objects.create(user=self.user, card=card3, quantity=5)
+        merge_instance.cardID3 = card3
+
+        card4 = card.objects.create(title="Card 4", rarity_id=self.rarity_common.id, image="cards/card4.jpg")
+        ownsCard.objects.create(user=self.user, card=card4, quantity=5)
+        merge_instance.cardID4 = card4
+
+        merge_instance.save()
+
+        #Create card5 and give the user ownership
+        card5 = card.objects.create(title="Card 5", rarity_id=self.rarity_common.id, image="cards/card5.jpg")
+        ownsCard.objects.create(user=self.user, card=card5, quantity=5)
+
+        #Post request to add card5
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "addCard": card5.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        merge_instance.refresh_from_db()
+        #Since slots 1-4 are taken, card5 should be added to slot5
+        self.assertEqual(merge_instance.cardID5, card5)
+
+        #Check that the inventory for card5 decreased
+        own_card5 = ownsCard.objects.get(user=self.user, card=card5)
+        self.assertEqual(own_card5.quantity, 4)
+
+    def testAddCardInsufficientQuantity(self):
+        """Tests that adding a card with insufficient quantity returns the proper error"""
+        #Set the quantity of the owned card to 0
+        own = ownsCard.objects.get(user=self.user, card=self.card1)
+        own.quantity = 0
+        own.save()
+        
+        #Attempt to add the card
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "addCard": self.card1.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        #Verify that the error message is returned
+        self.assertIn("error", response.context)
+        self.assertEqual(
+            response.context["error"],
+            "You need to get more of this card to add it to the merge or take one out of the merge box"
+        )
+
+    def testRemoveCardSlot2(self):
+        """Tests that a card is correctly removed from merge slot 2"""
+        merge_instance, _ = Merge.objects.get_or_create(userID=self.user)
+        #Ensure slot1 is empty and slot2 is filled
+        merge_instance.cardID1 = None
+        merge_instance.cardID2 = self.card1
+        merge_instance.save()
+        
+        #Simulate that card1 was previously added (inventory decreased)
+        own = ownsCard.objects.get(user=self.user, card=self.card1)
+        own.quantity -= 1
+        own.save()
+        
+        #Send POST request to remove the card
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "removeCard": self.card1.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        
+        merge_instance.refresh_from_db()
+        #Verify that slot2 is now cleared
+        self.assertIsNone(merge_instance.cardID2)
+        
+        own.refresh_from_db()
+        #Verify that inventory quantity has been increased back by 1
+        self.assertEqual(own.quantity, 5)
+    
+    def testRemoveCardSlot3(self):
+        """Tests that a card is correctly removed from merge slot 3"""
+        merge_instance, _ = Merge.objects.get_or_create(userID=self.user)
+        #Ensure slots 1 and 2 are empty, and slot3 is filled
+        merge_instance.cardID1 = None
+        merge_instance.cardID2 = None
+        merge_instance.cardID3 = self.card1
+        merge_instance.save()
+        
+        #Simulate a prior deduction in inventory
+        own = ownsCard.objects.get(user=self.user, card=self.card1)
+        own.quantity -= 1
+        own.save()
+        
+        #Remove the card from the merge slot
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "removeCard": self.card1.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        
+        merge_instance.refresh_from_db()
+        #Verify that slot3 is now empty
+        self.assertIsNone(merge_instance.cardID3)
+        
+        own.refresh_from_db()
+        self.assertEqual(own.quantity, 5)
+    
+    def testRemoveCardSlot4(self):
+        """Tests that a card is correctly removed from merge slot 4"""
+        merge_instance, _ = Merge.objects.get_or_create(userID=self.user)
+        #Ensure slots 1-3 are empty, and slot4 is filled
+        merge_instance.cardID1 = None
+        merge_instance.cardID2 = None
+        merge_instance.cardID3 = None
+        merge_instance.cardID4 = self.card1
+        merge_instance.save()
+        
+        #Deduct one from inventory to simulate prior addition
+        own = ownsCard.objects.get(user=self.user, card=self.card1)
+        own.quantity -= 1
+        own.save()
+        
+        #Remove the card via POST
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "removeCard": self.card1.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        
+        merge_instance.refresh_from_db()
+        self.assertIsNone(merge_instance.cardID4)
+        
+        own.refresh_from_db()
+        self.assertEqual(own.quantity, 5)
+    
+    def testRemoveCardSlot5(self):
+        """Tests that a card is correctly removed from merge slot 5"""
+        merge_instance, _ = Merge.objects.get_or_create(userID=self.user)
+        #Ensure slots 1-4 are empty, and slot5 is filled
+        merge_instance.cardID1 = None
+        merge_instance.cardID2 = None
+        merge_instance.cardID3 = None
+        merge_instance.cardID4 = None
+        merge_instance.cardID5 = self.card1
+        merge_instance.save()
+        
+        #Deduct inventory for card1
+        own = ownsCard.objects.get(user=self.user, card=self.card1)
+        own.quantity -= 1
+        own.save()
+        
+        #POST request to remove card from slot5
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "removeCard": self.card1.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        
+        merge_instance.refresh_from_db()
+        self.assertIsNone(merge_instance.cardID5)
+        
+        own.refresh_from_db()
+        self.assertEqual(own.quantity, 5)
+
+    def testMergeCardImagesContext(self):
+        """Tests that the merge context is built correctly when some slots contain a card"""
+        #Pre-populate the merge instance: add self.card1 to slot 3
+        merge_instance, _ = Merge.objects.get_or_create(userID=self.user)
+        merge_instance.cardID3 = self.card1
+        merge_instance.save()
+
+        #Perform a GET request to the mergecards view
+        response = self.client.get(reverse("EcoWorld:mergecards"))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("merge", response.context)
+        merge_context = response.context["merge"]
+        
+        #Verify that the merge list has 5 items
+        self.assertEqual(len(merge_context), 5)
+        
+        # Build the expected context list:
+        expected = [
+            {'id': None, 'image': None},
+            {'id': None, 'image': None},
+            {'id': 'cardID3', 'image': self.card1.image.url},
+            {'id': None, 'image': None},
+            {'id': None, 'image': None},
+        ]
+        self.assertEqual(merge_context, expected)
+
+    def testRemoveCardNotInMergeSlot(self):
+        """Tests that trying to remove a card that is not in any merge slot returns the appropriate error"""
+        #Ensure the merge instance exists and that all merge slots are empty
+        merge_instance, _ = Merge.objects.get_or_create(userID=self.user)
+        merge_instance.cardID1 = None
+        merge_instance.cardID2 = None
+        merge_instance.cardID3 = None
+        merge_instance.cardID4 = None
+        merge_instance.cardID5 = None
+        merge_instance.save()
+        
+        #Post a request to remove self.card1, which is not in any merge slot
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "removeCard": self.card1.id,
+            "rarityforbutton": self.rarity_common.id,
+        })
+        self.assertEqual(response.status_code, 200)
+        #Verify that the error message is returned
+        self.assertIn("error", response.context)
+        self.assertEqual(response.context["error"], "This card is not in a merge slot")
+        
+        #Also verify that the context contains the expected keys
+        self.assertIn("playerItems", response.context)
+        self.assertIn("rarity", response.context)
+        self.assertIn("merge", response.context)
+        
+        #Check that the merge context (cardImages) is built correctly (5 slots, each empty)
+        merge_context = response.context["merge"]
+        self.assertEqual(len(merge_context), 5)
+        for item in merge_context:
+            self.assertEqual(item, {'id': None, 'image': None})
+
+
+    def testMergeCardsFuncError(self):
+        """Tests that submitting mergebutton equal to '5' returns the appropriate error."""
+        # Create an owned card for common rarity (id=1)
+        # (Already created in setUp: self.card1 with rarity common)
+        # Ensure there is at least one card in the inventory for the rarity filter.
+        # In this branch, the view filters on card__rarity_id=rarity (where rarity is passed via POST)
+        # and then adjusts the image path.
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "mergebutton": "5",  # This should trigger the error condition.
+            "rarity": self.rarity_common.id,  # This is used to fetch the inventory.
+        })
+        self.assertEqual(response.status_code, 200)
+        # Check that the error message is as expected.
+        self.assertIn("error", response.context)
+        self.assertEqual(
+            response.context["error"],
+            "This card rarity cannot be merged!"
+        )
+        # Verify that the context contains playerItems and merge keys.
+        self.assertIn("playerItems", response.context)
+        self.assertIn("merge", response.context)
+        # The merge list should have 5 items (even if empty).
+        self.assertEqual(len(response.context["merge"]), 5)
+
+
+    def testMergeCardsProcessing(self):
+        """Tests that when mergebutton is submitted and merge slots are full, the merge is processed."""
+        # Create a card for uncommon rarity (rarity id=2) which will be the result of merging.
+        card_uncommon = card.objects.create(
+            title="Card Uncommon", 
+            rarity_id=self.rarity_uncommon.id, 
+            image="cards/card_uncommon.jpg"
+        )
+        # Ensure user owns the uncommon card (even if quantity is 0 initially).
+        ownsCard.objects.create(user=self.user, card=card_uncommon, quantity=0)
+
+        # Populate the merge instance with a card in all 5 slots (using self.card1 which is of common rarity)
+        merge_instance, _ = Merge.objects.get_or_create(userID=self.user)
+        merge_instance.cardID1 = self.card1
+        merge_instance.cardID2 = self.card1
+        merge_instance.cardID3 = self.card1
+        merge_instance.cardID4 = self.card1
+        merge_instance.cardID5 = self.card1
+        merge_instance.save()
+
+        # Simulate a merge action.
+        # Here, we pass mergebutton with a value that is not "5". In the view, the code converts the value 
+        # to an int and increments it. For example, if we send "1", then mergeCardsFunc becomes 1 and after increment, 2.
+        response = self.client.post(reverse("EcoWorld:mergecards"), {
+            "mergebutton": "1",  # a valid merge action
+            "rarity": self.rarity_common.id,  # initial rarity used to fetch inventory
+        })
+
+        # The merge should have been processed, meaning:
+        # - The merge slots are cleared.
+        merge_instance.refresh_from_db()
+        self.assertIsNone(merge_instance.cardID1)
+        self.assertIsNone(merge_instance.cardID2)
+        self.assertIsNone(merge_instance.cardID3)
+        self.assertIsNone(merge_instance.cardID4)
+        self.assertIsNone(merge_instance.cardID5)
+        # - The user should receive a card of the next rarity (i.e. rarity 2, uncommon in our test setup).
+        # Since the template returned is "EcoWorld/merge_opening_page.html", we can check for that.
+        self.assertTemplateUsed(response, "EcoWorld/merge_opening_page.html")
+        # - Also, the user's ownership for the uncommon card should be incremented.
+        user_own_uncommon = ownsCard.objects.get(user=self.user, card=card_uncommon)
+        self.assertEqual(user_own_uncommon.quantity, 1)
+
+
+
+
+
+
+
+class TestMergeOpeningPage(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_merge_opening_page(self):
+        """Tests merge page opens"""
+        response = self.client.get(reverse("EcoWorld:mergereveal"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "EcoWorld/merge_opening_page.html")
+
+
+
+
+
+"""
+Test card rarity model
+Methods:
+    setUp() ; Sets up a card rarity
+    testCardStrMethod() : Tests the string method
+Author:
+Chris Lynch (cl1037@exeter.ac.uk)
+"""
+class TestcardRarity(TestCase):
+    def setUp(self):
+        self.common = cardRarity.objects.create(title="Common")
+
+    #Tests string method
+    def testCardStrMethod(self):
+        """
+        Tests the string method works
+        """
+        self.assertEqual(str(self.common), "Common")
+
+"""
+Test class for owns card model
+Methods:
+setUp(): Makes a user and gives them a card
+checkStrMethod(): Checks the str method works
+
+Author:
+Chris Lynch (cl1037@exeter.ac.uk)
+"""
+class TestOwnsCard(TestCase):
+    def setUp(self):
+        #Sets up user 
+        self.user = User.objects.create_user(username="testuser", password="testpass")
+        common_rarity = cardRarity.objects.create(title="Common")
+        #Card ownership
+        self.test_card = card.objects.create(title="log", rarity=common_rarity)
+        
+        
+        #Create an ownsCard instance
+        self.owns_card = ownsCard.objects.create(user=self.user, card=self.test_card, quantity=5)
+
+
+    def testStrMethod(self):
+        """
+        Test Str method works
+        """
+        expected_string = f"{self.user.username} owns {self.test_card.title}"
+        self.assertEqual(str(self.owns_card), expected_string)
+
+
+class TestMergeModel(TestCase):
+    def setUp(self):
+        #Create a test user
+        self.user = User.objects.create_user(username="testuser", password="password")
+        
+        #Create a test cardRarity instance for cards
+        self.common = cardRarity.objects.create(title="common")
+        
+        #Create test card instances.
+        self.card1 = card.objects.create(title="Card1", rarity=self.common)
+        self.card2 = card.objects.create(title="Card2", rarity=self.common)
+        self.card3 = card.objects.create(title="Card3", rarity=self.common)
+        self.card4 = card.objects.create(title="Card4", rarity=self.common)
+        self.card5 = card.objects.create(title="Card5", rarity=self.common)
+        
+        #Create a Merge instance linking the user and the cards
+        self.merge = Merge.objects.create(
+            userID=self.user,
+            cardID1=self.card1,
+            cardID2=self.card2,
+            cardID3=self.card3,
+            cardID4=self.card4,
+            cardID5=self.card5
+        )
+
+    def testMergeStr(self):
+        # Test that the __str__ method returns the expected string
+        expected_str = f"Merge operation for {self.user.username}"
+        self.assertEqual(str(self.merge), expected_str)
+        
+        
 class ChallengesTest(TestCase):
     """
     Comprehensive test suite for the Challenges page including:

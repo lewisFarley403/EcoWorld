@@ -4,6 +4,7 @@ This module defines the endpoints for the EcoWorld app:
     - `testAddDrink` : This view allows the user to test adding a drink event
 Author:
     -Lewis Farley (lf507@exeter.ac.uk)
+    -Chris Lynch (cl1037@exeter.ac.uk)
 """
 
 from django.urls import path
