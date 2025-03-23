@@ -337,7 +337,6 @@ class LeaderboardTests(TestCase):
         
         # Verify the squares are properly processed
         squares = response.context['squares']
-        print("SQUARES : ",squares)
         self.assertEqual(len(squares), 5)  # Should be 5x5 grid
         self.assertEqual(len(squares[0]), 5)
         
