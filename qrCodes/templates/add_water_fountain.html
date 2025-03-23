@@ -7,19 +7,21 @@
 </head>
 <body>
 {% include "partials/navbar.html" %}
-    <style>
-       .navbar{padding:0;}
+<style>
+    .navbar{padding:0;}
     .fountain-form{
         padding:60px;
     }
-    </style>
-    <div class="fountain-form">
+    body{background-color: #00dea5;}
+
+</style>
+<div class="fountain-form">
     <h1>Add a New Water Fountain</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Submit</button>
     </form>
-    </div>
+</div>
 </body>
 </html>

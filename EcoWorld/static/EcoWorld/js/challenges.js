@@ -81,6 +81,11 @@ function completeChallenge(challengeId, button) {
             
             // Update all progress bars
             updateAllProgress();
+            
+            // Refresh the page after a slight delay to allow animations to complete
+            setTimeout(function() { 
+                window.location.reload(); 
+            }, 1500);
         } else {
             alert("Error: " + data.error);
         }
@@ -150,6 +155,13 @@ function incrementObjective(objectiveId, button) {
                 
                 // Update all progress bars after the text has been updated
                 updateAllProgress();
+                
+                // If progress is complete, let animations finish then refresh
+                if (newProgress === total) {
+                    setTimeout(function() { 
+                        window.location.reload(); 
+                    }, 1500);
+                }
             }, 300);
 
             if (newProgress === total) {
@@ -240,6 +252,7 @@ function getCSRFToken() {
 // Auto-refresh daily objectives and challenges every X milliseconds
 const RESET_INTERVAL = 10000;  // Must match Python interval
 
+//Page Authored by Theodore Armes and Lewis Farley 
 
 
 

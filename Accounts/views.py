@@ -119,10 +119,9 @@ def user_info(request):
     Author:
         - Lewis Farley (lf507@exeter.ac.uk)
     """
-    # pfp_url = "/media/pfps/" + pfp_url
     user_info = {
         'username': request.user.username,
-        'pfp_url': "/media/pfps/" +request.user.profile.profile_picture if request.user.profile.profile_picture else '',
+        'pfp_url': "/media/pfps/" + request.user.profile.profile_picture if request.user.profile.profile_picture else '',
         'coins': request.user.profile.number_of_coins,
     }
     return JsonResponse(user_info)
@@ -169,3 +168,19 @@ def delete_account(request):
     messages.success(request, 'Your account has been deleted successfully.')
     return redirect('/')  # Redirect to login page
 
+
+@login_required
+def logout_view(request):
+    """
+    This view logs out the user and redirects them to the home page.
+
+    Attributes:
+        request : HttpRequest : The HTTP request object
+    Returns:
+        redirect : HttpResponse : The HTTP response redirecting to the home page
+    Author:
+        - Ethan Sweeney (es1052@exeter.ac.uk)
+    """
+    logout(request)
+    messages.success(request, 'You have been logged out successfully.')
+    return redirect('/')

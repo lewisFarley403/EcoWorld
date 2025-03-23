@@ -7,9 +7,10 @@ body {
 }
 
 .game-container {
-    max-width: 50%;
+    width: 100%;
+    max-width: 90%;
     margin: 0 auto;
-    padding: 60px;
+    padding: 2.5%;
     text-align: center;
     background-color: white;
     border-radius: 10px;
@@ -204,4 +205,30 @@ button:hover {
 @keyframes fade-out {
     from {opacity: 1;}
     to {opacity: 0;}
+}
+
+.game-instructions {
+    margin-top: 15px;
+}
+
+.desktop-controls {
+    display: block;
+}
+
+.mobile-controls {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .desktop-controls {
+        display: none;
+    }
+
+    .mobile-controls {
+        display: block;
+    }
+
+    .game-container{
+        padding-top: 60px;
+    }
 }

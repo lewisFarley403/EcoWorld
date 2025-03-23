@@ -44,8 +44,9 @@ def get_ranked_users(request):
 
     # Loop through all users and sum their earned coins
     for user in users:
-        coins_earnt = sum([i.score for i in UserEarntCoins.objects.filter(user=user)])
-        coin_map[user] = coins_earnt  # Map user to their total score
+        if not user.username == "admin":
+                coins_earnt = sum([i.score for i in UserEarntCoins.objects.filter(user=user)])
+                coin_map[user] = coins_earnt  # Map user to their total score
 
     # Sort the users based on their earned coins in descending order
     sorted_users = sorted(coin_map.items(), key=lambda x: x[1], reverse=True)

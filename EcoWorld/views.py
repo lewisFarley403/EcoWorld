@@ -21,7 +21,7 @@ from django.utils.timezone import now
 from django.views.decorators.csrf import csrf_exempt
 
 from Accounts.models import Friends, FriendRequests
-from forum.models import Post
+from forum.models import Post, PostInteraction
 from qrCodes.models import drinkEvent
 from .forms import ChallengeForm
 from .models import User, pack, ownsCard, ongoingChallenge, card, Merge
@@ -103,7 +103,7 @@ def store(request):
         userinfo = getUserInfo(request)
 
         #Sends the info to the page
-        return render(request, "ecoWorld/store.html",{ "packs": pack_list, "userinfo": userinfo[0]})
+        return render(request, "EcoWorld/store.html",{ "packs": pack_list, "userinfo": userinfo[0]})
 
     return HttpResponse("Invalid request")
 
@@ -181,6 +181,20 @@ def pack_opening_page(request):
 
 @login_required
 def challenge(request):
+    """
+    Renders the Challenges page for the logged-in user, showing active daily objectives and tracking drinking cooldown.
+
+    - Fetches all current ongoing challenges (daily objectives) for the user.
+    - Checks the user's last drink time to determine drink button availability.
+    - Calculates completed and total challenge progress.
+    - Passes context data such as coins, cooldown, and challenge progress to the template.
+
+    Returns:
+        HttpResponse: Renders the 'challenge_page.html' template with user-specific challenge data.
+
+    Author:
+        Lewis Farley (lf507@exeter.ac.uk), Theodore Armes (tesa201@exeter.ac.uk)
+    """
     daily_objectives = getUsersChallenges(request.user)
     user = User.objects.get(id=request.user.id)
 
@@ -221,8 +235,18 @@ def challenge(request):
 @login_required
 def increment_daily_objective(request):
     """
-    Increments the progress of a daily objective by 1.
-    Grants coins when an objective is completed.
+    Increments the progress of a daily objective by 1 and rewards coins when completed.
+
+    - Retrieves the objective ID from the POST request.
+    - Increases the progress counter if it hasn't reached the goal.
+    - Marks the objective as completed and rewards the user with coins if fully completed.
+    - Returns updated progress and total completion data.
+
+    Returns:
+        JsonResponse: Contains success status, progress updates, and reward information.
+
+    Author:
+        Lewis Farley (lf507@exeter.ac.uk), Theodore Armes (tesa201@exeter.ac.uk)
     """
     if request.method == "POST":
         data = json.loads(request.body)
@@ -273,7 +297,20 @@ def increment_daily_objective(request):
 
 @login_required
 def completeChallenge(request):
+    """
+    Marks a challenge as completed for the logged-in user and updates their reward.
 
+    - Retrieves the challenge ID from the POST request.
+    - Updates the user's profile by adding reward coins.
+    - Sets the completion timestamp for the challenge.
+    - Saves the updated challenge status in the database.
+
+    Returns:
+        HttpResponse: Success or failure message.
+
+    Author:
+        Lewis Farley (lf507@exeter.ac.uk), Theodore Armes (tesa201@exeter.ac.uk)
+    """
     if request.method == "POST":
         data = json.loads(request.body)
         user = User.objects.get(id=request.user.id)
@@ -305,7 +342,27 @@ def gamekeeper_page(request):
 
     users = User.objects.exclude(user_permissions__codename="can_view_gamekeeper_button")
     missing_rows = range(max(0, 3 - users.count()))
-    return render(request, "EcoWorld/gamekeeper_page.html", {"users": users, "missing_rows": missing_rows, "userinfo":userinfo[0]})
+
+    # Get forum posts data
+    posts = Post.objects.all().order_by('-created_at')
+    posts_data = []
+    for post in posts:
+        likes = PostInteraction.objects.filter(post=post, interaction_type='like').count()
+        dislikes = PostInteraction.objects.filter(post=post, interaction_type='dislike').count()
+        ratio = f"{dislikes/(likes + dislikes):.2%}" if (likes + dislikes) > 0 else "N/A"
+        posts_data.append({
+            'post': post,
+            'likes': likes,
+            'dislikes': dislikes,
+            'ratio': ratio
+        })
+
+    return render(request, "EcoWorld/gamekeeper_page.html", {
+        "users": users, 
+        "missing_rows": missing_rows, 
+        "userinfo": userinfo[0],
+        "posts": posts_data
+    })
 
 @permission_required("Accounts.can_view_gamekeeper_button")  # Only gamekeepers can promote others
 def grant_gamekeeper(request, user_id):
@@ -468,8 +525,9 @@ def friends(request):
         #If removing a friend
         else:
             removeUser = User.objects.filter(username=removeUser).first()
-            removeUserID = removeUser.id
-            Friends.objects.filter(Q(userID1=user, userID2=removeUserID) | Q(userID1=removeUserID, userID2=user)).delete()
+            if removeUser:
+                removeUserID = removeUser.id
+                Friends.objects.filter(Q(userID1=user, userID2=removeUserID) | Q(userID1=removeUserID, userID2=user)).delete()
 
             #Updates data on friend requests
             friendreqs = FriendRequests.objects.filter(receiverID=user)
@@ -814,6 +872,19 @@ def merge_opening_page(request):
 @csrf_exempt
 @login_required
 def save_objective_note(request):
+    """
+    Saves a user-provided note upon completing a daily objective.
+
+    - Expects a POST request with `objective_id` and `message` in the JSON payload.
+    - Updates the submission field of the corresponding ongoing challenge.
+    - Saves the updated challenge object.
+
+    Returns:
+        JsonResponse: Success or failure status.
+
+    Author:
+        Theodore Armes (tesa201@exeter.ac.uk)
+    """
     if request.method == "POST":
         data = json.loads(request.body)
         objective_id = data.get("objective_id")

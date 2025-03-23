@@ -128,7 +128,9 @@ body {
     .main-content {
         flex-direction: column;
         overflow: auto;
-        height: auto;
+        padding-top: 60px;
+        height: 100vh;
+        flex: none;
     }
 
     .left-panel, .right-panel {
@@ -147,4 +149,33 @@ body {
         max-width: 250px;
         margin: 0 auto;
     }
+    .main-container {
+        position: relative;
+        width: 100%;
+    }
+
+    .left-panel {
+        position: fixed;
+        top: 0;
+        left: -250px; /* Hide by default */
+        width: 250px;
+        height: 100vh;
+        background: #fff;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    .left-panel.active {
+        left: 0;
+    }
+
+    .toggle-menu {
+        position: fixed;
+        top: 20px;
+        left: 20px;
+        z-index: 1001;
+        display: block;
+    }
+
 }

@@ -1,0 +1,161 @@
+body {
+    background-color: #00dea5;
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    align-items: flex-start;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding-top: 60px;
+}
+
+.grid-wrapper {
+    flex: 1 1 600px;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    aspect-ratio: 1/1;
+    background-color: rgba(0,0,0,0.1);
+    border: 3px solid #003c3c;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.grid-square {
+    position: relative;
+    background-color: #00dea5;
+}
+
+.grid-square img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+}
+
+.grid-square img:hover {
+    transform: scale(1.05);
+    z-index: 1;
+}
+
+.inventory-box {
+    flex: 1 1 400px;
+    max-width: 500px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin: 0 auto;
+}
+
+.inventory-box h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 0 0 1rem 0;
+    color: #003c3c;
+}
+
+.inventory-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 15px;
+    padding: 10px;
+}
+
+.mergearea {
+    padding: 30px 0;
+    text-align: center;
+}
+
+.mergebutton {
+    background-color: #00dea5;
+    color: black;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 400px;
+    height: 150px;
+    border-radius: 10px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 1.5rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.mergebutton:hover {
+    transform: scale(1.05);
+    color: white;
+    background-color: #003c3c;
+    text-decoration: none;
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    .container {
+        padding-top: 80px;
+        display:block;
+    }
+
+    .grid-wrapper {
+        padding: 10px;
+        margin-bottom: 20px;
+    }
+
+    .inventory-box {
+        margin-top: 20px;
+    }
+
+    .mergebutton {
+        height: 100px;
+        font-size: 1.2rem;
+    }
+}
+
+/* Quantity badge improvements */
+.quantity-badge {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background-color: #003c3c;
+    color: white;
+    font-size: 0.75rem;
+    min-width: 20px;
+    height: 20px;
+    padding: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+/* Card container hover effect */
+.card-container {
+    transition: transform 0.2s ease;
+}
+
+.card-container:hover {
+    transform: translateY(-5px);
+}

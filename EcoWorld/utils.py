@@ -8,13 +8,20 @@ from .models import ongoingChallenge, challenge, card, cardRarity, pack
 
 def getUsersChallenges(user):
     """
-    This function returns all challenges for a user.
-    Attributes:
-        user : User : The user for whom the challenges are retrieved.
+    Retrieves all current challenges for a user, creating new ones if needed.
+
+    - If no challenges exist for the user, generates a new set via `createChallenges()`.
+    - Removes and replaces expired challenges based on `settings.CHALLENGE_EXPIRY`.
+    - Ensures no duplicate challenge assignments for the user.
+
+    Args:
+        user (User): The user for whom challenges are being retrieved or created.
+
     Returns:
-        challenges : QuerySet : The challenges for the user.
+        QuerySet: A list of `ongoingChallenge` instances assigned to the user.
+
     Author:
-        - Lewis Farley (lf507@exeter.ac.uk)
+        Lewis Farley (lf507@exeter.ac.uk), Theodore Armes (tesa201@exeter.ac.uk)
     """
 
     challenges = list(ongoingChallenge.objects.filter(user=user))
@@ -47,13 +54,20 @@ def getUsersChallenges(user):
 
 def createChallenges(user):
     """
-    This function creates all challenges for a user.
-    Attributes:
-        user : User : The user for whom the challenges are created.
+    Generates and assigns a set number of challenges to a user.
+
+    - Randomly selects challenges from the database.
+    - Ensures the number of assigned challenges matches `settings.NUM_CHALLENGES`.
+    - Handles cases where there are insufficient challenges available in the database.
+
+    Args:
+        user (User): The user for whom challenges are being created.
+
     Returns:
-        challenges : [ongoingChallenge] : The challenges created for the user.
+        None
+
     Author:
-        - Lewis Farley (lf507@exeter.ac.uk)
+        Lewis Farley (lf507@exeter.ac.uk), Theodore Armes (tesa201@exeter.ac.uk)
     """
     challenges = list(challenge.objects.all())
     try:

@@ -365,3 +365,25 @@ class TestGarden(TestCase):
         self.assertFalse(data["success"])
         self.assertEqual(data["message"], "You don't own this card")
 
+def test_sustainability_reward_card(self):
+    """Test earning garden card through sustainability action
+    - Create user
+    - Complete eco-friendly action
+    - Verify card reward
+    """
+    # Create test user and login
+    user = User.objects.create_user(username="eco_player", password="green123")
+    self.client.login(username="eco_player", password="green123")
+
+    # Add sustainability reward card
+    response = self.client.post(
+        reverse('add_card'),
+        json.dumps({'row': 0, 'col': 0, 'card_id': 1}),
+        content_type='application/json'
+    )
+
+    # Verify card placement
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(response.json()["success"], True)
+    self.assertIn("Card placed successfully!", response.json()["message"])
+

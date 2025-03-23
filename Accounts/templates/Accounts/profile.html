@@ -7,7 +7,7 @@
     {% block extra_css %}
         <link rel="stylesheet" href="{% static 'Accounts/css/profile.css' %}">
     {% endblock %}
-        {% include "partials/navbar.html" %}
+    {% include "partials/navbar.html" %}
     <style>
         #modal{
             display: none; /* Hidden by default */
@@ -50,27 +50,32 @@
         <div class="profile-sidebar">
             <h2>{{ profile.username }}</h2>
             <div class="profile-picture-container">
-                <img src="{% static 'Accounts/pfps/' %}{{ profile.profile_picture }}" alt="Profile Picture" class="profile-picture">
+                <img src="/media/pfps/{{ profile.profile_picture }}" alt="Profile Picture" class="profile-picture">
             </div>
             {% if not is_read_only %}
-            <button type="button" id="selectProfilePictureBtn">Change Profile Picture</button>
-            <form method="POST">
-                {% csrf_token %}
-                <input type="hidden" id="profilePictureInput" name="profile_picture" value="{{ profile.profile_picture }}">
-                <label for="bio">Edit Bio:</label>
-                <textarea name="bio" id="bio" rows="4">{{ profile.bio }}</textarea>
-                <button type="submit">Update Profile</button>
-            </form>
+                <button type="button" id="selectProfilePictureBtn">Change Profile Picture</button>
+                <form method="POST">
+                    {% csrf_token %}
+                    <input type="hidden" id="profilePictureInput" name="profile_picture" value="{{ profile.profile_picture }}">
+                    <label for="bio">Edit Bio:</label>
+                    <textarea name="bio" id="bio" rows="4">{{ profile.bio }}</textarea>
+                    <button type="submit">Update Profile</button>
+                </form>
+                <form action="/accounts/logout/" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="button">Logout</button>
+                </form>
+
             {% endif %}
             {%if is_read_only%}
-            <p>{{ profile.bio }}</p>
+                <p>{{ profile.bio }}</p>
             {% endif %}
 
             {% if not is_read_only %}
-            <form action="{% url 'delete_account' %}" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-danger">Delete Account</button>
-            </form>
+                <form action="{% url 'delete_account' %}" method="post" onsubmit="return confirm('Are you sure you want to delete your account? This action cannot be undone.')">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete Account</button>
+                </form>
             {% endif %}
         </div>
 
@@ -93,11 +98,11 @@
                 {%csrf_token%}
                 <div>
                     {% if not is_read_only %}
-                    <h1>Your Garden:</h1>
-                    <p>Click it to visit the garden!</p>
+                        <h1>Your Garden:</h1>
+                        <p>Click it to visit the garden!</p>
                     {% endif %}
                     {% if is_read_only %}
-                    <h1>{{ username }}'s Garden:</h1>
+                        <h1>{{ username }}'s Garden:</h1>
                     {% endif %}
                     <div class="grid-container">
                         {% for row in squares %}
