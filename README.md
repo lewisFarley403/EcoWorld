@@ -54,6 +54,8 @@ awareness and actionable steps towards environmental sustainability.
 
 4. Run the django server ```python manage.py runserver```
 
+**Note:** Some conifg variables are stored in ECM2434/settings.py.
+
 ### How to test
 1. Install the dependencies:
    ```sh
