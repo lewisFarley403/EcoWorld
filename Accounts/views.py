@@ -68,12 +68,12 @@ def signup(request):
         form = SignUpForm()
     return render(request, 'Accounts/signup.html', {'form': form})
 
-@login_required  # Ensure that only logged-in users can access the user_profile
+@login_required  # Ensure that only logged-in users can access the profile
 def profile(request):
     """
-    This view allows the user to view and update their user_profile.
-    It renders the user_profile form (when it received get request)
-    and updates the user_profile when the form is submitted (it receives post request).
+    This view allows the user to view and update their profile.
+    It renders the profile form (when it received get request)
+    and updates the profile when the form is submitted (it receives post request).
     it requires the user to be logged in. if the user is not logged in,
     it redirects to the login page.
     Attributes:
@@ -84,22 +84,23 @@ def profile(request):
         - Ethan Sweeney (es1052@exeter.ac.uk)
 
     """
-    user_profile = Profile.objects.get(user=request.user)
+    profile = Profile.objects.get(user=request.user)
 
-    # Handle the user_profile picture update
+    # Handle the profile picture update
     if request.method == 'POST':
         # Get the form data
         bio = request.POST.get('bio')
         profile_picture = request.POST.get('profile_picture')
 
-        # Update the user_profile
-        user_profile.bio = bio
-        if profile_picture:
-            user_profile.profile_picture = profile_picture
-            # Set the selected user_profile picture file name
-        user_profile.save()
+        # Update the profile
 
-        # Redirect to the user_profile page after saving
+        profile.bio = bio
+        if profile_picture:
+            profile.profile_picture = profile_picture
+            # Set the selected profile picture file name
+        profile.save()
+
+        # Redirect to the profile page after saving
         return redirect('profile')
 
     g = garden.objects.get(userID=request.user)
@@ -115,7 +116,7 @@ def profile(request):
 
     # If it's a GET request, show the form
     return render(request, 'Accounts/profile.html',
-                  {'user_profile': user_profile,'squares': processed_squares,'MEDIA_URL'
+                  {'profile': profile,'squares': processed_squares,'MEDIA_URL'
                   :settings.MEDIA_URL,'size':g.size,'available_cards':final})
 
 @login_required
@@ -129,13 +130,13 @@ def user_info(request):
     Author:
         - Lewis Farley (lf507@exeter.ac.uk)
     """
-    users_info = {
+    user_info = {
         'username': request.user.username,
         'pfp_url': "/media/pfps/" + request.user.profile.profile_picture
         if request.user.profile.profile_picture else '',
         'coins': request.user.profile.number_of_coins,
     }
-    return JsonResponse(users_info)
+    return JsonResponse(user_info)
 
 
 def read_only_profile(request):
