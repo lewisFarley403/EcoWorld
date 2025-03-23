@@ -74,13 +74,13 @@ class GamekeeperViewTests(TestCase):
         response = self.client.get(reverse("EcoWorld:gamekeeper_page"))
         # Expecting a 302 redirect to the login page.
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith("/accounts/login/"))
+        self.assertTrue(response.url.startswith("/?next=/ecoworld/gamekeeper/"))
 
     def test_gamekeeper_page_access_unauthenticated(self):
         """An unauthenticated request should redirect to the login page."""
         response = self.client.get(reverse("EcoWorld:gamekeeper_page"))
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith("/accounts/login/"))
+        self.assertTrue(response.url.startswith("/?next=/ecoworld/gamekeeper/"))
 
     # --- Tests for the grant_gamekeeper view ---
 
@@ -98,7 +98,7 @@ class GamekeeperViewTests(TestCase):
         response = self.client.post(reverse("EcoWorld:grant_gamekeeper", args=[self.gamekeeper_user.id]))
         # By default, @permission_required redirects unauthorized users to login.
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith("/accounts/login/"))
+        self.assertTrue(response.url.startswith("/?next=/ecoworld/grant_gamekeeper/1/"))
 
     # --- Tests for the add_challenge view ---
 
@@ -130,7 +130,7 @@ class GamekeeperViewTests(TestCase):
         response = self.client.post(reverse("EcoWorld:add_challenge"), post_data)
         # Unauthorized users are redirected to login.
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith("/accounts/login/"))
+        self.assertTrue(response.url.startswith("/?next=/ecoworld/add-challenge/"))
         # No new challenge should be created.
         self.assertEqual(challenge.objects.count(), 0)
 
