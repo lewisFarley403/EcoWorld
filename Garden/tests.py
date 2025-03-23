@@ -15,7 +15,9 @@ Chris Lynch (cl1037@exeter.ac.uk)
 
 """
 import json
+from unittest.mock import patch
 
+from django.conf import settings
 from django.test import TestCase, Client
 from django.urls import reverse
 
@@ -73,6 +75,73 @@ class TestGarden(TestCase):
         self.garden_square1 = gardenSquare.objects.get(gardenID=self.garden1, squareID=0)
         self.garden_square1.cardID = self.card1
         self.garden_square1.save()
+
+
+    def test_show_garden_context(self):
+        """
+        Tests that the show_garden view returns the correct context
+        """
+        #Log in the test user
+        self.client.login(username="testuser1", password="1234")
+        
+        #Call the show_garden view via the URL pattern
+        response = self.client.get(reverse('home'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "Garden/garden.html")
+        
+        context = response.context
+        
+        #Verify that the garden size is present and squares is a 2D list of that size
+        garden_size = context.get('size')
+        self.assertIsNotNone(garden_size)
+        
+        squares = context.get('squares')
+        self.assertIsNotNone(squares)
+        #Check that squares is a 2D list of dimensions size x size
+        self.assertEqual(len(squares), garden_size)
+        for row in squares:
+            self.assertEqual(len(row), garden_size)
+        
+        #Verify MEDIA_URL is correctly passed
+        self.assertEqual(context.get('MEDIA_URL'), settings.MEDIA_URL)
+        
+        #Check userinfo contains username, pfp_url, and coins
+        userinfo = context.get("userinfo")
+        self.assertIsNotNone(userinfo)
+        self.assertIn("username", userinfo)
+        self.assertIn("pfp_url", userinfo)
+        self.assertIn("coins", userinfo)
+        
+        #Check that the playerInventory only contains items with quantity > 0
+        playerInventory = context.get("playerInventory")
+        self.assertIsNotNone(playerInventory)
+        for item in playerInventory:
+            self.assertTrue(item["quantity"] > 0)
+
+    def test_add_card_insufficient_quantity(self):
+        """
+        Test that trying to add a card when the user doesn't have enough (quantity <= 0)
+        returns the proper error message.
+        """
+        self.client.login(username="testuser1", password="1234")
+        
+        # Set the quantity for the card to 0 to simulate insufficient quantity.
+        owned_card = ownsCard.objects.get(user=self.user1, card=self.card1)
+        owned_card.quantity = 0
+        owned_card.save()
+        
+        response = self.client.post(
+            reverse('add_card'),
+            json.dumps({'row': 2, 'col': 2, 'card_id': self.card1.id}),
+            content_type='application/json'
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertFalse(data["success"])
+        self.assertEqual(data["message"], "You don't have enough of this card.")
+
+
 
 
     #Tests if the garden page requires the login
@@ -188,3 +257,111 @@ class TestGarden(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()["success"], False)
         self.assertIn("No card in this square", response.json()["message"])
+
+    
+    def testAddCardInvalidCard(self):
+        """
+        Tests that if an invalid card ID is provided it returns error
+        Author: Chris Lynch (cl1037@exeter.ac.uk)
+        """
+        self.client.login(username="testuser1", password="1234")
+        
+        #Use a card id that doesn't exist
+        response = self.client.post(
+            reverse('add_card'),
+            json.dumps({'row': 2, 'col': 2, 'card_id': 9999}),
+            content_type='application/json'
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertFalse(data["success"])
+        self.assertEqual(data["message"], "Invalid card ID")
+
+    def testAddCardNoOwnership(self):
+        """
+        Tests that if the user does not own the card the view returns the appropriate error message
+        Author: Chris Lynch (cl1037@exeter.ac.uk)
+        """
+        self.client.login(username="testuser1", password="1234")
+        
+        #Create a new card that the user does not own
+        new_card = card.objects.create(title="New Card", image="cards/new_card.png", rarity=self.common_rarity)
+        #check no ownsCard record exists for this card by deleting any if present
+        ownsCard.objects.filter(user=self.user1, card=new_card).delete()
+        
+        response = self.client.post(
+            reverse('add_card'),
+            json.dumps({'row': 2, 'col': 2, 'card_id': new_card.id}),
+            content_type='application/json'
+        )
+        
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertFalse(data["success"])
+        self.assertEqual(data["message"], "You don't own this card")
+
+    def testAddCardInvalidMethod(self):
+        """
+        Tests that if a non POST request is made to the addCard view it returns the proper message
+        Author: Chris Lynch (cl1037@exeter.ac.uk)
+        """
+        self.client.login(username="testuser1", password="1234")
+        
+        response = self.client.get(reverse('add_card'))
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertFalse(data["success"])
+        self.assertEqual(data["message"], "Invalid request.")
+
+
+    def testRemoveCardInvalidSquare(self):
+        """
+        Tests that if the row/col do not correspond to an existing gardenSquare the view returns "Invalid garden square"
+        Author: Chris Lynch (cl1037@exeter.ac.uk)
+        """
+        self.client.login(username="testuser1", password="1234")
+        # Use row=4, col=1 outside the grid
+        response = self.client.post(
+            reverse('remove_card'),
+            json.dumps({'row': 4, 'col': 1}),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertFalse(data["success"])
+        self.assertEqual(data["message"], "Invalid garden square")
+
+    def testRemoveCardInvalidMethod(self):
+        """
+        Tests that a non-POST request to removeCard returns the fallback message
+        Author: Chris Lynch (cl1037@exeter.ac.uk)
+        """
+        self.client.login(username="testuser1", password="1234")
+        response = self.client.get(reverse('remove_card'))
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertFalse(data["success"])
+        self.assertEqual(data["message"], "Invalid request")
+
+
+
+    @patch('Garden.views.ownsCard.objects.get_or_create')
+    def testRemoveCardownsCardException(self, mock_get_or_create):
+        """
+        Tests that if ownsCard.get_or_create raises a DoesNotExist exception
+        Author: Chris Lynch (cl1037@exeter.ac.uk)
+        """
+        self.client.login(username="testuser1", password="1234")
+        mock_get_or_create.side_effect = ownsCard.DoesNotExist
+
+        response = self.client.post(
+            reverse('remove_card'),
+            json.dumps({'row': 1, 'col': 1}),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertFalse(data["success"])
+        self.assertEqual(data["message"], "You don't own this card")
+
