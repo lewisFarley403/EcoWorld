@@ -12,8 +12,10 @@ from django.conf import settings
 from EcoWorld.models import card, ownsCard
 from Garden.models import garden, gardenSquare
 
+#pylint: disable=too-few-public-methods
+# pylint: disable=no-member
 
-def createGarden(user):
+def create_garden(user):
     """
     This function creates a garden for the user.
     It creates a garden object and garden squares for the user.
@@ -28,16 +30,22 @@ def createGarden(user):
     g = garden(userID=user)
     g.save()
     for i in range(settings.GARDEN_SIZE**2):
-        gS = gardenSquare(gardenID=g, squareID=i)
-        gS.save()
+        g_s = gardenSquare(gardenID=g, squareID=i)
+        g_s.save()
 
     return g
 
 
-def createOwnsDb(user):
+def create_owns_db(user):
+    """
+    Creates ownership records for all cards for a given user.
+
+    This function iterates over all card objects and creates an ownsCard
+    record for each card, associating it with the provided user.
+
+    Args:
+        user (User): The user for whom the ownership records are created.
+    """
     for cards in card.objects.all():
-        oCard = ownsCard(card_id=cards.id, user_id=user.id)
-        oCard.save()
-
-    
-
+        o_card = ownsCard(card_id=cards.id, user_id=user.id)
+        o_card.save()

@@ -1,7 +1,8 @@
 """
 Module to create the Profile model for the Accounts app.
 This module includes:
-    - Profile: Model for storing user profile information (bio, first name, last name, profile picture).
+    - Profile: Model for storing user profile information
+    (bio, first name, last name, profile picture).
 
 Usage:
     - Import the Profile model in views.py to access user profile information.
@@ -16,6 +17,8 @@ from django.contrib.auth.models import User
 from django.db import models
 
 # models.py
+#pylint: disable=too-few-public-methods
+# pylint: disable=no-member
 
 class Profile(models.Model):
     """
@@ -42,6 +45,14 @@ class Profile(models.Model):
         return self.user.username
 
     class Meta:
+        """
+        Metaclass for the Profile model.
+
+        This class provides metadata for the Profile model, including permissions.
+
+        Attributes:
+            permissions (list): A list of tuples specifying custom permissions for the model.
+        """
         permissions = [
             ("can_view_gamekeeper_button", "Can grant gamekeeper rights"),
         ]
@@ -62,8 +73,15 @@ class Friends(models.Model):
     userID2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="FriendTwo")
 
     class Meta:
-        unique_together = ("userID1", "userID2")
-    
+        """
+        Metaclass for the Friends model.
+
+        This class provides metadata for the Friends model, including unique constraints.
+
+        Attributes:
+            unique_together (tuple): A tuple specifying fields that must be unique together.
+        """
+        unique_together = ("userID1","userID2")
     def __str__(self):
         return f"{self.userID1.username} is friends with {self.userID2.username}"
 
@@ -83,7 +101,14 @@ class FriendRequests(models.Model):
     receiverID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="received_requests")
 
     class Meta:
-        unique_together = ("senderID", "receiverID") 
+        """
+        Metaclass for the FriendRequests model.
 
+        This class provides metadata for the FriendRequests model, including unique constraints.
+
+        Attributes:
+            unique_together (tuple): A tuple specifying fields that must be unique together.
+        """
+        unique_together = ("senderID","receiverID")
     def __str__(self):
         return f"{self.senderID.username} sent a request to {self.receiverID.username}"

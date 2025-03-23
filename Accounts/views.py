@@ -20,8 +20,10 @@ from EcoWorld.models import ownsCard
 from Garden.models import garden
 from .forms import SignUpForm
 from .models import Profile
-from .utils import createGarden, createOwnsDb
+from .utils import create_garden, create_owns_db
 
+#pylint: disable=too-few-public-methods
+# pylint: disable=no-member
 
 # views.py
 
@@ -41,7 +43,8 @@ def privacy_policy(request):
 def signup(request):
     """
     This view allows the user to sign up for an account.
-    It renders the signup form (when it received get request) and creates a new user when the form is submitted (it receives post request).
+    It renders the signup form (when it received get request)
+    and creates a new user when the form is submitted (it receives post request).
 
     Attributes:
         request : HttpRequest : The HTTP request object
@@ -55,21 +58,24 @@ def signup(request):
         if form.is_valid():
             user=form.save()
             # create garden for user
-            createGarden(user)
+            create_garden(user)
             #creates cards owned by user set default as 0.
-            createOwnsDb(user)
+            create_owns_db(user)
             login(request, user)
-            return redirect('/ecoworld/')  # Redirect to the login page after successful registration
+            return redirect('/ecoworld/')
+            # Redirect to the login page after successful registration
     else:
         form = SignUpForm()
     return render(request, 'Accounts/signup.html', {'form': form})
 
-@login_required  # Ensure that only logged-in users can access the profile
+@login_required  # Ensure that only logged-in users can access the user_profile
 def profile(request):
     """
-    This view allows the user to view and update their profile.
-    It renders the profile form (when it received get request) and updates the profile when the form is submitted (it receives post request).
-    it requires the user to be logged in. if the user is not logged in, it redirects to the login page.
+    This view allows the user to view and update their user_profile.
+    It renders the user_profile form (when it received get request)
+    and updates the user_profile when the form is submitted (it receives post request).
+    it requires the user to be logged in. if the user is not logged in,
+    it redirects to the login page.
     Attributes:
         request : HttpRequest : The HTTP request object
     Returns:
@@ -78,35 +84,39 @@ def profile(request):
         - Ethan Sweeney (es1052@exeter.ac.uk)
 
     """
-    profile = Profile.objects.get(user=request.user)
+    user_profile = Profile.objects.get(user=request.user)
 
-    # Handle the profile picture update
+    # Handle the user_profile picture update
     if request.method == 'POST':
         # Get the form data
         bio = request.POST.get('bio')
         profile_picture = request.POST.get('profile_picture')
 
-        # Update the profile
-        profile.bio = bio
+        # Update the user_profile
+        user_profile.bio = bio
         if profile_picture:
-            profile.profile_picture = profile_picture  # Set the selected profile picture file name
-        profile.save()
+            user_profile.profile_picture = profile_picture
+            # Set the selected user_profile picture file name
+        user_profile.save()
 
-        # Redirect to the profile page after saving
+        # Redirect to the user_profile page after saving
         return redirect('profile')
 
     g = garden.objects.get(userID=request.user)
     squares = g.gardensquare_set.all()
-    processedSquares = [[squares[i*g.size+j] for j in range (g.size)] for i in range (g.size)]
+    processed_squares = [[squares[i*g.size+j] for j in range (g.size)] for i in range (g.size)]
 
 
-    playerInventory = ownsCard.objects.filter(user=request.user)
-    availableCards = [ card.card for card in playerInventory if card.card not in [square.cardID for square in squares]]
-    serialized=json.loads(serializers.serialize('json', availableCards))
+    player_inventory = ownsCard.objects.filter(user=request.user)
+    available_cards = [ card.card for card in player_inventory if card.card not in
+                       [square.cardID for square in squares]]
+    serialized=json.loads(serializers.serialize('json', available_cards))
     final = [obj["fields"]|{'id':obj['pk']} for obj in serialized]
 
     # If it's a GET request, show the form
-    return render(request, 'Accounts/profile.html', {'profile': profile,'squares': processedSquares,'MEDIA_URL':settings.MEDIA_URL,'size':g.size,'availableCards':final})
+    return render(request, 'Accounts/profile.html',
+                  {'user_profile': user_profile,'squares': processed_squares,'MEDIA_URL'
+                  :settings.MEDIA_URL,'size':g.size,'available_cards':final})
 
 @login_required
 def user_info(request):
@@ -119,20 +129,21 @@ def user_info(request):
     Author:
         - Lewis Farley (lf507@exeter.ac.uk)
     """
-    user_info = {
+    users_info = {
         'username': request.user.username,
-        'pfp_url': "/media/pfps/" + request.user.profile.profile_picture if request.user.profile.profile_picture else '',
+        'pfp_url': "/media/pfps/" + request.user.profile.profile_picture
+        if request.user.profile.profile_picture else '',
         'coins': request.user.profile.number_of_coins,
     }
-    return JsonResponse(user_info)
+    return JsonResponse(users_info)
 
 
 def read_only_profile(request):
     """
-    This view allows the user to view the profile of another user.
+    This view allows the user to view the user_profile of another user.
     Attributes:
         request : HttpRequest : The HTTP request object
-        username : str : The username of the user whose profile is being viewed
+        username : str : The username of the user whose user_profile is being viewed
     Returns:
         render : HttpResponse : The rendered HTML page
     Author:
@@ -141,13 +152,17 @@ def read_only_profile(request):
     username = request.GET.get("username", None)  # Default if no username is provided
 
     user = User.objects.get(username=username)
-    profile = Profile.objects.get(user=user)
-    print(dir(profile))
+    user_profile = Profile.objects.get(user=user)
+    print(dir(user_profile))
     print()
     g = garden.objects.get(userID=user)
     squares = g.gardensquare_set.all()
-    processedSquares = [[squares[i * g.size + j] for j in range(g.size)] for i in range(g.size)]
-    return render(request, 'Accounts/profile.html', {'profile': profile, 'squares': processedSquares, 'MEDIA_URL': settings.MEDIA_URL, 'size': g.size,'is_read_only': True,'username':username})
+    processed_squares = [[squares[i * g.size + j] for j in range(g.size)]
+                        for i in range(g.size)]
+    return render(request, 'Accounts/profile.html',
+                  {'user_profile': user_profile, 'squares': processed_squares,
+                   'MEDIA_URL': settings.MEDIA_URL, 'size': g.size,'is_read_only':
+                       True,'username':username})
 
 
 

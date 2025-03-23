@@ -6,7 +6,7 @@ from .models import UserEarntCoins
 from Accounts.models import Profile
 from Garden.models import garden, gardenSquare
 from Accounts.forms import SignUpForm
-from Accounts.utils import createGarden
+from Accounts.utils import create_garden
 
 class LeaderboardTests(TestCase):
     def setUp(self):
@@ -298,7 +298,7 @@ class LeaderboardTests(TestCase):
         """Test the garden tooltip template rendering"""
         # Create a new user using the signup form
         from Accounts.forms import SignUpForm
-        from Accounts.utils import createGarden
+        from Accounts.utils import create_garden
         
         # Create form data
         form_data = {
@@ -318,7 +318,7 @@ class LeaderboardTests(TestCase):
         user = form.save()
         
         # Create the garden using the utility function
-        user_garden = createGarden(user)
+        user_garden = create_garden(user)
         
         # Get the tooltip template
         response = self.client.get(
