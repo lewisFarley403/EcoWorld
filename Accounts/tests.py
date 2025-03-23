@@ -100,9 +100,6 @@ class testSignupForm(TestCase):
         self.assertEqual(user.username, 'testuser')
         self.assertEqual(user.email, 'testuser@gmail.com')
         profile = Profile.objects.get(user=user)
-        print("PRINTING PROFILE")
-        print("first name: ", profile.first_name)
-        print("last name: ", profile.last_name)
         self.assertEqual(profile.first_name, 'John')
         self.assertEqual(profile.last_name, 'Doe')
 

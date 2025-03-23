@@ -24,7 +24,7 @@ from .models import Profile
 # pylint: disable=unused-argument
 
 @receiver(post_save, sender=User)
-def create_or_update_profile(_, instance, created, **kwargs):
+def create_or_update_profile(sender, instance, created, **kwargs):
     """
 
     This function creates or updates the user profile when the user is created or updated.
