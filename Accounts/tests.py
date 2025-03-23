@@ -7,6 +7,8 @@ from Garden.models import garden, gardenSquare
 from .forms import SignUpForm, ProfileUpdateForm
 from .models import Profile, FriendRequests, Friends
 
+#pylint: disable=too-few-public-methods
+# pylint: disable=no-member
 
 # model test
 class ProfileModelTest(TestCase):
@@ -37,6 +39,9 @@ class ProfileModelTest(TestCase):
 
 class testSignupForm(TestCase):
     def test_valid_signup_form(self):
+        """
+        Test that a valid signup form can be submitted and the user is created correctly.
+        """
         form_data = {
             'first_name': 'John',
             'last_name': 'Doe',
@@ -49,6 +54,9 @@ class testSignupForm(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_invalid_email_signup_form(self):
+        """
+        Test that a garden is created for a user when they sign up.
+        """
         form_data = {
             'first_name': 'John',
             'last_name': 'Doe',
@@ -61,6 +69,9 @@ class testSignupForm(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['email'], ['Enter a valid email address.'])
     def test_non_matching_passwords_signup_form(self):
+        """
+        Set up a test user and profile for the ProfileUpdateForm tests.
+        """
         form_data = {
             'first_name': 'John',
             'last_name': 'Doe',
@@ -73,6 +84,9 @@ class testSignupForm(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(form.errors['password2'], ['The two password fields didn’t match.'])
     def test_valid_signup_form_write(self):
+        """
+        Test that a valid profile update form can be submitted and the profile is updated correctly.
+        """
         form_data = {
             'first_name': 'John',
             'last_name': 'Doe',
@@ -178,8 +192,10 @@ class LoginTestCase(TestCase):
             'username': self.username,
             'password': self.password
         })
-        self.assertEqual(response.status_code, 302)  # Should redirect to success page or render login page
-        self.assertTrue(response.wsgi_request.user.is_authenticated) # User should be authenticated
+        self.assertEqual(response.status_code, 302)
+        # Should redirect to success page or render login page
+        self.assertTrue(response.wsgi_request.user.is_authenticated)
+        # User should be authenticated
 
     def test_login_with_incorrect_credentials(self):
         """Test login with incorrect credentials"""
@@ -187,8 +203,10 @@ class LoginTestCase(TestCase):
             'username': self.username,
             'password': "wrongpassword"
         })
-        self.assertEqual(response.status_code, 200)  # Login page should re-render with errors
-        self.assertFalse(response.wsgi_request.user.is_authenticated) # User should not be authenticated
+        self.assertEqual(response.status_code, 200)
+        # Login page should re-render with errors
+        self.assertFalse(response.wsgi_request.user.is_authenticated)
+        # User should not be authenticated
 class LogoutTestCase(TestCase):
     def setUp(self):
         """Create a test user"""
@@ -198,6 +216,9 @@ class LogoutTestCase(TestCase):
         self.client.login(username=self.username, password=self.password)
 
     def test_signout(self):
+        """
+        Test that a logged-in user can sign out successfully.
+        """
         response = self.client.post(reverse('logout'))
         self.assertEqual(response.status_code, 302)
         self.assertFalse(response.wsgi_request.user.is_authenticated)
