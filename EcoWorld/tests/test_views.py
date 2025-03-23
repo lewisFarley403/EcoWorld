@@ -7,44 +7,6 @@ from EcoWorld.models import challenge
 from qrCodes.models import drinkEvent, waterFountain
 import json
 
-class EcoWorldViewsTest(TestCase):
-
-    def setUp(self):
-        """ Set up data before each test"""
-        self.client = Client()
-
-        # Fake user
-        self.user = User.objects.create_user(username = "testuser", password = "password123")
-
-        # Fake water fountain
-        self.fountain = waterFountain.objects.create(id = 1, location = "Test Location")
-
-        #URLS that I want to test
-        self.add_drink_url = reverse("EcoWorld:dashboard")
-        # self.generate_qr_url = reverse("EcoWorld:generate_qr")
-        # self.scan_qr_url = reverse("EcoWorld:scan_qr")
-        # self.upload_photo_url = reverse("EcoWorld:upload_photo")
-
-
-    # def test_add_drink_invalid_user(self):
-    #     #This fails because the addDrink function in views doesn't handle non-existent users gracefully
-    #     #but im not sure if we need that function tbh
-    #     """Test adding a drink with an invalid user."""
-    #     data = {
-    #         "user": 999,  # Non-existing user ID
-    #         "fountain": self.fountain.id,
-    #         "drank_on": "2025-02-22T12:00:00Z"
-    #     }
-
-    #     response = self.client.post(self.add_drink_url, json.dumps(data), content_type="application/json")
-
-    #     self.assertEqual(response.status_code, 200)
-    #     self.assertIn("Invalid user or fountain", response.content.decode())
-
-
-
-
-
 class GamekeeperViewTests(TestCase):
     def setUp(self):
         # Create a gamekeeper user and a regular user.

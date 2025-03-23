@@ -212,7 +212,7 @@ class TestStore(TestCase):
         response = self.client.get(reverse('EcoWorld:store'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "ecoWorld/store.html")
+        self.assertTemplateUsed(response, "EcoWorld/store.html")
 
         #User info tests to make sure the page has what it needs from the user
         self.assertIn("userinfo", response.context)
