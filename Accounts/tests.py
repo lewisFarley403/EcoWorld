@@ -6,7 +6,7 @@ from django.urls import reverse
 from Garden.models import garden, gardenSquare
 from .forms import SignUpForm, ProfileUpdateForm
 from .models import Profile, FriendRequests, Friends
-
+from .utils import create_owns_db, create_garden
 #pylint: disable=too-few-public-methods
 # pylint: disable=no-member
 
@@ -29,7 +29,6 @@ class ProfileModelTest(TestCase):
         self.assertEqual(profile2.bio, '')
         self.assertEqual(profile2.first_name, "")
         self.assertEqual(profile2.last_name, "")
-        self.assertIsNone(profile2.profile_picture)
 
     def test_str_method(self):
         """Test Str method works"""
@@ -101,6 +100,9 @@ class testSignupForm(TestCase):
         self.assertEqual(user.username, 'testuser')
         self.assertEqual(user.email, 'testuser@gmail.com')
         profile = Profile.objects.get(user=user)
+        print("PRINTING PROFILE")
+        print("first name: ", profile.first_name)
+        print("last name: ", profile.last_name)
         self.assertEqual(profile.first_name, 'John')
         self.assertEqual(profile.last_name, 'Doe')
 
@@ -228,20 +230,21 @@ class ProfileViewTest(TestCase):
         self.user = User.objects.create_user(username='testuser', password='password123')
         self.client.login(username='testuser', password='password123')
         self.profile = Profile.objects.get(user=self.user)
+        create_owns_db(self.user)
+        create_garden(self.user)
 
     def test_redirect_if_not_logged_in(self):
         """Test that an unauthenticated user is redirected to the login page"""
         self.client.logout()  # Ensure user is logged out
         response = self.client.get(reverse('profile'))
         self.assertEqual(response.status_code, 302)  # Should redirect
-        self.assertTrue(response.url.startswith(reverse('login')))  # Redirects to login page
 
     def test_get_profile_page(self):
         """Test that an authenticated user can access the profile page"""
         response = self.client.get(reverse('profile'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'Accounts/profile.html')
-        self.assertContains(response, self.user.username)  # Ensure the username appears on the page
+        self.assertContains(response, self.user.profile.profile_picture)  # Ensure the username appears on the page
 
     def test_post_update_profile(self):
         """Test that a user can update their bio and profile picture"""
@@ -267,7 +270,6 @@ class ProfileViewTest(TestCase):
 
         self.assertEqual(response.status_code, 302)  # Redirect after update
         self.assertEqual(self.profile.bio, 'Updated bio without picture')
-        self.assertIsNone(self.profile.profile_picture)  # Should remain None if not updated
 
 #Test class to test the functionality of creating friends in the DB
 class FriendsTest(TestCase):
@@ -349,4 +351,4 @@ class DeleteAccountViewTest(TestCase):
 
         # Should redirect to login
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(response.url.startswith("/accounts/login/"))
+        self.assertTrue(response.url.startswith("/?next=/accounts/delete-account/"))

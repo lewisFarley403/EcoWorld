@@ -24,7 +24,7 @@ from .models import Profile
 # pylint: disable=unused-argument
 
 @receiver(post_save, sender=User)
-def create_or_update_profile(sender, instance, created, **kwargs):
+def create_or_update_profile(_, instance, created, **kwargs):
     """
 
     This function creates or updates the user profile when the user is created or updated.
@@ -36,8 +36,15 @@ def create_or_update_profile(sender, instance, created, **kwargs):
         created : bool : A boolean value indicating if the user is created
     """
     if created:
-        Profile.objects.create(user=instance)
+        Profile.objects.create(
+            user=instance,
+            first_name=instance.first_name,
+            last_name=instance.last_name
+        )
     else:
+        # Update profile fields if User model is updated
+        instance.profile.first_name = instance.first_name
+        instance.profile.last_name = instance.last_name
         instance.profile.save()
 
 @receiver(pre_save, sender=Profile)

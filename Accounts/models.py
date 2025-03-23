@@ -36,8 +36,8 @@ class Profile(models.Model):
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     bio = models.TextField(blank=True)
-    first_name = models.TextField(blank=True)
-    last_name = models.TextField(blank=True)
+    first_name = models.TextField()
+    last_name = models.TextField()
     defaultpfp = "/pfp1.png"
     profile_picture = models.CharField(max_length=255, default=defaultpfp)
     number_of_coins = models.IntegerField(default=0)
