@@ -109,6 +109,13 @@ def thankyou(request, coins_earned):
 
 @permission_required("Accounts.can_view_gamekeeper_button")
 def add_recycling_point(request):
+    """
+     This function renders the add recycling point page and handles the form submission.
+     It creates a new RecyclingLocation object if the form is valid.
+
+     Author:
+     Ethan Sweeney (es1052@exeter.ac.uk)
+     """
     if request.method == 'POST':
         name = request.POST.get('name')
         latitude = request.POST.get('latitude')
@@ -126,6 +133,14 @@ def add_recycling_point(request):
 
 @permission_required("Accounts.can_view_gamekeeper_button")
 def delete_recycling_point(request, pk=None):
+    """
+        This function renders the delete recycling point page and handles the form submission.
+        It displays a map of all recycling locations and allows the user to delete one.
+        It deletes a RecyclingLocation object if the form is valid.
+
+        Author:
+        Ethan Sweeney (es1052@exeter.ac.uk)
+        """
     if pk:
         location = get_object_or_404(RecyclingLocation, pk=pk)
         if request.method == 'POST':
