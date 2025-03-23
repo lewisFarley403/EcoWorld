@@ -208,10 +208,17 @@ class DeleteRecyclingPointTests(TestCase):
         self.client.login(username='gamekeeper', password='testpass123')
 
     def test_view_url_exists_at_desired_location(self):
+        """"
+        Test that the view exists at the desired location.
+        """
         response = self.client.get('/glass-disposal/delete_recycling_point/')
         self.assertEqual(response.status_code, 200)
 
     def test_view_requires_permission(self):
+        """
+        Test that the view requires the correct permission.
+        """
+
         # Create unauthorized user
         unauth_user = User.objects.create_user(
             username='regularuser',
@@ -224,6 +231,10 @@ class DeleteRecyclingPointTests(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_list_view_returns_all_locations(self):
+        """
+        Test that the list view returns all recycling locations
+        """
+
         response = self.client.get(reverse('delete_recycling_point_list'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Test Location 1")
@@ -231,6 +242,7 @@ class DeleteRecyclingPointTests(TestCase):
         self.assertEqual(len(response.context['locations']), 2)
 
     def test_delete_post_deletes_location(self):
+        """"Test that a POST request to the delete view deletes the location"""
         url = reverse('delete_recycling_point', kwargs={'pk': self.location1.pk})
         response = self.client.post(url)
 
@@ -239,11 +251,16 @@ class DeleteRecyclingPointTests(TestCase):
         self.assertEqual(RecyclingLocation.objects.count(), 1)
 
     def test_delete_nonexistent_location_returns_404(self):
+        """
+        Test that a POST request to delete a non-existent location returns a 404
+        """
         url = reverse('delete_recycling_point', kwargs={'pk': 999})
         response = self.client.post(url)
         self.assertEqual(response.status_code, 404)
 
     def test_get_request_to_delete_url_does_not_delete(self):
+        """"
+        Test that a GET request to the delete view does not delete the location"""
         url = reverse('delete_recycling_point', kwargs={'pk': self.location1.pk})
         response = self.client.get(url)
 
@@ -252,6 +269,7 @@ class DeleteRecyclingPointTests(TestCase):
 
 
     def test_post_deletion_updates_list_view(self):
+        """"Test that the list view updates after a location is deleted"""
         # Delete first location
         self.client.post(reverse('delete_recycling_point', kwargs={'pk': self.location1.pk}))
 
@@ -262,10 +280,12 @@ class DeleteRecyclingPointTests(TestCase):
         self.assertContains(response, "Test Location 2")
 
     def test_template_used(self):
+        """Test that the correct template is used"""
         response = self.client.get(reverse('delete_recycling_point_list'))
         self.assertTemplateUsed(response, 'glassDisposal/delete_recycling_point.html')
 
     def test_view_handles_zero_locations(self):
+        """"Test that the view handles zero locations"""
         # Delete all locations
         RecyclingLocation.objects.all().delete()
 
