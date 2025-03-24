@@ -154,8 +154,6 @@ def read_only_profile(request):
 
     user = User.objects.get(username=username)
     user_profile = Profile.objects.get(user=user)
-    print(dir(user_profile))
-    print()
     g = garden.objects.get(userID=user)
     squares = g.gardensquare_set.all()
     processed_squares = [[squares[i * g.size + j] for j in range(g.size)]

@@ -3,7 +3,7 @@ import random
 from django.conf import settings
 from django.utils import timezone
 
-from .models import ongoingChallenge, challenge, card, cardRarity, pack
+from .models import ongoingChallenge, challenge
 
 
 def getUsersChallenges(user):
