@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {let draggableCards = 
 
 
 function drag(event) {
-    console.log("Drag started:", event.target);
 
     let draggedElement = event.target.closest(".card-container");
 
@@ -52,7 +51,6 @@ function drop(event, row, col) {
     let cardImage = event.dataTransfer.getData("cardImage");
     let csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
 
-    console.log(`Attempting to place card ID: ${cardId} at Row: ${row}, Col: ${col}`);
     if (!cardId) {
         alert("No card ID found!");
         return;
@@ -72,7 +70,6 @@ function drop(event, row, col) {
     })
         .then(response => response.json())
         .then(data => {
-            console.log("Server Response:", data);
             if (data.success) {
                 let targetSquare = event.target.closest(".grid-square");
 
@@ -81,20 +78,14 @@ function drop(event, row, col) {
                 newCardImage.src = data.card_image;
                 newCardImage.alt = "Card Image";
                 newCardImage.setAttribute("data-card-id", cardId);
-                console.log("Before appending, card has data-card-id:", newCardImage.getAttribute("data-card-id"));
                 newCardImage.addEventListener("click", function() {
                     let clickedCardId = this.getAttribute("data-card-id");
-                    console.log("Clicked card:", row, col, clickedCardId);
                     removeCard(row, col, clickedCardId);
                 });
 
 
                 targetSquare.innerHTML = "";
                 targetSquare.appendChild(newCardImage);
-
-                console.log("After appending, checking the DOM directly...");
-                console.log("Image element in DOM:", targetSquare.querySelector("img"));
-                console.log("Retrieved from DOM:", targetSquare.querySelector("img").getAttribute("data-card-id"));
 
 
                 let inventoryCard = document.querySelector(`.card-container[data-card-id="${cardId}"]`);
@@ -120,8 +111,6 @@ function drop(event, row, col) {
 function removeCard(row, col) {
     let csrfToken = document.querySelector('[name="csrfmiddlewaretoken"]').value;
 
-    console.log(`Removing card at Row: ${row}, Col: ${col}`);
-
     fetch('/garden/removeCard/', {
         method: 'POST',
         headers: {
@@ -141,8 +130,6 @@ function removeCard(row, col) {
 
 
                 let cardId = data.card_id;
-
-                console.log(`Returned card ID ${cardId} to inventory`);
 
                 let inventoryCard = document.querySelector(`.card-container[data-card-id="${cardId}"]`);
                 if (inventoryCard) {
@@ -177,7 +164,6 @@ document.addEventListener("DOMContentLoaded", function() {
             let row = this.parentNode.getAttribute("data-row");
             let col = this.parentNode.getAttribute("data-col");
             let cardId = this.getAttribute("data-card-id");
-            console.log("Clicked card from DOM Load:", row, col, cardId);
             removeCard(row, col, cardId);
         });
     });

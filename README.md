@@ -8,6 +8,9 @@ promoting sustainable behaviors. The goal is to engage users through
 interactive challenges, rewards, and  educational content that fosters
 awareness and actionable steps towards environmental sustainability.
 
+### Link to the deployed website
+**https://whniecm2434.pythonanywhere.com/**
+
 ### Team Members
 - Ethan Sweeney
 - Lewis Farley
@@ -34,8 +37,8 @@ awareness and actionable steps towards environmental sustainability.
    ```
 
 2. Set up the database by running the appropriate script for your system:
-   - Windows: Run `setup.bat`
-   - macOS/Linux: Run `./setup.sh`
+   - Windows: Run `setup_windows.bat`
+   - macOS/Linux: Run `./setup_mac_linux.sh`
 
    Or manually run the following commands:
    ```sh
@@ -51,6 +54,17 @@ awareness and actionable steps towards environmental sustainability.
 
 4. Run the django server ```python manage.py runserver```
 
+**Note:** Some conifg variables are stored in ECM2434/settings.py.
+
+### How to test
+1. Install the dependencies:
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+2. Run the following command:
+- On windows, run: `test_windows.bat`
+- On macOS/Linux, run: `./test_mac_linux.sh`
 
 ### Privacy Policy
 Template from https://app.privacypolicies.com/wizard/privacy-policy

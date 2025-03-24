@@ -2,20 +2,94 @@
 <html>
 <head>
     <title>Select a Guide</title>
+    <style>
+        body {
+            background-color: #00dea5;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        .button {
+            display: inline-block;
+            background-color: #002a2b;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            margin: 5px;
+        }
+
+        .button:hover {
+            background-color: #002a2b;
+        }
+
+        .cancel-button {
+            background-color: #dc3545;
+        }
+
+        .cancel-button:hover {
+            background-color: #a71d2a;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 20px;
+            }
+            .container {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-{% include "partials/navbar.html" %}
-<style>.navbar{padding:0;}
-  body{background-color: #00dea5;}
-</style>
-<div style="padding:60px;">
-    <h1>Select a Guide</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Submit</button>
-    </form>
-    <a href="{% url 'EcoWorld:gamekeeper_page' %}" class="button"><button class="button">cancel</button></a>
-</div>
+    {% include "partials/navbar.html" %}
+    <div class="container">
+        <h1>Select a Guide</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="button">Submit</button>
+        </form>
+        <a href="{% url 'EcoWorld:gamekeeper_page' %}" class="button cancel-button">Cancel</a>
+    </div>
 </body>
 </html>

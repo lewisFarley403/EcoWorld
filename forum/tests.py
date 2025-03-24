@@ -65,7 +65,8 @@ class PostCreationTest(TestCase):
         self.assertEqual(post.submission, 'Test submission')
     
     def test_card_post_creation(self):
-        """Test that a post is created when a card is earned
+        """
+        Test that a post is created when a card is earned
         
         Author:
             Lewis Farley (lf507@exeter.ac.uk)

@@ -22,13 +22,11 @@ function calculateTotalProgress() {
     
     allObjectiveCards.forEach(card => {
         const progressText = card.querySelector('.progress-count').textContent;
-        console.log("Progress text for card:", progressText);
         const [current, max] = progressText.split('/').map(num => parseInt(num.trim()));
         totalTasks += max;
         completedTasks += current;
     });
 
-    console.log(`Total progress - Completed: ${completedTasks}, Total: ${totalTasks}`);
     return {
         // challenges: { completed: completedChallenges, total: challengeCards.length },
         objectives: { completed: completedTasks, total: totalTasks }
@@ -38,8 +36,6 @@ function calculateTotalProgress() {
 // Function to update all progress bars
 function updateAllProgress() {
     const progress = calculateTotalProgress();
-    console.log("PROGRESS")
-    console.log(progress.objectives.completed, progress.objectives.total)
     // Update challenges progress
     const challengeProgressElement = document.querySelector(".progress-tracker-section progress:first-of-type");
     const challengeProgressCount = challengeProgressElement.nextElementSibling;
@@ -49,7 +45,6 @@ function updateAllProgress() {
     // Update objectives progress
     // const objectiveProgressElement = document.querySelector(".progress-tracker-section .progress-item:nth-of-type(2) progress");
     const objectiveProgressElement=document.getElementById("progress-bar")
-    console.log(objectiveProgressElement)
     const objectiveProgressCount = objectiveProgressElement.nextElementSibling;
     updateProgressBar(objectiveProgressElement, progress.objectives.completed, progress.objectives.total);
     objectiveProgressCount.textContent = `${progress.objectives.completed}/${progress.objectives.total}`;
@@ -117,7 +112,6 @@ function fetchNewChallenge() {
 }
 
 function incrementObjective(objectiveId, button) {
-    console.log("Incrementing objective:", objectiveId);    
     fetch("/ecoworld/increment_objective/", {
         method: "POST",
         headers: {
@@ -128,8 +122,6 @@ function incrementObjective(objectiveId, button) {
     })
     .then(response => response.json())
     .then(data => {
-        console.log("Server response:", data);
-
         if (data.success) {
             // Find the objective card and its progress elements
             const objectiveCard = button.closest('.objective-card');
@@ -143,7 +135,6 @@ function incrementObjective(objectiveId, button) {
             let parts = progressSpan.textContent.split("/");
             let total = parseInt(parts[1]);
             let newProgress = data.progress;
-            console.log(`Updating progress: ${newProgress}/${total}`);
 
             // Animate the progress text change
             progressSpan.style.transition = 'opacity 0.3s';
@@ -165,7 +156,6 @@ function incrementObjective(objectiveId, button) {
             }, 300);
 
             if (newProgress === total) {
-                console.log("Objective completed!");
                 // Add completion animation
                 objectiveCard.classList.add('completed-objective');
                 
