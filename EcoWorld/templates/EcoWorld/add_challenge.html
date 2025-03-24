@@ -5,28 +5,72 @@
     <meta charset="UTF-8">
     <title>Add Challenge</title>
     <link rel="stylesheet" href="{% static 'EcoWorld/css/dashboard.css' %}">
-</head>
-<style>
-    .challenge-form{
-        padding:60px;
-    }
-    body{background-color: #00dea5;}
+    <style>
+        body {
+            background-color: #00dea5;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
 
-</style>
+        .challenge-form {
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
 
 <body>
-{% include "partials/navbar.html" %}
-<div class="challenge-form">
-    <h2>Add New Challenge</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="button">Add Challenge</button>
-    </form>
+    {% include "partials/navbar.html" %}
+    <div class="challenge-form">
+        <h2>Add New Challenge</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Add Challenge</button>
+        </form>
     </div>
 </body>
 </html>
-
-
-
-
