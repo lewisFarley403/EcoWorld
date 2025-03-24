@@ -48,23 +48,25 @@ def getUsersChallenges(user):
             x for x in challenges
             if timezone.now() - x.created_on > settings.CHALLENGE_EXPIRY
         ]
-        possibleChallenges = list(challenge.objects.all())
+        possible_challenges = list(challenge.objects.all())
 
         for e in expired:
             e.delete()
             challenges.remove(e)
-        for i in range(len(expired)):
+        for _ in range(len(expired)):
             # create new challenges to replace the removed ones
-            c = random.choice(possibleChallenges)
+            c = random.choice(possible_challenges)
             # make sure the challenge isn't already in the users challenges
-            while c in [ch.challenge
-                        for ch in challenges]:  
-                c = random.choice(possibleChallenges)
+            while c in [ch.challenge for ch in
+                        challenges]:
+                c = random.choice(possible_challenges)
+
             ongoingChallenge.objects.create(challenge=c,
                                             user=user,
                                             submission=None,
                                             submitted_on=None)
-            possibleChallenges.remove(c)
+            possible_challenges.remove(c)
+            
     return ongoingChallenge.objects.filter(user=user)
 
 
