@@ -4,7 +4,6 @@
     <!-- Link to the global navbar.css file -->
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
     <!-- Add a script to fetch user info from the API -->
-    <link rel="icon" type="image/png" href="{% static 'misc/favicon.png' %}">
     <script>
         function updateUserInfo() {
             fetch('/api/userinfo/')
@@ -15,7 +14,7 @@
                     const coinsEl = document.getElementById('coins');
                     
                     if (usernameEl) usernameEl.innerText = data.username;
-                    if (pfpEl) pfpEl.src = data.pfp_url || "{% static 'misc/default_pfp.png' %}";
+                    if (pfpEl) pfpEl.src = data.pfp_url;
                     if (coinsEl) coinsEl.innerText = data.coins;
                 })
                 .catch(error => {
@@ -37,7 +36,6 @@
         <div class="navbar-container">
             <div class="navbar-left">
                 <a href="/ecoworld/dashboard" class="navbar-brand">
-                    <!-- <img src="{% static 'misc/logo.png' %}" alt="Eco World" class="navbar-logo"> -->
                     <span>Eco World</span>
                 </a>
                 <button class="navbar-menu-button" onclick="toggleMenu()">

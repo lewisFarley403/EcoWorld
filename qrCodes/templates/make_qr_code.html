@@ -85,13 +85,11 @@ body::before {
     </style> -->
     <script>
         function generateQRCode() {
-            console.log('Generating QR code');
             // Get input value
             const input = document.getElementById('qr-input').value;
             const baseUrl = window.location.origin; // Gets the current domain
             const qrCodeUrl = `${baseUrl}/qrcode/scan_code?id=${encodeURIComponent(input)}`;
             // Clear previous QR code
-            console.log(qrCodeUrl)
             document.getElementById('qrcode').innerHTML = '';
 
             if (input) {

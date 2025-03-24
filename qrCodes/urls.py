@@ -1,3 +1,16 @@
+"""
+URL configuration for QR Codes app.
+
+This module defines the URL patterns for QR code functionality,
+including code generation, scanning, and water fountain management.
+
+URL Patterns:
+    - /generate_qr_code/: QR code generation endpoint
+    - /scan_code/: Code scanning processing endpoint
+    - /scanner/: QR code scanner interface
+    - /add_water_fountain/: Water fountain registration
+"""
+
 from django.urls import path
 
 from .views import generate_qr_code, scan_code, scan_code_page, add_water_fountain

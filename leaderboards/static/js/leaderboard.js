@@ -13,8 +13,6 @@ function disableTooltipOnMobile() {
 }
 
 function onPageLoad() {
-    console.log("Document loaded");
-
     // Handle back button and page restore
     window.addEventListener('pageshow', function(event) {
         if (event.persisted) {
@@ -33,7 +31,6 @@ function onPageLoad() {
 
     // Fetch leaderboard data from the server
     fetch('getleaderboarddata').then(response => response.json()).then(data => {
-        console.log(data);
 
         // If there are fewer than 3 players, we just take whatever is available
         let top3 = data.rankedUsers.length < 3 ? data.rankedUsers : data.rankedUsers.slice(0, 3);
@@ -94,8 +91,6 @@ function onPageLoad() {
         }
 
         data.rankedUsers.forEach((user, i) => {
-            console.log("USER")
-            console.log(user);
             var row = table.insertRow(-1);
             
             // row.href = `/read_profile/?username=${user.username}`;
@@ -139,7 +134,6 @@ function onPageLoad() {
         const logged_in_user_rank = data.current_user_data.rank
         const logged_in_user_score = data.current_user_data.score
         const logged_in_user_username = data.current_user_data.username
-        console.log(logged_in_user_score)
         document.getElementById('current-rank').innerText = logged_in_user_rank;
         document.getElementById('current-coins').innerText = logged_in_user_score;
         document.getElementById('current-name').innerText = logged_in_user_username;

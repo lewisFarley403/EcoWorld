@@ -1,3 +1,16 @@
+"""
+Tests for the Accounts application.
+
+This module contains test cases for the Accounts app functionality,
+including model tests, form validations, and view behaviors. Tests cover:
+    - Profile model creation and methods
+    - User signup and authentication
+    - Profile updates and form validation
+    - Friend request system
+    - Account deletion
+    - Garden creation on signup
+"""
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
@@ -134,13 +147,20 @@ class testProfileForm(TestCase):
         self.user = User.objects.create_user(username='testuser', password='password123')
         self.profile = Profile.objects.get(user=self.user)
     def test_valid_profile_form(self):
+        """"
+        Test that a valid profile update form can be submitted and the profile is updated correctly.
+        """
         form_data = {
             'bio': 'This is a test bio.',
             'profile_picture': 'test.jpg'
         }
         form = ProfileUpdateForm(data=form_data)
         self.assertTrue(form.is_valid())
+
     def test_valid_profile_form_write(self):
+        """"
+        Test that a valid profile update form can be submitted and the profile is updated correctly.
+        """
         form_data = {
             'bio': 'This is a test bio.',
             'profile_picture': 'test.jpg'
@@ -305,18 +325,23 @@ class FriendRequestsTest(TestCase):
 
     #Create a request and make sure it works
     def testCreateFriendRequest(self):
+        """"
+        Test creating a friend request
+        """
         request = FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
         self.assertEqual(request.senderID, self.user1)
         self.assertEqual(request.receiverID, self.user2)
 
     #Make sure that no duplicate friend requests are allowed
     def testDuplicateFriendRequest(self):
+        """Test duplicate friend request"""
         FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
         with self.assertRaises(Exception):
             FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
 
     #Test to make sure the STR method works properly
     def testStr(self):
+        """Test string method"""
         request = FriendRequests.objects.create(senderID=self.user1, receiverID=self.user2)
         self.assertEqual(str(request), "user1 sent a request to user2")
 

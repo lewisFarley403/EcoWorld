@@ -20,10 +20,12 @@ class ContentQuizPairModelTest(TestCase):
             )
 
     def test_contentQuizPair_str_method(self):
+        """Test the string representation of the ContentQuizPair model"""
         self.assertEqual(str(self.guide1),'test1')
 
 
     def test_contentQuizPair_defaults(self):
+        """Test the default values of the ContentQuizPair model"""
         contentQuizPair2 = ContentQuizPair.objects.create(
             title='title',
             content='content',
@@ -33,6 +35,7 @@ class ContentQuizPairModelTest(TestCase):
         self.assertEqual(contentQuizPair2.reward,50)
 
     def test_contentQuizPair_custom_values(self):
+        """Test the custom values of the ContentQuizPair model"""
         contentQuizPair3 = ContentQuizPair.objects.create(
             title='custom_title',
             content='custom_content',
@@ -64,15 +67,18 @@ class UserQuizResultsModelTest(TestCase):
         )
 
     def test_userQuizResults_defaults(self):
+        """Test the default values of the UserQuizResults model"""
         self.assertEqual(self.profile1Results.score, 0)
         self.assertEqual(self.profile1Results.best_result, 0)
         self.assertEqual(self.profile1Results.previous_best, 0)
         self.assertEqual(self.profile1Results.is_completed, False)
 
     def test_userQuizResults_str_method(self):
+        """Test the string representation of the UserQuizResults model"""
         self.assertEqual(str(self.profile1Results), "testuser - test guide 1")
 
     def test_userQuizResults_save_method(self):
+        """Test the save method of the UserQuizResults model"""
         result = UserQuizResult.objects.create(
             user=self.user,
             content_quiz_pair=self.guide1,
@@ -84,6 +90,7 @@ class UserQuizResultsModelTest(TestCase):
         self.assertTrue(result.is_completed)
 
     def test_userQuizResults_update_best_result(self):
+        """Test the update of the best result in the UserQuizResults model"""
         result = UserQuizResult.objects.create(
             user=self.user,
             content_quiz_pair=self.guide1,
@@ -98,6 +105,7 @@ class UserQuizResultsModelTest(TestCase):
         self.assertEqual(result.previous_best, 0)
 
     def test_userQuizResults_previous_best_update(self):
+        """Test the update of the previous best result in the UserQuizResults model"""
         result = UserQuizResult.objects.create(
             user=self.user,
             content_quiz_pair=self.guide1,
@@ -112,6 +120,7 @@ class UserQuizResultsModelTest(TestCase):
 
 class TestGuidesForm(TestCase):
     def test_valid_guides_form(self):
+        """Test the GuidesForm with valid data"""
         form_data = {
             'title': 'Test Guide',
             'content': 'This is a test guide content.'
@@ -120,6 +129,7 @@ class TestGuidesForm(TestCase):
         self.assertTrue(form.is_valid())
 
     def test_invalid_guides_form(self):
+        """Test the GuidesForm with invalid data"""
         form_data = {
             'title': '',  # Title is required
             'content': 'This is a test guide content.'
@@ -149,28 +159,33 @@ class GuidesViewsTest(TestCase):
         )
 
     def test_menu_view(self):
+        """Test the menu view"""
         self.client.login(username='testuser', password='password123')
         response = self.client.get(reverse('menu'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'test guide 1')
 
     def test_content_view(self):
+        """Test the content view"""
         self.client.login(username='testuser', password='password123')
         response = self.client.get(reverse('content', args=[self.guide1.id]))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'test content')
 
     def test_remove_guides_view(self):
+        """Test the remove guide view"""
         self.client.login(username='testadmin', password='password123')
         response = self.client.get(reverse('remove guide'))
         self.assertEqual(response.status_code, 200)
 
     def test_add_guide_view(self):
+        """Test the add guide view"""
         self.client.login(username='testadmin', password='password123')
         response = self.client.get(reverse('add guide'))
         self.assertEqual(response.status_code, 200)
 
     def test_results_view(self):
+        """Test the results view"""
         self.client.login(username='testuser', password='password123')
         # Create a quiz result first
         UserQuizResult.objects.create(
@@ -188,6 +203,7 @@ class GuidesViewsTest(TestCase):
         self.assertContains(response, 'Best Score: 1')
 
     def test_registerScore_view(self):
+        """Test the registerScore view"""
         self.client.login(username='testuser', password='password123')
 
         data = {'score': 1}
@@ -199,6 +215,7 @@ class GuidesViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_quiz_view(self):
+        """Test the quiz view"""
         self.client.login(username='testuser', password='password123')
         response = self.client.get(reverse('quiz', args=[self.guide1.id]))
         self.assertEqual(response.status_code, 200)
@@ -206,16 +223,19 @@ class GuidesViewsTest(TestCase):
         # self.assertContains(response, 'quiz_questions_json')
 
     def test_quiz_view_invalid_id(self):
+        """Test the quiz view with an invalid ID"""
         self.client.login(username='testuser', password='password123')
         response = self.client.get(reverse('quiz', args=[99999]))
         self.assertEqual(response.status_code, 404)
 
     def test_results_view_invalid_id(self):
+        """Test the results view with an invalid ID"""
         self.client.login(username='testuser', password='password123')
         response = self.client.get(reverse('results', args=[99999]))
         self.assertEqual(response.status_code, 404)
 
     def test_registerScore_view_new_result(self):
+        """ Test the registerScore view with a new result """
         self.client.login(username='testuser', password='password123')
         data = {'score': 1}
         response = self.client.post(
@@ -230,6 +250,7 @@ class GuidesViewsTest(TestCase):
         self.assertEqual(result.previous_best, 0)
 
     def test_registerScore_view_update_existing_result(self):
+        """ Test the registerScore view with an updated result """
         self.client.login(username='testuser', password='password123')
         # First attempt
         data = {'score': 1}
@@ -252,6 +273,7 @@ class GuidesViewsTest(TestCase):
         self.assertEqual(result.previous_best, 1)
 
     def test_add_guide_view_with_quiz(self):
+        """Test the add guide view with a quiz"""
         self.client.login(username='testadmin', password='password123')
         data = {
             'title': 'Test Guide with Quiz',
@@ -269,6 +291,7 @@ class GuidesViewsTest(TestCase):
         self.assertEqual(guide.quiz_max_marks, 1)
 
     def test_remove_guide_view_post(self):
+        """Test the remove guide view with POST request"""
         self.client.login(username='testadmin', password='password123')
         data = {'pair': self.guide1.id}
         response = self.client.post(reverse('remove guide'), data)
@@ -276,6 +299,7 @@ class GuidesViewsTest(TestCase):
         self.assertFalse(ContentQuizPair.objects.filter(id=self.guide1.id).exists())
 
     def test_menu_view_with_completed_guides(self):
+        """Test the menu view with a completed guide"""
         self.client.login(username='testuser', password='password123')
         # Create a completed guide
         completed_guide = ContentQuizPair.objects.create(
