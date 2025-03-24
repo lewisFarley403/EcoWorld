@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
     let currentQuestion = 0;
     const questions = quizQuestions;
-    console.log("Quiz Questions:", quizQuestions);
 
     // Shuffle the questions array
     questions.sort(() => Math.random() - 0.5);
