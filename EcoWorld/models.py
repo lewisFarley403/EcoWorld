@@ -1,7 +1,3 @@
-from datetime import date
-from django.conf import settings
-from django.contrib.auth.models import User
-
 """
 This module defines the database models for the EcoWorld app:
     - `challenge` : Model for storing challenge information
@@ -16,10 +12,12 @@ usage:
 author:
     - Lewis Farley (lf507@exeter.ac.uk)
 """
-
-from django.db import models
 import random
-from Accounts.models import User
+from datetime import date
+from django.conf import settings
+from django.contrib.auth.models import User
+from django.db import models
+
 # Create your models here.
 class challenge(models.Model):
     """
@@ -32,7 +30,8 @@ class challenge(models.Model):
         created_on (DateField): The date the challenge was created.
         worth (IntegerField): The number of coins awarded upon completion.
         goal (IntegerField): The required number of completions to finish the challenge.
-        redirect_url (CharField): An optional URL users may be directed to upon starting the challenge.
+        redirect_url (CharField): An optional URL users may be directed to upon starting 
+                                  the challenge.
 
     Methods:
         __str__(): Returns the name of the challenge.
@@ -76,7 +75,8 @@ class ongoingChallenge(models.Model):
     submission = models.TextField(null=True)
 
     submitted_on = models.DateTimeField(null=True, blank=True)
-    created_on = models.DateTimeField( auto_now_add=True) #sets this to the current date when the object is created
+    #sets this to the current date when the object is created
+    created_on = models.DateTimeField( auto_now_add=True)
     completion_count = models.IntegerField(default=0)
     progress = models.IntegerField(default =0)
 
@@ -84,9 +84,6 @@ class ongoingChallenge(models.Model):
         return self.challenge.name + " by " + self.user.username
     def is_complete(self):
         return self.submission is not None
-    
-
-    
 
 class cardRarity(models.Model):
     """
@@ -140,7 +137,7 @@ class ownsCard(models.Model):
     quantity = models.IntegerField(default=0)
     def __str__(self):
         return self.user.username + " owns " + self.card.title
-    
+
 class pack(models.Model):
     """
     Model for storing Packs so they can be bought in store
@@ -211,29 +208,16 @@ class Merge(models.Model):
     
     """
     userID = models.ForeignKey(User, on_delete=models.CASCADE, related_name="UserID")
-    cardID1 = models.ForeignKey(card, null=True, blank=True, on_delete=models.CASCADE, related_name="CardID1")
-    cardID2 = models.ForeignKey(card, null=True, blank=True, on_delete=models.CASCADE, related_name="CardID2")
-    cardID3 = models.ForeignKey(card, null=True, blank=True, on_delete=models.CASCADE, related_name="CardID3")
-    cardID4 = models.ForeignKey(card, null=True, blank=True, on_delete=models.CASCADE, related_name="CardID4")
-    cardID5 = models.ForeignKey(card, null=True, blank=True, on_delete=models.CASCADE, related_name="CardID5")
+    cardID1 = models.ForeignKey(card, null=True, blank=True,
+                                on_delete=models.CASCADE, related_name="CardID1")
+    cardID2 = models.ForeignKey(card, null=True, blank=True,
+                                on_delete=models.CASCADE, related_name="CardID2")
+    cardID3 = models.ForeignKey(card, null=True, blank=True,
+                                on_delete=models.CASCADE, related_name="CardID3")
+    cardID4 = models.ForeignKey(card, null=True, blank=True,
+                                on_delete=models.CASCADE, related_name="CardID4")
+    cardID5 = models.ForeignKey(card, null=True, blank=True,
+                                on_delete=models.CASCADE, related_name="CardID5")
 
     def __str__(self):
         return f"Merge operation for {self.userID.username}"
-
-#
-# class dailyObjective(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     name = models.CharField(max_length=255)
-#     progress = models.IntegerField(default=0)
-#     goal = models.IntegerField(default=10)  # Example: Must recycle 10 items
-#     completed = models.BooleanField(default=False)
-#     date_created = models.DateField(default=now)
-#     last_reset = models.DateTimeField(default=now) #Field for tracking resets
-#     submission = models.TextField(null=True, blank=True)  # Store user's response
-#     coins = models.IntegerField(default=10)  # New field for coin rewards
-#
-#
-#     def __str__(self):
-#         return f"{self.name} - {self.user.username}"
-
-

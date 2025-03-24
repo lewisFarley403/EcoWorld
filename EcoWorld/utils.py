@@ -3,7 +3,7 @@ import random
 from django.conf import settings
 from django.utils import timezone
 
-from .models import ongoingChallenge, challenge, card, cardRarity, pack
+from .models import ongoingChallenge, challenge
 
 
 def getUsersChallenges(user):
@@ -29,24 +29,27 @@ def getUsersChallenges(user):
         ## there are no challenges for the user, create them
         createChallenges(user)
     else:
-        # expired = filter(lambda x: datetime.now()-x.created_on> settings.CHALLENGE_EXPIRY, challenges)
         expired = [
             x for x in challenges
             if timezone.now() - x.created_on > settings.CHALLENGE_EXPIRY
         ]
-        possibleChallenges = list(challenge.objects.all())
+        possible_challenges = list(challenge.objects.all())
 
         for e in expired:
             e.delete()
             challenges.remove(e)
-        for i in range(len(expired)):
+        for _ in range(len(expired)):
             # create new challenges to replace the removed ones
-            c = random.choice(possibleChallenges)
+            c = random.choice(possible_challenges)
+            # make sure the challenge isn't already in the users challenges
             while c in [ch.challenge for ch in
-                        challenges]:  # make sure the challenge isn't already in the users challenges
-                c = random.choice(possibleChallenges)
-            ongoingChallenge.objects.create(challenge=c, user=user, submission=None, submitted_on=None)
-            possibleChallenges.remove(c)
+                        challenges]:
+                c = random.choice(possible_challenges)
+            ongoingChallenge.objects.create(challenge=c,
+                                            user=user,
+                                            submission=None,
+                                            submitted_on=None)
+            possible_challenges.remove(c)
     return ongoingChallenge.objects.filter(user=user)
 
 
@@ -74,8 +77,10 @@ def createChallenges(user):
         for _ in range(settings.NUM_CHALLENGES):
             c = random.choice(challenges)
             challenges.remove(c)
-            ongoingChallenge.objects.create(challenge=c, user=user, submission=None, submitted_on=None)
+            ongoingChallenge.objects.create(challenge=c,
+                                            user=user,
+                                            submission=None,
+                                            submitted_on=None)
     except IndexError:
         print("not enough challenges")
         print("it is possible that the database hasn't been populated with enough challenges")
-

@@ -35,7 +35,7 @@ def getUserInfo(request):
     Returns: user info to be displayed on the navbar
 
     Author:
-    Ethan Sweeney (es1052@exeter.ac.uk)
+        Ethan Sweeney (es1052@exeter.ac.uk)
     """
     user = request.user
     user = User.objects.get(id=user.id)
@@ -58,10 +58,11 @@ def dashboard(request):
     Returns: render request and userinfo to be displayed
 
     Author:
-    Chris Lynch (cl1037@exeter.ac.uk)
+        Chris Lynch (cl1037@exeter.ac.uk)
     """
 
-    #Upon loading the page the dashboard needs its username and pfp along with coins, this function here gives it to the dashboard html file
+    #Upon loading the page the dashboard needs its username and pfp along with coins,
+    # this function here gives it to the dashboard html file
     if request.method == "GET":
         userinfo = getUserInfo(request)
 
@@ -70,12 +71,15 @@ def dashboard(request):
 @login_required
 def store(request):
     """
-    This view renders the store for the ecoworld page. This pages purpose is to allow users to purchase packs to unlock cards with their coins
+    This view renders the store for the ecoworld page.
+    This pages purpose is to allow users to purchase packs to unlock cards with their coins
     It requires the user to be logged in
     Returns:
-    Render request plus two dictionaries one of user data for the header and one of the pack data for viewing
+    Render request plus two dictionaries one of user data for the header
+    and one of the pack data for viewing
+
     Author:
-    Chris Lynch (cl1037@exeter.ac.uk)
+        Chris Lynch (cl1037@exeter.ac.uk)
 
     """
     if request.method == "GET":
@@ -118,7 +122,7 @@ def buy_pack(request):
     Success if it can be bought
 
     Author:
-    Chris Lynch (cl1037@exeter.ac.uk)
+        Chris Lynch (cl1037@exeter.ac.uk)
     """
     if request.method == "POST":
         #Error handling where it tries to get the appropriate data
@@ -149,7 +153,8 @@ def buy_pack(request):
 @login_required
 def pack_opening_page(request):
     """
-    Webpage to render the pack opening animation. When a pack is bought it redirects to here where it will send the correct info
+    Webpage to render the pack opening animation. When a pack is bought it
+    redirects to here where it will send the correct info
     to the page so the right pack gets opened
     It has a function to buy pack from the packs model in models.py
     Returns:
@@ -182,7 +187,8 @@ def pack_opening_page(request):
 @login_required
 def challenge(request):
     """
-    Renders the Challenges page for the logged-in user, showing active daily objectives and tracking drinking cooldown.
+    Renders the Challenges page for the logged-in user,
+    showing active daily objectives and tracking drinking cooldown.
 
     - Fetches all current ongoing challenges (daily objectives) for the user.
     - Checks the user's last drink time to determine drink button availability.
@@ -211,9 +217,10 @@ def challenge(request):
     today = date.today()
     total_daily_objectives = len(daily_objectives)
     completed_daily_objectives = sum(1 for c in daily_objectives if c.is_complete())
-
-    total_objective_worth = sum(obj.challenge.goal for obj in daily_objectives)  # Total worth of all objectives
-    completed_objective_worth = sum(obj.progress for obj in daily_objectives)  # Sum of completed progress
+    # Total worth of all objectives
+    total_objective_worth = sum(obj.challenge.goal for obj in daily_objectives)
+    # Sum of completed progress
+    completed_objective_worth = sum(obj.progress for obj in daily_objectives)
     context = {
         "daily_objectives": daily_objectives,
         "username": user.username,
@@ -266,7 +273,6 @@ def increment_daily_objective(request):
                 objective.save()
 
 
-            # completed_objectives_count = ongoingChallenge.objects.filter(user=request.user, completed=True).count()
             users_ongoing_challenges = ongoingChallenge.objects.filter(user=request.user)
             completed_objectives_count =0
             for challenge in users_ongoing_challenges:
@@ -274,8 +280,11 @@ def increment_daily_objective(request):
                     completed_objectives_count +=1
 
             daily_objectives = getUsersChallenges(request.user)
-            total_objective_worth = sum(obj.challenge.goal for obj in daily_objectives)  # Total worth of all objectives
-            completed_objective_worth = sum(obj.progress for obj in daily_objectives)  # Sum of completed progress
+            # Total worth of all objectives
+            total_objective_worth = sum(obj.challenge.goal for obj in daily_objectives)
+
+            # Sum of completed progress
+            completed_objective_worth = sum(obj.progress for obj in daily_objectives)
             return JsonResponse({
                 "success": True,
                 "progress": objective.progress,
@@ -288,11 +297,6 @@ def increment_daily_objective(request):
 
         else:
             return JsonResponse({"success": False, "message": "Goal already reached"})
-        # except ongoingChallenge.DoesNotExist:
-        # except Exception as e:
-        #     print(e)
-        #     return JsonResponse({"success": False, "message": "Objective not found"}, status=404)
-
     return JsonResponse({"success": False, "message": "Invalid request"}, status=400)
 
 @login_required
@@ -314,11 +318,9 @@ def completeChallenge(request):
     if request.method == "POST":
         data = json.loads(request.body)
         user = User.objects.get(id=request.user.id)
-        onging = ongoingChallenge.objects.filter(user=user)
+        on_going_challenge = data["id"]
 
-        onGoingChallenge = data["id"]
-
-        chal = ongoingChallenge.objects.get(id=onGoingChallenge)
+        chal = ongoingChallenge.objects.get(id=on_going_challenge)
         worth = chal.challenge.worth
         chal.submitted_on = datetime.now()
 
@@ -331,11 +333,12 @@ def completeChallenge(request):
 @permission_required("Accounts.can_view_gamekeeper_button")  # Only existing gamekeeper can access
 def gamekeeper_page(request):
     """
-    This view renders the gamekeeper page, which allows gamekeepers to do things a regular user cannot.
+    This view renders the gamekeeper page, which allows gamekeepers 
+    to do things a regular user cannot.
     Returns: render request and a list of users who are not gamekeepers
 
     Author:
-    Ethan Sweeney (es1052@exeter.ac.uk)
+        Ethan Sweeney (es1052@exeter.ac.uk)
     """
     if request.method == "GET":
         userinfo = getUserInfo(request)
@@ -367,12 +370,13 @@ def gamekeeper_page(request):
 @permission_required("Accounts.can_view_gamekeeper_button")  # Only gamekeepers can promote others
 def grant_gamekeeper(request, user_id):
     """
-    This view grants the can_view_gamekeeper_button permission to a user, effectively promoting them to an gamekeeper.
+    This view grants the can_view_gamekeeper_button permission to a user,
+    effectively promoting them to an gamekeeper.
 
     Returns: Reloading of the gamekeeper page with the updated list of users.
 
     Author:
-    Ethan Sweeney (es1052@exeter.ac.uk)
+        Ethan Sweeney (es1052@exeter.ac.uk)
     """
     if not request.user.has_perm("Accounts.can_view_gamekeeper_button"):
         return HttpResponse("You do not have permission to do this.", status=403)
@@ -398,7 +402,7 @@ def add_challenge(request):
     Returns: Render request and a form to add a challenge.
 
     Author:
-    Ethan Sweeney (es1052@exeter.ac.uk)
+        Ethan Sweeney (es1052@exeter.ac.uk)
     """
     if request.method == 'POST':
         form = ChallengeForm(request.POST)
@@ -406,25 +410,25 @@ def add_challenge(request):
             new_challenge = form.save(commit=False)  # Don't save to DB yet
             new_challenge.created_by = request.user  # Set creator manually
             new_challenge.save()  # Now save
-            return redirect("EcoWorld:gamekeeper_page")  # Redirect back to the gamekeeper page after saving
+            # Redirect back to the gamekeeper page after saving
+            return redirect("EcoWorld:gamekeeper_page")
     else:
         form = ChallengeForm()
     return render(request, "EcoWorld/add_challenge.html", {"form": form})
 
-
-
-
-@login_required
 def friends(request):
     """
-    Web portal for friends in the ecoworld system. This page has 3 main parts: A current friends list, a search bar to add friends
+    Web portal for friends in the ecoworld system. This page has 2 main parts:
+    - A current friends list
+    - a search bar to add friends
     and a requests box.
     It uses the models created in accounts for friends and friend requests
-    Depending on the action made it has returns for adding a friend in the search, accepting or declining a friend request and
+    Depending on the action made it has returns for adding a friend in the search,
+    accepting or declining a friend request and
     removing a friend from the friends list
 
     Author:
-    Chris Lynch (cl1037@exeter.ac.uk)
+        Chris Lynch (cl1037@exeter.ac.uk)
     """
     if request.method == "GET":
         user=request.user
@@ -433,98 +437,133 @@ def friends(request):
         #Gets pending requests
         friendreqs = FriendRequests.objects.filter(receiverID=user)
 
-        userFriends = Friends.objects.filter(Q(userID1=user) | Q(userID2=user))
+        user_friends = Friends.objects.filter(Q(userID1=user) | Q(userID2=user))
 
 
 
-        return render(request, "EcoWorld/friends.html", {"userinfo" : userinfo[0], "friendreqs": friendreqs, "friends" : userFriends})
+        return render(request, "EcoWorld/friends.html",
+                      {"userinfo" : userinfo[0],
+                       "friendreqs": friendreqs,
+                       "friends" : user_friends})
 
     elif request.method == "POST":
         userinfo = getUserInfo(request)
         user = request.user
-        userID     = user.id
+        user_id= user.id
         #Gets pending requests
         friendreqs = FriendRequests.objects.filter(receiverID=user)
 
         #Gets user friends
-        userFriends = Friends.objects.filter(Q(userID1=user) | Q(userID2=user))
+        user_friends = Friends.objects.filter(Q(userID1=user) | Q(userID2=user))
 
         #Get the username sent in the form for adding friend
         username = request.POST.get("friendUsername")
 
         #Get friend request if sent and username
-        friendAccOrRej = request.POST.get("friendar")
-        friendAction = request.POST.get("friendaction")
+        friend_acc_or_rej = request.POST.get("friendar")
+        friend_action = request.POST.get("friendaction")
 
 
         #Get removed friend if sent
-        removeUser = request.POST.get("remove")
+        remove_user = request.POST.get("remove")
 
 
         #If the user is adding a friend
         if username:
             error = None
             #Gets the requested user for the friend request
-            requestedUser = User.objects.filter(username=username).first()
+            requested_user = User.objects.filter(username=username).first()
 
 
 
             #Check for user existing
-            if not requestedUser:
+            if not requested_user:
                 error = "User Not Found!"
-                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends})
+                return render(request, "EcoWorld/friends.html",
+                              {"userinfo": userinfo[0],
+                               "error" : error,
+                               "friendreqs" : friendreqs,
+                               "friends" : user_friends})
 
             #Check if user tried to add themselves
             if username == user.username:
                 error = "You cant request yourself"
-                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends})
+                return render(request, "EcoWorld/friends.html",
+                              {"userinfo": userinfo[0],
+                               "error" : error,
+                               "friendreqs" : friendreqs,
+                               "friends" : user_friends})
 
-            requestedUserID = requestedUser.id
-            existing_request = FriendRequests.objects.filter(senderID=userID, receiverID=requestedUserID).exists() or FriendRequests.objects.filter(senderID=requestedUserID, receiverID=userID).exists()
+            requested_user_id = requested_user.id
+            f1 = FriendRequests.objects.filter(senderID=user_id,
+                                               receiverID=requested_user_id).exists()
+            f2 = FriendRequests.objects.filter(senderID=requested_user_id,
+                                               receiverID=user_id).exists()
+            existing_request = f1 or f2
 
             #Checks if pending request already made
             if existing_request:
                 error = "Friend request already pending"
-                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends})
+                return render(request, "EcoWorld/friends.html",
+                              {"userinfo": userinfo[0],
+                               "error" : error,
+                               "friendreqs" : friendreqs,
+                               "friends" : user_friends})
 
 
             #Check if they are already friends
-            existing_Friends = Friends.objects.filter(userID1=requestedUserID, userID2= userID).exists() or Friends.objects.filter(userID1=userID, userID2=requestedUserID).exists()
-            if existing_Friends:
+            f1 =Friends.objects.filter(userID1=user_id, userID2=requested_user_id).exists()
+            f2= Friends.objects.filter(userID1=requested_user_id, userID2= user_id).exists()
+            existing_friends =  f2 or f1
+            if existing_friends:
                 error = "You are already friends with this user!"
-                return render(request, "EcoWorld/friends.html", {"userinfo": userinfo[0], "error" : error,"friendreqs" : friendreqs,"friends" : userFriends})
+                return render(request, "EcoWorld/friends.html",
+                              {"userinfo": userinfo[0],
+                               "error" : error,
+                               "friendreqs" : friendreqs,
+                               "friends" : user_friends})
 
 
             #Add request to database
-            FriendRequests.objects.create(senderID=request.user, receiverID=requestedUser)
-            AddMessage = "Friend request sent!"
-            return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs, "addmessage": AddMessage,"friends" : userFriends})
+            FriendRequests.objects.create(senderID=request.user, receiverID=requested_user)
+            add_message = "Friend request sent!"
+            return render(request, "EcoWorld/friends.html",
+                          {"userinfo":userinfo[0],
+                           "friendreqs" : friendreqs,
+                           "addmessage": add_message,
+                           "friends" : user_friends})
 
         #If the user is accepting or rejecting a friend request
-        elif friendAccOrRej:
+        elif friend_acc_or_rej:
             #Gets requested user for DB
-            requestedUser = User.objects.filter(username=friendAccOrRej).first()
+            requested_user = User.objects.filter(username=friend_acc_or_rej).first()
 
             #If accepted friend request
-            if friendAction == "accept":
+            if friend_action == "accept":
                 #Creates row in friends table and removes from requests
-                Friends.objects.create(userID1=user, userID2=requestedUser)
-                FriendRequests.objects.filter(senderID=requestedUser, receiverID=user).delete()
+                Friends.objects.create(userID1=user, userID2=requested_user)
+                FriendRequests.objects.filter(senderID=requested_user, receiverID=user).delete()
 
                 #Gets active requests and friends again to return
                 friendreqs = FriendRequests.objects.filter(receiverID=user)
-                userFriends = Friends.objects.filter(Q(userID1=user) | Q(userID2=user))
+                user_friends = Friends.objects.filter(Q(userID1=user) | Q(userID2=user))
 
-                return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs,"friends" : userFriends})
+                return render(request, "EcoWorld/friends.html",
+                              {"userinfo":userinfo[0],
+                               "friendreqs" : friendreqs,
+                               "friends" : user_friends})
 
             else:
                 #Deletes friend request info as its a reject
-                FriendRequests.objects.filter(senderID=requestedUser, receiverID=user).delete()
+                FriendRequests.objects.filter(senderID=requested_user, receiverID=user).delete()
 
                 #Updates data on friend requests
                 friendreqs = FriendRequests.objects.filter(receiverID=user)
 
-                return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs,"friends" : userFriends})
+                return render(request, "EcoWorld/friends.html",
+                              {"userinfo":userinfo[0],
+                               "friendreqs" : friendreqs,
+                               "friends" : user_friends})
 
 
 
@@ -532,19 +571,24 @@ def friends(request):
 
         #If removing a friend
         else:
-            removeUser = User.objects.filter(username=removeUser).first()
-            if removeUser:
-                removeUserID = removeUser.id
-                Friends.objects.filter(Q(userID1=user, userID2=removeUserID) | Q(userID1=removeUserID, userID2=user)).delete()
+            remove_user = User.objects.filter(username=remove_user).first()
+            if remove_user:
+                remove_user_id = remove_user.id
+                Friends.objects.filter(Q(userID1=user, userID2=remove_user_id) | Q(userID1=remove_user_id, userID2=user)).delete()
 
             #Updates data on friend requests
             friendreqs = FriendRequests.objects.filter(receiverID=user)
 
 
 
-            return render(request, "EcoWorld/friends.html", {"userinfo":userinfo[0],"friendreqs" : friendreqs,"friends" : userFriends})
+            return render(request, "EcoWorld/friends.html",
+                          {"userinfo":userinfo[0],
+                           "friendreqs" : friendreqs,
+                           "friends" : user_friends})
 
 
+
+@login_required
 def mergecards(request):
     """
     Function to handle all the intricacies of merging cards together.
@@ -575,7 +619,9 @@ def mergecards(request):
 
 
 
-        return render(request, "EcoWorld/mergecards.html", {"userinfo" : userinfo[0], "merge":cardImages})
+        return render(request, "EcoWorld/mergecards.html",
+                      {"userinfo" : userinfo[0],
+                       "merge":cardImages})
 
     elif request.method == "POST":
         #Gets rarity option chosen if so
