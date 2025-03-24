@@ -1,3 +1,14 @@
+"""
+Utility functions for EcoWorld challenge management.
+
+This module provides utility functions for managing game challenges,
+including challenge creation, assignment, and expiry handling. Features:
+    - Challenge generation and assignment
+    - Automatic challenge expiry management
+    - Challenge rotation and replacement
+    - User challenge state management
+"""
+
 import random
 
 from django.conf import settings
@@ -8,28 +19,31 @@ from .models import ongoingChallenge, challenge, card, cardRarity, pack
 
 def getUsersChallenges(user):
     """
-    Retrieves all current challenges for a user, creating new ones if needed.
+    Retrieve and manage current challenges for a user.
 
-    - If no challenges exist for the user, generates a new set via `createChallenges()`.
-    - Removes and replaces expired challenges based on `settings.CHALLENGE_EXPIRY`.
-    - Ensures no duplicate challenge assignments for the user.
+    This function handles the complete lifecycle of user challenges:
+    - Creates new challenges if none exist
+    - Manages challenge expiry and replacement
+    - Ensures challenge uniqueness per user
+    - Maintains the required number of active challenges
 
     Args:
-        user (User): The user for whom challenges are being retrieved or created.
+        user (User): The user whose challenges are being managed
 
     Returns:
-        QuerySet: A list of `ongoingChallenge` instances assigned to the user.
+        QuerySet: Active ongoingChallenge instances for the user
 
+    Note:
+        Challenge expiry is controlled by settings.CHALLENGE_EXPIRY
+        Number of challenges is controlled by settings.NUM_CHALLENGES
     Author:
         Lewis Farley (lf507@exeter.ac.uk), Theodore Armes (tesa201@exeter.ac.uk)
     """
-
     challenges = list(ongoingChallenge.objects.filter(user=user))
     if len(challenges) == 0:
         ## there are no challenges for the user, create them
         createChallenges(user)
     else:
-        # expired = filter(lambda x: datetime.now()-x.created_on> settings.CHALLENGE_EXPIRY, challenges)
         expired = [
             x for x in challenges
             if timezone.now() - x.created_on > settings.CHALLENGE_EXPIRY
@@ -42,30 +56,39 @@ def getUsersChallenges(user):
         for i in range(len(expired)):
             # create new challenges to replace the removed ones
             c = random.choice(possibleChallenges)
-            while c in [ch.challenge for ch in
-                        challenges]:  # make sure the challenge isn't already in the users challenges
+            # make sure the challenge isn't already in the users challenges
+            while c in [ch.challenge
+                        for ch in challenges]:  
                 c = random.choice(possibleChallenges)
-            ongoingChallenge.objects.create(challenge=c, user=user, submission=None, submitted_on=None)
+            ongoingChallenge.objects.create(challenge=c,
+                                            user=user,
+                                            submission=None,
+                                            submitted_on=None)
             possibleChallenges.remove(c)
     return ongoingChallenge.objects.filter(user=user)
 
 
-
-
 def createChallenges(user):
     """
-    Generates and assigns a set number of challenges to a user.
+    Create a new set of challenges for a user.
 
-    - Randomly selects challenges from the database.
-    - Ensures the number of assigned challenges matches `settings.NUM_CHALLENGES`.
-    - Handles cases where there are insufficient challenges available in the database.
+    Generates the initial set of random challenges for a user,
+    ensuring the correct number of challenges are assigned based
+    on the NUM_CHALLENGES setting.
 
     Args:
-        user (User): The user for whom challenges are being created.
+        user (User): The user to create challenges for
 
     Returns:
         None
 
+    Raises:
+        IndexError: If there aren't enough challenges in the database
+            to meet the NUM_CHALLENGES requirement
+
+    Note:
+        The number of challenges created is controlled by settings.NUM_CHALLENGES
+  
     Author:
         Lewis Farley (lf507@exeter.ac.uk), Theodore Armes (tesa201@exeter.ac.uk)
     """
@@ -74,8 +97,10 @@ def createChallenges(user):
         for _ in range(settings.NUM_CHALLENGES):
             c = random.choice(challenges)
             challenges.remove(c)
-            ongoingChallenge.objects.create(challenge=c, user=user, submission=None, submitted_on=None)
+            ongoingChallenge.objects.create(challenge=c,
+                                            user=user,
+                                            submission=None,
+                                            submitted_on=None)
     except IndexError:
         print("not enough challenges")
         print("it is possible that the database hasn't been populated with enough challenges")
-

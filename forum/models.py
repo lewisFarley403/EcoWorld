@@ -1,11 +1,39 @@
+"""
+Models for the forum functionality.
+
+This module defines the database models for forum-related features,
+including posts and user interactions. The models support:
+    - Multiple post types (challenges, objectives, cards, guides)
+    - Visibility control (friends-only or university-wide)
+    - Post interactions (likes/dislikes)
+    - Automatic post creation from various sources
+"""
+
 from django.db import models
 from django.contrib.auth.models import User
 from EcoWorld.models import challenge, card
 
 class Post(models.Model):
     """
-    Model for storing forum posts.
-    This includes challenge completions, daily objectives, and card achievements.
+    Model for storing and managing forum posts.
+
+    This model handles different types of posts including challenge completions,
+    daily objectives, card achievements, and guides. Posts can be configured
+    for different visibility levels and contain various types of content.
+
+    Attributes:
+        user (ForeignKey): The user who created the post
+        post_type (str): Type of post (challenge/objective/card/guide)
+        visibility (str): Post visibility level (friends/university)
+        created_at (DateTimeField): Timestamp of post creation
+        challenge (ForeignKey): Optional linked challenge
+        card_achievement (ForeignKey): Optional linked card
+        title (str): Optional post title
+        description (str): Optional post description
+        submission (str): Optional challenge submission text
+        score (int): Optional guide completion score
+    Author:
+        Lewis Farley (lf507@exeter.ac.uk)
     """
     POST_TYPES = [
         ('challenge', 'Challenge Completion'),
@@ -31,6 +59,7 @@ class Post(models.Model):
     description = models.TextField(null=True, blank=True)
     submission = models.TextField(null=True, blank=True)
     score = models.IntegerField(null=True, blank=True)  # For guide completion scores
+
     class Meta:
         ordering = ['-created_at']
 
@@ -39,7 +68,17 @@ class Post(models.Model):
 
     @staticmethod
     def create_from_ongoing_challenge(ongoing_challenge):
-        """Create a new post from a challenge completion."""
+        """
+        Create a new post from a completed challenge.
+
+        Args:
+            ongoing_challenge (OngoingChallenge): The completed challenge to create a post from
+
+        Returns:
+            Post: The newly created post instance
+        Author:
+            Lewis Farley (lf507@exeter.ac.uk)
+        """
         post = Post(
             user=ongoing_challenge.user,
             post_type='challenge',
@@ -51,7 +90,18 @@ class Post(models.Model):
 
     @staticmethod
     def create_from_card(card_obj, user):
-        """Create a new post from a card achievement."""
+        """
+        Create a new post from a card achievement.
+
+        Args:
+            card_obj (Card): The card that was achieved
+            user (User): The user who achieved the card
+
+        Returns:
+            Post: The newly created post instance
+        Author:
+            Lewis Farley (lf507@exeter.ac.uk)
+        """
         post = Post(
             user=user,
             post_type='card',
@@ -62,7 +112,20 @@ class Post(models.Model):
 
     @staticmethod
     def create_from_guide(title, description, user, score):
-        """Create a new post from a guide completion."""
+        """
+        Create a new post from a completed guide.
+
+        Args:
+            title (str): The title of the guide
+            description (str): Description of the guide completion
+            user (User): The user who completed the guide
+            score (int): The score achieved in the guide
+
+        Returns:
+            Post: The newly created post instance
+        Author:
+            Lewis Farley (lf507@exeter.ac.uk)
+        """
         post = Post(
             user=user,
             post_type='guide',
@@ -73,9 +136,21 @@ class Post(models.Model):
         post.save()
         return post
 
+
 class PostInteraction(models.Model):
     """
-    Model for storing post interactions (likes/dislikes).
+    Model for managing user interactions with posts.
+
+    Tracks likes and dislikes on posts, ensuring each user can only
+    have one type of interaction per post.
+
+    Attributes:
+        user (ForeignKey): The user who interacted with the post
+        post (ForeignKey): The post that was interacted with
+        interaction_type (str): Type of interaction (like/dislike)
+        created_at (DateTimeField): Timestamp of the interaction
+    Author:
+        Lewis Farley (lf507@exeter.ac.uk)
     """
     INTERACTION_TYPES = [
         ('like', 'Like'),

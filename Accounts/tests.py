@@ -1,3 +1,16 @@
+"""
+Tests for the Accounts application.
+
+This module contains test cases for the Accounts app functionality,
+including model tests, form validations, and view behaviors. Tests cover:
+    - Profile model creation and methods
+    - User signup and authentication
+    - Profile updates and form validation
+    - Friend request system
+    - Account deletion
+    - Garden creation on signup
+"""
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase

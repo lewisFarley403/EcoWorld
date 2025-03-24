@@ -1,3 +1,18 @@
+"""
+URL configuration for leaderboards app.
+
+This module defines the URL patterns for the leaderboards functionality,
+including the main leaderboard view, data retrieval endpoints, and tooltip templates.
+
+URL Patterns:
+    - /: Main leaderboard page
+    - /getleaderboarddata/: API endpoint for ranked user data
+    - /get-tooltip-template/: Endpoint for garden tooltip templates
+
+Author:
+    Lewis Farley (lf507@exeter.ac.uk)
+"""
+
 from django.urls import path
 
 from . import views

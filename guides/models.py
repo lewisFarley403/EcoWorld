@@ -5,29 +5,30 @@ from Accounts.models import User
 
 # Create your models here.
 
-"""
-This class represents a content and quiz pair, which includes 
-educational content and associated quiz questions.
 
-Attributes:
-    title (CharField): 
-        The title of the content-quiz pair.
-    content (TextField): 
-        The main content or educational material.
-    quiz_questions (JSONField): 
-        A JSON field containing the quiz questions and answers.
-    quiz_max_marks (IntegerField): 
-        The maximum marks achievable in the quiz. Default is -1.
-    reward (IntegerField): 
-        The coins given for completing the quiz. Default is 50.
-
-Returns:
-    str: The title of the content-quiz pair when the object is printed.
-
-author:
-    Johnny Say (js1687@exeter.ac.uk)
-"""
 class ContentQuizPair(models.Model):
+    """
+    This class represents a content and quiz pair, which includes 
+    educational content and associated quiz questions.
+
+    Attributes:
+        title (CharField): 
+            The title of the content-quiz pair.
+        content (TextField): 
+            The main content or educational material.
+        quiz_questions (JSONField): 
+            A JSON field containing the quiz questions and answers.
+        quiz_max_marks (IntegerField): 
+            The maximum marks achievable in the quiz. Default is -1.
+        reward (IntegerField): 
+            The coins given for completing the quiz. Default is 50.
+
+    Returns:
+        str: The title of the content-quiz pair when the object is printed.
+
+    author:
+        Johnny Say (js1687@exeter.ac.uk)
+    """
     title = models.CharField(max_length=255)
     content = models.TextField()
     quiz_questions = models.JSONField()

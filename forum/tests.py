@@ -1,3 +1,14 @@
+"""
+Unit tests for the forum application.
+
+This module contains comprehensive test cases for the forum functionality, including:
+    - Post creation and management for different content types
+    - Feed display with various filters (my posts, friends' posts, university-wide)
+    - Post sorting and interaction functionality
+    - Gamekeeper moderation features
+    - Model validation and constraints
+"""
+
 from django.test import TestCase, Client
 from django.urls import reverse
 from django.contrib.auth.models import User
@@ -10,10 +21,14 @@ import json
 
 
 class PostCreationTest(TestCase):
-    """Test post creation for various submission types
-    
-    Author:
-        Lewis Farley (lf507@exeter.ac.uk)
+    """
+    Test suite for post creation functionality.
+
+    Tests the creation of posts for different types of content:
+        - Challenge completions
+        - Card achievements
+        - Guide completions
+    Verifies proper post attributes and relationships.
     """
     
     def setUp(self):
@@ -96,10 +111,15 @@ class PostCreationTest(TestCase):
 
 
 class FeedDisplayTest(TestCase):
-    """Test the feed display with various filters and conditions
-    
-    Author:
-        Lewis Farley (lf507@exeter.ac.uk)
+    """
+    Test suite for feed display functionality.
+
+    Tests various feed filtering options and display conditions:
+        - Empty feed handling
+        - Friend-only post visibility
+        - University-wide post visibility
+        - Post filtering by type
+        - User-specific post filtering
     """
     
     def setUp(self):
@@ -288,10 +308,13 @@ class FeedDisplayTest(TestCase):
 
 
 class PostSortingTest(TestCase):
-    """Test post sorting functionality
-    
-    Author:
-        Lewis Farley (lf507@exeter.ac.uk)
+    """
+    Test suite for post sorting functionality.
+
+    Tests different post sorting mechanisms:
+        - Chronological sorting (most recent first)
+        - Sorting by interaction count (likes/dislikes)
+        - Proper ordering within each sort type
     """
     
     def setUp(self):
@@ -389,10 +412,14 @@ class PostSortingTest(TestCase):
 
 
 class PostCreationErrorTest(TestCase):
-    """Test error cases for post creation
-    
-    Author:
-        Lewis Farley (lf507@exeter.ac.uk)
+    """
+    Test suite for post creation error handling.
+
+    Tests various error conditions in post creation:
+        - Invalid post types
+        - Invalid content IDs
+        - Missing required fields
+        - Validation constraints
     """
     
     def setUp(self):
@@ -435,10 +462,14 @@ class PostCreationErrorTest(TestCase):
 
 
 class PostInteractionTest(TestCase):
-    """Test post interaction functionality
-    
-    Author:
-        Lewis Farley (lf507@exeter.ac.uk)
+    """
+    Test suite for post interaction functionality.
+
+    Tests user interactions with posts:
+        - Adding/removing likes and dislikes
+        - Interaction constraints (one per user per post)
+        - Interaction state changes
+        - Error handling for invalid interactions
     """
     
     def setUp(self):
@@ -549,10 +580,14 @@ class PostInteractionTest(TestCase):
 
 
 class GamekeeperTest(TestCase):
-    """Test gamekeeper functionality
-    
-    Author:
-        Lewis Farley (lf507@exeter.ac.uk)
+    """
+    Test suite for gamekeeper moderation functionality.
+
+    Tests moderation features available to gamekeepers:
+        - Access control to moderation pages
+        - Post deletion capabilities
+        - Post filtering by interaction ratios
+        - Moderation action logging
     """
     
     def setUp(self):
@@ -623,8 +658,6 @@ class GamekeeperTest(TestCase):
         response = self.client.get(reverse('forum:forum_gamekeeper'))
         self.assertEqual(response.status_code, 200)
     
-
-    
     def test_post_deletion(self):
         """Test post deletion functionality
         
@@ -644,10 +677,14 @@ class GamekeeperTest(TestCase):
 
 
 class ModelTest(TestCase):
-    """Test model functionality
-    
-    Author:
-        Lewis Farley (lf507@exeter.ac.uk)
+    """
+    Test suite for model functionality and constraints.
+
+    Tests model-specific features:
+        - Post visibility settings
+        - String representations
+        - Field constraints and choices
+        - Model relationships and cascading
     """
     
     def setUp(self):

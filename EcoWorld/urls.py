@@ -1,10 +1,25 @@
 """
-This module defines the endpoints for the EcoWorld app:
-    - `addDrink` : This view allows the user to add a drink event
-    - `testAddDrink` : This view allows the user to test adding a drink event
-Author:
-    -Lewis Farley (lf507@exeter.ac.uk)
-    -Chris Lynch (cl1037@exeter.ac.uk)
+URL configuration for EcoWorld app.
+
+This module defines the URL patterns for the EcoWorld game functionality,
+including dashboard, store, pack management, challenges, and friend features.
+
+URL Patterns:
+    - /: Main dashboard view
+    - /store/: Game store interface
+    - /buyPack/: Pack purchase endpoint
+    - /packopening/: Pack opening interface
+    - /dashboard/: Alternative dashboard access
+    - /challenge/: Challenge view and management
+    - /completeChallenge/: Challenge completion endpoint
+    - /gamekeeper/: Gamekeeper administration page
+    - /grant_gamekeeper/<user_id>/: Gamekeeper role assignment
+    - /add-challenge/: Challenge creation interface
+    - /friends/: Friend management dashboard
+    - /mergecards/: Card merging interface
+    - /mergereveal/: Merge result reveal page
+    - /increment_objective/: Progress tracker update
+    - /save_objective_note/: Objective note management
 """
 
 from django.urls import path

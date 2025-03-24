@@ -1,18 +1,27 @@
 """
-URL configuration for ECM2434 project.
+Root URL configuration for ECM2434 project.
 
-The `urlpatterns` list routes URLs to views. For more information please see:
+This module contains the root URL configuration for the entire project,
+connecting all app-specific URL patterns to their respective apps.
+
+URL Patterns:
+    - admin/: Django admin interface
+    - /: Main application entry point (Accounts app)
+    - accounts/: User authentication and profile management
+    - ecoworld/: EcoWorld game functionality
+    - qrcode/: QR code scanning and processing
+    - garden/: Virtual garden management
+    - guides/: Sustainability guides and resources
+    - leaderboards/: User rankings and achievements
+    - glass-disposal/: Glass recycling information
+    - game/: Sustainability game features
+    - forum/: Community discussion board
+
+For more information on URL configuration, see:
     https://docs.djangoproject.com/en/5.1/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
+
+Author:
+    Lewis Farley (lf507@exeter.ac.uk)
 """
 from django.contrib import admin
 from django.urls import path,include

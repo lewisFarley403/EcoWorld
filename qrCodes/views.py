@@ -1,3 +1,15 @@
+"""
+Views for the QR code functionality.
+
+This module contains view functions for handling QR code-related requests,
+including code generation, scanning, and water fountain management. The views support:
+    - QR code generation for water fountains
+    - Code scanning and validation
+    - Drink event tracking
+    - Water fountain registration
+    - User reward management
+"""
+
 from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.shortcuts import render, redirect

@@ -1,3 +1,15 @@
+"""
+Views for the garden functionality.
+
+This module contains view functions for handling garden-related requests,
+including garden display and card management. The views support:
+    - Garden display and rendering
+    - Card placement in garden squares
+    - Card removal from garden squares
+    - Garden state management
+    - User inventory integration
+"""
+
 import json
 
 from django.conf import settings
