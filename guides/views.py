@@ -1,3 +1,15 @@
+"""
+Views for the guides functionality.
+
+This module contains view functions for handling guide-related requests,
+including content management, quiz functionality, and score tracking. The views support:
+    - Guide content creation and removal
+    - Quiz management and scoring
+    - User progress tracking
+    - Markdown content rendering
+    - Admin moderation features
+"""
+
 import json
 import markdown
 

@@ -1,3 +1,19 @@
+"""
+URL configuration for Forum app.
+
+This module defines the URL patterns for the community forum functionality,
+including post management, interactions, and moderation features.
+
+URL Patterns:
+    - /: Main forum feed
+    - /getchallengeinfo/: Challenge information retrieval endpoint
+    - /create_post/: Post creation interface
+    - /interact/: Post interaction endpoint
+    - /interactions/<post_id>/: Post interaction details
+    - /gamekeeper/: Forum moderation dashboard
+    - /gamekeeper/delete/<post_id>/: Post deletion endpoint
+"""
+
 from django.urls import path
 from . import views
 

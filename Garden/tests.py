@@ -27,6 +27,15 @@ from .models import garden, gardenSquare, User
 
 
 class TestGarden(TestCase):
+    """
+    Test suite for the garden application.
+
+    This class contains comprehensive test cases for the garden functionality, including:
+        - Garden view rendering
+        - Card placement and removal
+        - Error handling for invalid inputs
+        - Sustainability reward card placement
+    """
 
     def setUp(self):
         self.client = Client()

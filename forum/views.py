@@ -1,3 +1,19 @@
+"""
+Views for the forum functionality.
+
+This module contains view functions for handling forum-related requests,
+including post management, challenge information, user interactions,
+and moderation features. The views support:
+    - Post creation and deletion
+    - Challenge information retrieval
+    - Post interactions (likes/dislikes)
+    - Moderation tools for gamekeepers
+    - Friend-specific content filtering
+
+Author:
+    Lewis Farley (lf507@exeter.ac.uk)
+"""
+
 import json
 
 from django.contrib.auth.decorators import login_required, permission_required

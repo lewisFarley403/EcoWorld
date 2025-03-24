@@ -1,3 +1,17 @@
+"""
+Unit tests for the leaderboard functionality.
+
+This module contains comprehensive test cases for the leaderboard, including:
+    - User coin tracking and storage
+    - Leaderboard display and sorting
+    - Error handling and edge cases
+    - Template rendering and display
+    - User interaction and data retrieval
+
+Author:
+    Lewis Farley (lf507@exeter.ac.uk)
+"""
+
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse

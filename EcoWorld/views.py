@@ -367,7 +367,8 @@ def gamekeeper_page(request):
 @permission_required("Accounts.can_view_gamekeeper_button")  # Only gamekeepers can promote others
 def grant_gamekeeper(request, user_id):
     """
-    This view grants the can_view_gamekeeper_button permission to a user, effectively promoting them to an gamekeeper.
+    This view grants the can_view_gamekeeper_button permission to a user,
+    effectively promoting them to an gamekeeper.
 
     Returns: Reloading of the gamekeeper page with the updated list of users.
 
@@ -406,7 +407,8 @@ def add_challenge(request):
             new_challenge = form.save(commit=False)  # Don't save to DB yet
             new_challenge.created_by = request.user  # Set creator manually
             new_challenge.save()  # Now save
-            return redirect("EcoWorld:gamekeeper_page")  # Redirect back to the gamekeeper page after saving
+            # Redirect back to the gamekeeper page after saving
+            return redirect("EcoWorld:gamekeeper_page")
     else:
         form = ChallengeForm()
     return render(request, "EcoWorld/add_challenge.html", {"form": form})
